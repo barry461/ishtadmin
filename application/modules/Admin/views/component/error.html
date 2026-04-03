@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>错误提示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <style>
+        .body {
+            margin-top: 30%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="alert alert-danger body" role="alert">
+        <strong>错误：</strong> {{$msg}} <a href="javascript:;" onclick="redirect()">点击跳转</a>
+    </div>
+</div>
+
+</body>
+<script>
+    handleRedirect();
+
+    function redirect() {
+        window.history.back();
+    }
+
+    function handleRedirect() {
+        //setTimeout(redirect, 2000);
+    }
+</script>
+</html>

@@ -1,0 +1,103 @@
+/* 样式调整为继承父级 */
+.nav-top .el-submenu__title i,
+.nav-top .el-menu-item i,
+.nav-top-right .el-dropdown,
+.tab-title:hover .el-icon-caret-right,
+.tab-title.tab-native .el-icon-caret-right {
+	color: inherit;
+}
+
+.el-menu,
+.el-submenu,
+.nav-top .el-submenu__title,
+.nav-top .el-submenu .el-submenu .el-submenu__title,
+.nav-top .el-menu-item {
+	color: inherit;
+	background-color: inherit;
+}
+
+.theme-0 .menu-name,.theme-0 .tab-title-2>span{transition: none !important;}
+
+
+/* 声明变量 - 蓝色主题 */
+body{
+	--nav-bg-color: #000; /* 顶部导航 - 背景色 */
+	--nav-color: #f5f5f5; /* 顶部导航 - 文字色 */
+	--menu-bg-color-2: #111; /* 二级菜单 - 背景色 */
+	--menu-hover-bg-color: #1c1c1c; /* 菜单悬浮 - 背景色 */
+	--menu-active-bg-color: #409EFF; /* 菜单选中 - 背景色 */
+	--menu-active-color: #fff; /* 菜单选中 - 文字色 */
+	--tool-bg-color: #000; /* 工具栏 - 背景色 */
+	--tool-color: #f5f5f5; /* 工具栏 - 文字色 */
+	--tool-hover-bg-color: #1c1c1c; /* 工具栏悬浮 - 背景色 */
+}
+
+/* ========================== 默认样式 - 蓝色 ==========================  */
+
+/* 顶部导航栏背景色，前景色 */
+.nav-top {
+	background-color: var(--nav-bg-color) !important;
+	color: var(--nav-color) !important;
+}
+
+/* 二级菜单背景色 */
+.el-submenu .el-menu-item,
+.nav-top .el-submenu .el-submenu .el-submenu__title{
+	background: #FFF;
+}
+
+/* 所有菜单悬浮样式*/
+.nav-top .el-submenu__title:hover,
+.nav-top .el-menu-item:hover{
+	background-color: var(--menu-hover-bg-color) !important;
+	color: #fff !important;
+}
+
+/* 子菜单展开时的样式 */
+.nav-top .el-submenu.is-active > .el-submenu__title {
+	background: var(--menu-hover-bg-color) !important;
+	color: var(--menu-active-bg-color) !important;
+	font-weight: 600;
+}
+
+/* 所有菜单选中时 */
+.nav-top .el-menu-item.is-active {
+	background: var(--menu-active-bg-color) !important;
+	color: var(--menu-active-color) !important;
+	font-weight: 600;
+}
+
+/* 子菜单悬浮样式 */
+.el-menu--popup .el-menu-item:hover {
+	background-color: #ECF5FF;
+}
+
+/* 子菜单选中样式 */
+.el-menu--popup .el-menu-item.is-active {
+	background-color: var(--menu-active-bg-color);
+	color: var(--menu-active-color);
+}
+
+/* 工具栏背景色颜色, 前景色 */
+.nav-top-right {
+	color: var(--tool-color);
+	background-color: var(--tool-bg-color);
+}
+
+/* 工具栏悬浮颜色 */
+.tool-fox:hover {
+	background-color: var(--tool-hover-bg-color);
+}
+
+/* tab卡片栏 - 悬浮颜色 */
+.tab-title:hover{
+	color: var(--menu-active-bg-color);
+	border: 1px var(--menu-active-bg-color) solid;
+}
+/* tab卡片栏 - 选中颜色 */
+.tab-native.tab-title {
+	background-color: var(--menu-active-bg-color);
+	color: var(--menu-active-color);
+	border: 1px var(--menu-active-bg-color) solid;
+}
+

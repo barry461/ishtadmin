@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>插件管理</title>
+	<script src="../../static/common-head.js"></script>
+	<style>
+		html,
+		body {
+			background-color: #f5f5f5;
+			color: #333;
+			margin: 0;
+			padding: 0;
+		}
+
+		.plugins-container {
+			padding: 20px;
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+
+		.page-header {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 30px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.plugins-section {
+			margin-bottom: 40px;
+		}
+
+		.section-title {
+			font-size: 16px;
+			color: #999;
+			margin-bottom: 20px;
+			text-align: center;
+			position: relative;
+		}
+
+		.section-title::before,
+		.section-title::after {
+			content: '';
+			position: absolute;
+			top: 50%;
+			width: 200px;
+			height: 1px;
+			background: #ddd;
+		}
+
+		.section-title::before {
+			left: 0;
+		}
+
+		.section-title::after {
+			right: 0;
+		}
+
+		.plugins-table {
+			background: #fff;
+			border-radius: 4px;
+			overflow: hidden;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.table-header {
+			background: #f8f9fa;
+			border-bottom: 1px solid #dee2e6;
+			display: flex;
+			font-weight: 500;
+			font-size: 14px;
+			color: #666;
+		}
+
+		.table-header .col {
+			padding: 12px 16px;
+			border-right: 1px solid #dee2e6;
+		}
+
+		.table-header .col:last-child {
+			border-right: none;
+		}
+
+		.col-name {
+			flex: 2;
+		}
+
+		.col-desc {
+			flex: 3;
+		}
+
+		.col-version {
+			flex: 1;
+		}
+
+		.col-author {
+			flex: 1.5;
+		}
+
+		.col-actions {
+			flex: 1.5;
+		}
+
+		.plugin-row {
+			display: flex;
+			border-bottom: 1px solid #dee2e6;
+			transition: background 0.2s;
+		}
+
+		.plugin-row:hover {
+			background: #f8f9fa;
+		}
+
+		.plugin-row:last-child {
+			border-bottom: none;
+		}
+
+		.plugin-row .col {
+			padding: 16px;
+			border-right: 1px solid #dee2e6;
+			display: flex;
+			align-items: center;
+		}
+
+		.plugin-row .col:last-child {
+			border-right: none;
+		}
+
+		.plugin-name {
+			font-weight: 500;
+			color: #333;
+			font-size: 14px;
+		}
+
+		.plugin-desc {
+			color: #666;
+			font-size: 13px;
+			line-height: 1.4;
+		}
+
+		.plugin-version {
+			font-family: 'Monaco', 'Menlo', monospace;
+			font-size: 12px;
+			color: #666;
+		}
+
+		.plugin-author {
+			color: #007cba;
+			font-size: 13px;
+		}
+
+		.plugin-actions {
+			display: flex;
+			gap: 8px;
+		}
+
+		.action-btn {
+			padding: 4px 8px;
+			font-size: 12px;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+			transition: all 0.2s;
+			text-decoration: none;
+			display: inline-block;
+		}
+
+		.btn-settings {
+			background: #f0f0f0;
+			color: #666;
+		}
+
+		.btn-settings:hover {
+			background: #e0e0e0;
+			color: #333;
+		}
+
+		.btn-enable {
+			background: #e7f3ff;
+			color: #007cba;
+		}
+
+		.btn-enable:hover {
+			background: #cce7ff;
+		}
+
+		.btn-disable {
+			background: #fff2e7;
+			color: #d63384;
+		}
+
+		.btn-disable:hover {
+			background: #ffe0cc;
+		}
+
+		.status-enabled {
+			color: #28a745;
+		}
+
+		.status-disabled {
+			color: #dc3545;
+		}
+
+		@media (max-width: 768px) {
+			.plugins-container {
+				padding: 10px;
+			}
+
+			.table-header,
+			.plugin-row {
+				flex-direction: column;
+			}
+
+			.table-header .col,
+			.plugin-row .col {
+				border-right: none;
+				border-bottom: 1px solid #dee2e6;
+			}
+
+			.table-header .col:last-child,
+			.plugin-row .col:last-child {
+				border-bottom: none;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="plugins-container">
+		<div class="page-header">插件管理</div>
+
+		<!-- 已用的插件 -->
+		<div class="plugins-section">
+			<div class="section-title">已用的插件</div>
+			<div class="plugins-table">
+				<div class="table-header">
+					<div class="col col-name">名称</div>
+					<div class="col col-desc">描述</div>
+					<div class="col col-version">版本</div>
+					<div class="col col-author">作者</div>
+					<div class="col col-actions">操作</div>
+				</div>
+				<div class="plugin-row" v-for="plugin in enabledPlugins" :key="plugin.id">
+					<div class="col col-name">
+						<span class="plugin-name">{{ plugin.name }}</span>
+					</div>
+					<div class="col col-desc">
+						<span class="plugin-desc">{{ plugin.description }}</span>
+					</div>
+					<div class="col col-version">
+						<span class="plugin-version">{{ plugin.version }}</span>
+					</div>
+					<div class="col col-author">
+						<span class="plugin-author">{{ plugin.author }}</span>
+					</div>
+					<div class="col col-actions">
+						<div class="plugin-actions">
+							<a href="javascript:void(0)" class="action-btn btn-settings" @click="openSettings(plugin)">设置</a>
+							<a href="javascript:void(0)" class="action-btn btn-disable" @click="disablePlugin(plugin)">禁用</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 禁用的插件 -->
+		<div class="plugins-section">
+			<div class="section-title">禁用的插件</div>
+			<div class="plugins-table">
+				<div class="table-header">
+					<div class="col col-name">名称</div>
+					<div class="col col-desc">描述</div>
+					<div class="col col-version">版本</div>
+					<div class="col col-author">作者</div>
+					<div class="col col-actions">操作</div>
+				</div>
+				<div class="plugin-row" v-for="plugin in disabledPlugins" :key="plugin.id">
+					<div class="col col-name">
+						<span class="plugin-name">{{ plugin.name }}</span>
+					</div>
+					<div class="col col-desc">
+						<span class="plugin-desc">{{ plugin.description }}</span>
+					</div>
+					<div class="col col-version">
+						<span class="plugin-version">{{ plugin.version }}</span>
+					</div>
+					<div class="col col-author">
+						<span class="plugin-author">{{ plugin.author }}</span>
+					</div>
+					<div class="col col-actions">
+						<div class="plugin-actions">
+							<a href="javascript:void(0)" class="action-btn btn-enable" @click="enablePlugin(plugin)">启用</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		const app = new Vue({
+			el: '#app',
+			data: {
+				enabledPlugins: [
+					{
+						id: 1,
+						name: 'BingIndexNow',
+						description: 'Bing IndexNow Plugin 将文章URL推送到IndexNow',
+						version: '1.0.0',
+						author: 'wangyuhang'
+					},
+					{
+						id: 2,
+						name: 'DPlayer',
+						description: 'DPlayer for typecho',
+						version: '1.1.1',
+						author: 'player'
+					},
+					{
+						id: 3,
+						name: 'FootMenu',
+						description: '底部菜单',
+						version: '1.0.0',
+						author: 'wangyuhang'
+					},
+					{
+						id: 4,
+						name: 'Mirages',
+						description: 'Mirages 主题专用插件',
+						version: '7.10.0',
+						author: 'Hran'
+					},
+					{
+						id: 5,
+						name: 'Sitemap',
+						description: 'Sitemap for Typecho',
+						version: '1.0.0',
+						author: 'bayunjiang'
+					},
+					{
+						id: 6,
+						name: 'TagsPagination',
+						description: '标签',
+						version: '1.0.0',
+						author: 'wangyuhang'
+					},
+					{
+						id: 7,
+						name: 'tbxw',
+						description: '图片加速，视频自动功能queue',
+						version: '1.0.0',
+						author: '图片tbxw'
+					},
+					{
+						id: 8,
+						name: 'zzconfig',
+						description: '中转配置',
+						version: '1.0.0',
+						author: 'ws'
+					}
+				],
+				disabledPlugins: [
+					{
+						id: 9,
+						name: 'ArtPlayer',
+						description: 'ArtPlayer for typecho',
+						version: '1.0.0',
+						author: 'wangyuhang'
+					},
+					{
+						id: 10,
+						name: 'HelloWorld',
+						description: 'Hello World',
+						version: '1.0.0',
+						author: 'qining'
+					},
+					{
+						id: 11,
+						name: 'JoeAdvert',
+						description: '广告配置',
+						version: '1.0.0',
+						author: 'wangyuhang'
+					},
+					{
+						id: 12,
+						name: 'Wordpress to Typecho',
+						description: '将 Wordpress 数据转换导入到 Typecho',
+						version: '1.0.2 Beta',
+						author: 'qining'
+					}
+				]
+			},
+			methods: {
+				openSettings(plugin) {
+					console.log('打开设置页面:', plugin);
+					try {
+						// 打开插件设置页面
+						parent.sa_admin.showTab({
+							id: 'plugin-settings-' + plugin.id,
+							name: '设置插件 ' + plugin.name,
+							url: 'sa-view/plugins/plugin-settings.html'
+						});
+					} catch (e) {
+						console.error('跳转失败:', e);
+					}
+				},
+				enablePlugin(plugin) {
+					this.disabledPlugins = this.disabledPlugins.filter(p => p.id !== plugin.id);
+					this.enabledPlugins.push(plugin);
+					try {
+						parent.sa.msg('插件 ' + plugin.name + ' 已启用');
+					} catch (e) {
+						alert('插件 ' + plugin.name + ' 已启用');
+					}
+				},
+				disablePlugin(plugin) {
+					this.enabledPlugins = this.enabledPlugins.filter(p => p.id !== plugin.id);
+					this.disabledPlugins.push(plugin);
+					try {
+						parent.sa.msg('插件 ' + plugin.name + ' 已禁用');
+					} catch (e) {
+						alert('插件 ' + plugin.name + ' 已禁用');
+					}
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

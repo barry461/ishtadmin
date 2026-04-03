@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>角色列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- 参数栏 -->
+			<div class="c-title">检索参数</div>
+			<el-form :inline="true" @submit.native.prevent>
+				<sa-item name="角色名称" v-model="p.keyword"></sa-item>
+				<el-button type="primary" icon="el-icon-search" @click="f5()">查询</el-button>
+				<el-button type="primary" icon="el-icon-plus" @click="add()">新增</el-button>
+			</el-form>
+			<!-- 数据列表 -->
+			<el-table class="data-table" ref="data-table" :data="dataList" size="small" v-loading="loading">
+				<el-table-column label="编号" prop="role_id" width="70px"> </el-table-column>
+				<el-table-column label="角色名称">
+					<template slot-scope="s">
+						<el-input v-if="s.row.is_update" v-model="s.row.role_name"></el-input>
+						<span v-else>{{s.row.role_name}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="权限数量">
+					<template slot-scope="s">
+						<span>{{(s.row.permission_ids || []).length}}</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" width="220px">
+					<template slot-scope="s">
+						<el-button type="text" @click="update(s.row)">
+							<span :style="s.row.is_update ? 'color: red;' : ''">修改</span>
+						</el-button>
+						<el-button type="text" @click="del(s.row)">删除</el-button>
+						<el-button type="text" @click="menu_setup(s.row)">分配权限</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<sa-item type="page" :curr.sync="p.page" :size.sync="p.limit" :total="total" :sizes="[10,20,30,50,100]"
+				@change="f5()"></sa-item>
+		</div>
+	</div>
+	<script>
+		var app = new Vue({
+			components: {
+				"sa-item": httpVueLoader('../../sa-frame/com/sa-item.vue'),
+			},
+			el: '.vue-box',
+			data: {
+				sa: sa, 	// 超级对象
+				p: {	// 查询参数 
+					keyword: '',
+					page: 1,
+					limit: 20,
+				},
+				loading: false,
+				total: 0,
+				dataList: [],	// 数据集合
+			},
+			methods: {
+				// 刷新
+				f5: async function () {
+					this.loading = true;
+					try {
+						const res = await sa.http({
+							url: '/role/list',
+							method: 'get',
+							data: this.p
+						});
+						const data = res.data || {};
+						this.dataList = Array.isArray(data.list) ? data.list.map(item => ({ ...item, is_update: false })) : [];
+						this.total = parseInt(data.total) || 0;
+						sa.f5TableHeight();
+					} catch (e) {
+						console.error(e);
+						sa.error('加载角色列表失败');
+					} finally {
+						this.loading = false;
+					}
+				},
+				// 修改
+				update: function (data) {
+					sa.showIframe('编辑角色', 'role-add.html?role_id=' + data.role_id, '520px', '320px');
+				},
+				// 删除
+				del: function (data) {
+					sa.confirm('是否删除，此操作不可撤销', function () {
+						sa.http({
+							url: '/role/delete',
+							method: 'post',
+							data: { ids: [data.role_id] },
+							showSuccess: true
+						}).then(function () {
+							app.f5();
+						});
+					})
+				},
+				// 添加
+				add: function () {
+					sa.showIframe('新增角色', 'role-add.html?role_id=0', '520px', '320px');
+				},
+				// 修改菜单
+				menu_setup: function (data) {
+					var title = '为 [' + data.role_name + '] 分配权限';
+					sa.showIframe(title, 'menu-setup.html?role_id=' + data.role_id, '700px', '600px');
+				}
+			},
+			created: function () {
+				this.f5();
+				sa.onInputEnter();		// 监听输入框的回车事件，执行查询  
+			}
+		})
+	</script>
+</body>
+
+</html>

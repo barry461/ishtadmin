@@ -1,0 +1,94 @@
+<?php
+namespace repositories;
+
+use tools\RedisService;
+use VersionModel;
+
+trait SystemRepository
+{
+    /**
+     * 获取版本更新
+     * @param $version
+     * @param $oauth_type
+     * @return array|bool|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|mixed|object|string|null
+     */
+    public function getUpdate($version, $oauth_type)
+    {
+        $versions = RedisService::get(VersionModel::REDIS_VERSION_KEY[$oauth_type]);
+        if (!$versions) {
+            $versions = VersionModel::query()
+                ->where('type', $oauth_type)
+                ->where('status', VersionModel::STATUS_SUCCESS)
+                ->orderBy('id', 'DESC')
+                ->first();
+            $versions = $versions->toArray();
+            $this->setCacheWithSql(VersionModel::REDIS_VERSION_KEY[$oauth_type], $versions, '检测更新', 86400);
+        }
+
+        if ($versions['version'] != $version) {
+            $selfVersion = VersionModel::query()
+                ->where('version', $version)
+                ->where('type', $oauth_type)
+                ->select('must')
+                ->first();
+            $versions['must'] = $selfVersion->must ?? 1;
+        }
+
+        $app_version = (int)str_replace('.', '', $version);
+        $online_version = (int)str_replace('.', '', $versions['version']);
+        if ($online_version < $app_version) {
+            $versions['version'] = $version;
+        }
+        return $versions;
+    }
+
+    /**
+     * 根据广告位置获取广告列表
+     * @param string $position
+     * @return array
+     */
+    public function getADsByPosition(string $position = '1')
+    {
+        $showUser = $this->member['regdate'] > (TIMESTAMP - 86400 *2) ? [0, 1] : [0, 2];
+        $redisKey = \AdsModel::REDIS_ADS_KEY . $_POST['oauth_type'] . '_' . $position;
+        $data = RedisService::get($redisKey);
+        if (!$data) {
+            $ads = \AdsModel::query()
+                ->select(['id', 'title', 'img_url', 'url', 'type', 'ios_url', 'android_url', 'value'])
+                ->where('status', \AdsModel::STATUS_SUCCESS)
+                ->where('position', $position)
+                ->where('start_at', '<=', \Carbon\Carbon::now())
+                ->where('end_at', '>=', \Carbon\Carbon::now())
+                ->whereIn('show_user', $showUser)
+                ->get();
+
+            foreach ($ads as $key => $value) {
+                if ($value->type == \AdsModel::ADS_TYPE_DOWNLOAD) {
+                    $ads[$key]['url'] = $_POST['oauth_type'] == 'ios' ?
+                        'itms-services://?action=download-manifest&url=' . $value->ios_url :
+                        $value->android_url;
+                }
+            }
+
+            $data = $ads->toArray();
+            $this->setCacheWithSql($redisKey, $data, '广告列表', 86400);
+        }
+        return $data;
+    }
+
+    /**
+     * 根据position获取一条随机广告
+     * @param $position
+     * @return array|mixed
+     */
+    public function getOneAds($position)
+    {
+        $ads = $this->getADsByPosition($position);
+        $data = [];
+        if ($ads) {
+            $rand = array_rand($ads);
+            $data = $ads[$rand];
+        }
+        return $data;
+    }
+}

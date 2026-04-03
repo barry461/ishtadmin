@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+	<meta charset="utf-8">
+	<title>登录</title>
+	<meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+	<meta name="author" content="Vincent Garreau" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="stylesheet" media="screen" href="sa-frame/login/style.css">
+	<link rel="stylesheet" href="static/sa.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.14/lib/theme-chalk/index.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/index.js"></script>
+	<style type="text/css">
+		/* 背景图片 */
+		#particles-js {
+			background-image: url(sa-frame/login/bg.jpg);
+		}
+
+		/* 样式调整 */
+		.login-box {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: fixed;
+			width: inherit;
+			height: 100%;
+			pointer-events: none;
+		}
+
+		.login {
+			height: auto;
+			padding: 50px 50px;
+			position: static;
+			margin: 0 auto !important;
+			pointer-events: all;
+			border-radius: 0px;
+		}
+
+		.login-top {
+			margin-top: 0px;
+			margin-bottom: 30px;
+		}
+
+		.logo-img {
+			width: 50px;
+			height: 50px;
+			vertical-align: middle;
+			position: relative;
+			top: -3px;
+			border-radius: 50%;
+			margin-left: -10px;
+			margin-right: 10px;
+		}
+
+		.logo-img {
+			display: none;
+		}
+
+		.login-button {
+			width: 270px;
+			border-radius: 0px;
+			transition: all 0.2s;
+			margin: auto;
+			display: block;
+		}
+
+		.login-center-img {
+			margin-top: 0 !important;
+		}
+
+		/* .page-title{line-height: 50px;} */
+		.sk-rotating-plane {}
+
+		/* 动画相关 */
+		/* .login{background-color: rgba(0,0,0,0); } */
+		.login {
+			opacity: 0;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id="particles-js">
+		<div class="login-box">
+			<div class="login">
+				<div class="login-top">
+					<img src="" class="logo-img" alt="">
+					<span class="page-title">登录</span>
+				</div>
+				<el-form :model="state" :rules="rules" class="sa-container-center" size="medium" label-position="top">
+					<el-form-item prop="username">
+						<el-input class="w-full" placeholder="用户名" v-model.trim="state.username" clearable>
+							<template slot="prepend">
+								<div class="login-center-img"><img src="sa-frame/login/name.png" /></div>
+							</template>
+						</el-input>
+					</el-form-item>
+
+					<el-form-item prop="password">
+						<el-input class="w-full" placeholder="密码" v-model.trim="state.password" clearable>
+							<template slot="prepend">
+								<div class="login-center-img"><img src="sa-frame/login/password.png" /></div>
+							</template>
+						</el-input>
+					</el-form-item>
+
+					<el-form-item prop="card_num">
+						<el-input class="w-full" placeholder="谷歌验证码" v-model="state.card_num" clearable>
+							<template slot="prepend">
+								<div class="login-center-img"><svg xmlns="http://www.w3.org/2000/svg"
+										xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
+										<rect x="336" y="336" width="80" height="80" rx="8" ry="8" fill="currentColor"></rect>
+										<rect x="272" y="272" width="64" height="64" rx="8" ry="8" fill="currentColor"></rect>
+										<rect x="416" y="416" width="64" height="64" rx="8" ry="8" fill="currentColor"></rect>
+										<rect x="432" y="272" width="48" height="48" rx="8" ry="8" fill="currentColor"></rect>
+										<rect x="272" y="432" width="48" height="48" rx="8" ry="8" fill="currentColor"></rect>
+										<path
+											d="M448 32H304a32 32 0 0 0-32 32v144a32 32 0 0 0 32 32h144a32 32 0 0 0 32-32V64a32 32 0 0 0-32-32zm-32 136a8 8 0 0 1-8 8h-64a8 8 0 0 1-8-8v-64a8 8 0 0 1 8-8h64a8 8 0 0 1 8 8z"
+											fill="currentColor"></path>
+										<path
+											d="M208 32H64a32 32 0 0 0-32 32v144a32 32 0 0 0 32 32h144a32 32 0 0 0 32-32V64a32 32 0 0 0-32-32zm-32 136a8 8 0 0 1-8 8h-64a8 8 0 0 1-8-8v-64a8 8 0 0 1 8-8h64a8 8 0 0 1 8 8z"
+											fill="currentColor"></path>
+										<path
+											d="M208 272H64a32 32 0 0 0-32 32v144a32 32 0 0 0 32 32h144a32 32 0 0 0 32-32V304a32 32 0 0 0-32-32zm-32 136a8 8 0 0 1-8 8h-64a8 8 0 0 1-8-8v-64a8 8 0 0 1 8-8h64a8 8 0 0 1 8 8z"
+											fill="currentColor"></path>
+									</svg></div>
+							</template>
+						</el-input>
+					</el-form-item>
+					<el-form-item>
+
+						<el-button class="login-button" :loading="loading" type="primary" @click="login">登录</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</div>
+		<div class="sk-rotating-plane"></div>
+	</div>
+
+	<!-- scripts -->
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="/static/js/layer.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js"></script>
+	<script>
+		const isLogin = true
+	</script>
+	<script src="static/sa.js?v=2026030602"></script>
+	<script type="text/javascript">
+
+		// 所有参考属性  
+		var page_title = 'Sa-Admin 登录';		// 页面标题 
+		var key = 'admin';						// 默认的账号
+		var password = 'admin';					// 默认的password  
+		var logo = sa.app_logo;	// logo地址，为空字符串则不显示 
+
+		const app = new Vue({
+			el: '#particles-js',
+			data() {
+				return {
+					state: {
+						username: 'kele',
+						password: 'kele123',
+						card_num: '',
+						skip_verify: 1
+					},
+					rules: {
+						username: [
+							{ required: true, message: '请输入用户名', trigger: 'blur' },
+						],
+						password: [
+							{ required: true, message: '请输入密码', trigger: 'blur' },
+						],
+						// card_num: [
+						// 	{ required: true, message: '请输入验证码', trigger: 'blur' },
+						// 	{ min: 6, message: '请输入正确的验证码', trigger: 'blur' }
+						// ],
+					},
+					loading: false
+				}
+			},
+			methods: {
+				async login() {
+					this.loading = true
+					try {
+						const res = await sa.http({
+							url: '/login/dologin',
+							data: this.state,
+						})
+						sa.set_token(res.data.token)
+						localStorage.setItem('_user_info_', JSON.stringify(res.data.user))
+						if (parent == window) {
+							location.href = "index.html";
+						} else {
+							sa.closeCurrIframe();
+							parent.location.reload();
+						}
+					} catch (error) {
+						console.log('error: ', error);
+					} finally {
+						this.loading = false
+					}
+
+				}
+			}
+		})
+
+	</script>
+	<script type="text/javascript">
+		// 替换属性 
+		$('.page-title').html(sa.app_name);
+		$('title').html(sa.app_name);
+
+		if (logo != null && logo != '') {
+			$('.logo-img').attr('src', logo);
+			$('.logo-img').show();
+		}
+		// 去掉透明
+		setTimeout(function () {
+			document.querySelector('.login').style.opacity = '1';
+		}, 0)
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+body.theme-white.theme-sunset #foot-menu {
+    background: #F8F1E4;
+}
+.foot-menu {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 auto;
+}
+
+#foot-menu * {
+    -webkit-font-smoothing: auto;
+}
+
+.foot-menu a {
+    display: flex;
+    flex-direction: column;
+    color: rgba(0,0,0,0.9);
+    align-items: center;
+}
+.foot-menu i {
+    font-size: 1.6rem;
+}
+.foot-menu img {
+    max-width: 1.7rem;
+}
+body.theme-dark .foot-menu img.mode-dark {
+    display: block;
+}
+body.theme-dark .foot-menu img.mode-white {
+    display: none;
+}
+body.theme-white .foot-menu img.mode-dark,body.theme-sunset .foot-menu img.mode-dark {
+    display: none;
+}
+body.theme-white .foot-menu img.mode-white,body.theme-sunset .foot-menu img.mode-white {
+    display: block;
+}
+
+body.theme-dark .contact-link img.mode-dark {
+    display: block;
+}
+body.theme-dark .contact-link img.mode-white {
+    display: none;
+}
+body.theme-white .contact-link img.mode-dark,body.theme-sunset .contact-link img.mode-dark {
+    display: none;
+}
+body.theme-white .contact-link img.mode-white,body.theme-sunset .contact-link img.mode-white {
+    display: block;
+}
+
+.foot-menu span {
+    margin-top: .3rem;
+    font-size: .9rem;
+}
+.footer-desc {
+    margin-top: 1.5rem;
+    border-bottom: 1px solid rgb(204, 204, 204);
+    padding: .5rem 0;
+}
+.footer-desc b {
+    color: rgba(0,0,0,0.9);
+    font-size: 1rem;
+}
+.footer-desc p {
+    color: rgba(0,0,0,.7);
+    font-size: .9rem;
+    padding: 1rem 0;
+    line-height: normal;
+}
+.footer-link {
+    display: flex;
+    flex-direction: column;
+}
+.footer-link a {
+    font-size: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgb(204, 204, 204);
+}
+.footer-link span {
+    color: rgba(0,0,0,.5);
+}
+.contact-link {
+    padding: 1rem 0 2.5rem;
+    border-bottom: 1px solid rgb(204, 204, 204);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-link img {
+    max-width: 2rem;
+    margin: 0 1rem;
+}
+
+.contact-link i {
+    font-size: 1.6rem;
+    margin: 0 1rem;
+}
+
+.line-container {
+    width: 100%;
+    height: 1px;
+    background-color: #aca4a4;
+    margin: 2rem 0;
+}
+
+body.theme-dark .line-container {
+    background-color: #444444;
+}
+
+body.theme-dark .foot-menu a {
+    color: #fff;
+}
+body.theme-dark .footer-desc b {
+    color: #fff;
+}
+body.theme-dark .footer-desc p {
+    color: rgba(255,255,255,.7);
+}
+body.theme-dark .footer-link span {
+    color: rgba(255,255,255,.5);
+}
+body.theme-dark .footer-link a {
+    border-bottom: 1px solid rgb(68, 68, 68);
+}
+body.theme-dark .footer-desc {
+    border-bottom: 1px solid rgb(68, 68, 68);
+}
+body.theme-dark .contact-link {
+    border-bottom: 1px solid rgb(68, 68, 68);
+}
+
+/* Footer Legal Links Styles */
+.footer-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem 1.5rem;
+    margin: 1rem 0;
+    padding: 0.8rem 0;
+}
+
+.footer-legal-links .footer-link {
+    flex: 0 0 auto;
+    min-width: auto;
+}
+
+.footer-legal-links .footer-link a {
+    display: inline-block;
+    padding: 0;
+    border: none;
+    font-size: 0.9rem;
+    color: rgba(0,0,0,.6);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.footer-legal-links .footer-link a:hover {
+    color: rgba(0,0,0,.8);
+}
+
+.footer-legal-links .footer-link span {
+    color: inherit;
+    font-weight: normal;
+}
+
+body.theme-dark .footer-legal-links .footer-link a {
+    border: none;
+    color: rgba(255,255,255,.6);
+}
+
+body.theme-dark .footer-legal-links .footer-link a:hover {
+    color: rgba(255,255,255,.8);
+}
+
+body.theme-dark .footer-legal-links .footer-link span {
+    color: inherit;
+}
+
+@media(max-width: 767px) {
+    .footer-desc b {
+        font-size: 1.2rem
+    }
+    .foot-menu img {
+        max-width: 1.5rem;
+    }
+    .footer-desc p {
+        padding: .5rem 0;
+    }
+    .contact-link img {
+        max-width: 2.25rem;
+    }
+    .contact-link i {
+        margin: 0 .8rem;
+    }
+    .footer-legal-links {
+        gap: 0.6rem 1rem;
+        padding: 0.6rem 0;
+    }
+    .footer-legal-links .footer-link a {
+        font-size: 0.85rem;
+    }
+}

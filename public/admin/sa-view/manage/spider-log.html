@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>蜘蛛访问统计</title>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		.data-table {
+			width: 100%;
+		}
+
+		.spider-detail-dialog {
+			margin-bottom: 0 !important;
+		}
+
+		.spider-detail-dialog .el-dialog__body {
+			padding: 15px 20px 0 !important;
+		}
+
+		.spider-detail-dialog .page-box {
+			padding: 10px 0 !important;
+		}
+
+		.spider-detail-dialog .c-panel {
+			margin-bottom: 0 !important;
+			padding-bottom: 0 !important;
+		}
+
+		.spider-detail-body {
+			max-height: calc(100vh - 120px);
+			min-height: 400px;
+			overflow: auto;
+		}
+
+		.spider-detail-dialog .el-dialog {
+			min-height: 500px;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.spider-detail-dialog .el-dialog__body {
+			flex: 1;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- 统计概览 -->
+			<el-card shadow="never">
+				<div slot="header">
+					<span>蜘蛛访问统计</span>
+					<el-button type="text" style="float:right;padding:0" @click="fetchStats">刷新</el-button>
+				</div>
+				<el-table :data="statsList" size="small" v-loading="statsLoading">
+					<el-table-column label="蜘蛛" prop="label" width="120px"></el-table-column>
+					<el-table-column label="今日" prop="today" width="120px"></el-table-column>
+					<el-table-column label="昨日" prop="yesterday" width="120px"></el-table-column>
+					<el-table-column label="最近7天" prop="last7" width="120px"></el-table-column>
+					<el-table-column label="本月" prop="this_month" width="120px"></el-table-column>
+					<el-table-column label="上月" prop="last_month" width="120px"></el-table-column>
+					<el-table-column label="本月环比" prop="month_ratio" width="120px"></el-table-column>
+					<el-table-column label="操作" width="120px" align="center">
+						<template slot-scope="s">
+							<el-button type="primary" size="mini" @click="viewDetail(s.row)">详情</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-card>
+
+			<!-- 明细弹窗 -->
+			<el-dialog :visible.sync="detailVisible" :title="currentSpider + ' 访问明细'" width="80%" top="5vh"
+				custom-class="spider-detail-dialog">
+				<div class="spider-detail-body">
+					<!-- 检索参数 -->
+					<el-form inline>
+						<div class="c-item">
+							<label class="c-label">URI：</label>
+							<el-input v-model="detailParams.uri" placeholder="包含的路径关键字" clearable></el-input>
+						</div>
+						<div class="c-item">
+							<label class="c-label">IP 地址：</label>
+							<el-input v-model="detailParams.ip" placeholder="访问 IP" clearable></el-input>
+						</div>
+						<div class="c-item">
+							<label class="c-label">状态码：</label>
+							<el-input v-model="detailParams.status" placeholder="如 200、404" clearable></el-input>
+						</div>
+						<div class="c-item">
+							<label class="c-label">访问时间：</label>
+							<el-date-picker v-model="detailRange" value-format="yyyy-MM-dd" type="daterange"
+								range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+							</el-date-picker>
+						</div>
+						<div class="c-item">
+							<el-button type="primary" icon="el-icon-search" @click="fetchDetail">查询</el-button>
+						</div>
+					</el-form>
+
+					<!-- 明细列表 -->
+					<el-table v-loading="detailLoading" class="data-table" :data="detailList" size="small"
+						style="margin-top: 10px;">
+						<el-table-column label="ID" prop="id" width="80px"></el-table-column>
+						<el-table-column label="蜘蛛名称" prop="spider_name" width="120px"></el-table-column>
+						<el-table-column label="IP" prop="ip" width="150px" show-overflow-tooltip></el-table-column>
+						<el-table-column label="方法" prop="http_method" width="80px" align="center"></el-table-column>
+						<el-table-column label="状态码" prop="status" width="90px" align="center"></el-table-column>
+						<el-table-column label="请求 URI" prop="request_uri" show-overflow-tooltip></el-table-column>
+						<el-table-column label="来源" prop="referer" show-overflow-tooltip></el-table-column>
+						<el-table-column label="访问时间" prop="created_at" width="170px"></el-table-column>
+					</el-table>
+
+					<!-- 明细分页 -->
+					<div class="page-box">
+						<el-pagination background layout="total, prev, pager, next, jumper"
+							:current-page.sync="detailPagination.page" :page-size.sync="detailPagination.limit"
+							:total="detailTotal" @current-change="fetchDetail" @size-change="fetchDetail">
+						</el-pagination>
+					</div>
+				</div>
+			</el-dialog>
+		</div>
+	</div>
+
+	<script>
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				statsLoading: false,
+				statsList: [],
+				// 明细弹窗相关
+				detailVisible: false,
+				detailLoading: false,
+				currentSpider: '',
+				detailParams: {
+					uri: '',
+					ip: '',
+					status: '',
+				},
+				detailRange: [],
+				detailPagination: {
+					page: 1,
+					limit: 20,
+				},
+				detailList: [],
+				detailTotal: 0,
+			},
+			methods: {
+				async fetchStats() {
+					this.statsLoading = true;
+					try {
+						const res = await sa.http({
+							url: 'spiderlog/stats',
+							data: {}
+						});
+						this.statsList = Array.isArray(res && res.data) ? res.data : [];
+					} catch (e) {
+						console.error(e);
+						this.statsList = [];
+					} finally {
+						this.statsLoading = false;
+					}
+				},
+				viewDetail(row) {
+					this.currentSpider = row.spider_name || row.label || '';
+					this.detailParams.uri = '';
+					this.detailParams.ip = '';
+					this.detailParams.status = '';
+					this.detailRange = [];
+					this.detailPagination.page = 1;
+					this.detailVisible = true;
+					this.fetchDetail();
+					this.$nextTick(() => {
+						window.dispatchEvent(new Event('resize'));
+					});
+				},
+				async fetchDetail() {
+					this.detailLoading = true;
+					try {
+						const [date_from, date_to] = (this.detailRange || []);
+						const res = await sa.http({
+							url: 'spiderlog/list',
+							data: {
+								page: this.detailPagination.page,
+								limit: this.detailPagination.limit,
+								spider_name: this.currentSpider,
+								uri: this.detailParams.uri,
+								ip: this.detailParams.ip,
+								status: this.detailParams.status,
+								date_from,
+								date_to,
+							}
+						});
+						const d = res && res.data ? res.data : {};
+						this.detailList = Array.isArray(d.list) ? d.list : [];
+						this.detailTotal = Number(d.total || 0);
+						this.detailPagination.page = Number(d.page || this.detailPagination.page);
+						this.detailPagination.limit = Number(d.limit || this.detailPagination.limit);
+					} catch (e) {
+						console.error(e);
+						this.detailList = [];
+						this.detailTotal = 0;
+					} finally {
+						this.detailLoading = false;
+					}
+				},
+				showUa(row) {
+					const spider = row.spider_name || '';
+					const ua = row.user_agent || '';
+					layer.open({
+						type: 1,
+						title: 'UA 详情',
+						area: ['800px', '300px'],
+						shadeClose: true,
+						content: '<div style="padding:15px;word-break:break-all;">'
+							+ '<p><strong>蜘蛛：</strong>' + sa.html(spider) + '</p>'
+							+ '<p><strong>UA：</strong>' + sa.html(ua) + '</p>'
+							+ '</div>'
+					});
+				}
+			},
+			created() {
+				this.fetchStats();
+			}
+		})
+	</script>
+</body>
+
+</html>

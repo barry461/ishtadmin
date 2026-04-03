@@ -1,0 +1,52 @@
+<div id="pages"></div>
+<ul id="page"></ul>
+</div>
+<script>
+    $(document).ready(function(){$(".i-checks").iCheck({checkboxClass:"icheckbox_square-green",radioClass:"iradio_square-green",})});
+</script>
+<script>layui.use('laypage', function () {
+    var laypage = layui.laypage;
+
+    laypage.render({
+        elem: pages,
+        count: "{{$count}}",
+        limit: 24,
+        curr: getQueryVariable('page'),
+        hash: 'page',
+        jump: function (obj, first) {
+            if (!first) {
+                window.location.href = changeURLArg('page', obj.curr)
+            }
+        },
+    });
+    function getQueryVariable(variable){
+        let query = window.location.search.substring(1);
+        let vars = query.split("&");
+        for (let i=0;i<vars.length;i++) {
+            let pair = vars[i].split("=");
+            if(pair[0] == variable){return pair[1];}
+        }
+        return(false);
+    }
+
+    function changeURLArg(arg,arg_val){
+        let url = window.location.href;
+        var pattern=arg+'=([^&]*)';
+        var replaceText=arg+'='+arg_val;
+        if(url.match(pattern)){
+            var tmp='/('+ arg+'=)([^&]*)/gi';
+            tmp=url.replace(eval(tmp),replaceText);
+            return tmp;
+        }else{
+            if(url.match('[\?]')){
+                return url+'&'+replaceText;
+            }else{
+                return url+'?'+replaceText;
+            }
+        }
+        return url + '\n'+arg+'\n'+arg_val;
+    }
+})
+</script>
+</body>
+</html>

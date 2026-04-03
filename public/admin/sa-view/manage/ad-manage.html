@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">标题：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">位置：</label>
+					<el-select v-model="params.position" clearable>
+						<el-option v-for="item in positions" v-bind="item"></el-option>
+					</el-select>
+				</div>
+
+				<div class="c-item">
+					<label class="c-label">状态：</label>
+					<el-select v-model="params.status" clearable>
+						<el-option label="禁用" :value="0"></el-option>
+						<el-option label="启用" :value="1"></el-option>
+					</el-select>
+				</div>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+				<el-button type="info" icon="el-icon-refresh" @click="resetTableData">重置</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table v-loading="fetching" class="data-table" ref="data-table" :data="dataList" size="small">
+				<el-table-column label="标题" prop="title"></el-table-column>
+				<el-table-column label="链接" show-overflow-tooltip prop="link"></el-table-column>
+				<el-table-column label="位置" prop="position_str"></el-table-column>
+				<el-table-column label="分类" show-overflow-tooltip prop="category_name">
+					<template slot-scope="scope">
+						<span v-if="scope.row.category">
+							{{scope.row.category_name}}
+						</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="图片地址" prop="img_url"></el-table-column>
+				<el-table-column label="排序" prop="sort"></el-table-column>
+				<el-table-column label="状态" width="80px" prop="status_str">
+					<template slot-scope="scope">
+						<el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
+							{{scope.row.status_str}}
+						</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column label="创建时间" prop="created_at"></el-table-column>
+				<!-- <el-table-column prop="address" align="center" label="操作" width="180px">
+					<template slot-scope="s">
+						<el-button class="c-btn" type="primary" icon="el-icon-view" @click="update(s.row.context)">查看详情</el-button>
+					</template>
+				</el-table-column> -->
+
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<div class="page-box">
+				<el-pagination :key="dataCount" background layout="total, prev, pager, next, jumper"
+					:current-page.sync="pagination.page" :page-size.sync="pagination.limit" :total="dataCount"
+					@current-change="fetchTableData" @size-change="fetchTableData">
+				</el-pagination>
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				params: {
+					keyword: '',
+					position: '',
+					status: ''
+				},
+				context: '',
+				positions: []
+			},
+			methods: {
+				resetTableParams() {
+					this.params = {
+						keyword: '',
+						position: '',
+						status: ''
+					}
+				},
+				async getPositions() {
+					try {
+						const res = await sa.http({
+							url: 'advert/positionOptions'
+						})
+						this.positions = res.data
+					} catch (error) {
+					}
+				},
+				async fetchList() {
+					this.fetching = true
+					try {
+						const res = await sa.http({
+							url: 'advert/list',
+							data: {
+								...this.pagination,
+								...this.params
+							}
+						})
+
+						return res
+					} catch (error) {
+						return Promise.reject(error)
+					} finally {
+						this.fetching = false
+					}
+				},
+			},
+			created() {
+				this.getPositions()
+				sa.onInputEnter();
+			}
+		})
+	</script>
+
+</body>
+
+</html>

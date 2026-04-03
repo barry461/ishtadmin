@@ -1,0 +1,52 @@
+<template>
+  <el-dialog
+    :visible.sync="visible"
+    width="600px"
+    :title="form.id ? '编辑统计 / 验证代码' : '新增统计 / 验证代码'">
+    <el-form :model="form" label-width="100px">
+      <el-form-item label="名称">
+        <el-input v-model="form.name" placeholder="例如：GA4 全站统计 / Google Site Verification"></el-input>
+      </el-form-item>
+      <el-form-item label="位置">
+        <el-select v-model="form.position">
+          <el-option label="Head 代码（</head> 前）" value="head"></el-option>
+          <el-option label="Footer 代码（</body> 前）" value="footer"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-switch
+          v-model="form.status"
+          :active-value="1"
+          :inactive-value="0">
+        </el-switch>
+      </el-form-item>
+      <el-form-item label="排序">
+        <el-input-number v-model="form.sort" :min="0"></el-input-number>
+      </el-form-item>
+      <el-form-item label="代码内容">
+        <el-input
+          type="textarea"
+          :rows="8"
+          v-model="form.code"
+          placeholder="仅粘贴 &lt;meta&gt; / &lt;script&gt; 片段，不要包含 &lt;html&gt; / &lt;head&gt; / &lt;body&gt; 标签">
+        </el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="$emit('update:visible', false)">取 消</el-button>
+      <el-button type="primary" :loading="loading" @click="$emit('save')">确 定</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+export default {
+  name: 'SeoStatDialog',
+  props: {
+    visible: Boolean,
+    form: Object,
+    loading: Boolean
+  }
+}
+</script>
+

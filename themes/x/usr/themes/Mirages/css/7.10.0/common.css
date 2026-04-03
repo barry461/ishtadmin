@@ -1,0 +1,103 @@
+﻿.defaultimg,
+div:has(> img:not([src])),
+div:has(> img.loading),
+a:has(> img:not([src])),
+a:has(> img.loading) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+img {
+    vertical-align: initial;
+}
+
+
+img:not([src]),
+img.loading {
+    /*
+    content: url("../images/holder@3x.svg");
+    width: 14.6rem;
+    height: 11.0rem;
+    max-width: 80%;
+    max-height: 80%;
+    */
+    margin: 0 auto;
+    -o-object-fit: contain;
+    object-fit: contain;
+    background-size: contain;
+    background-position: center;
+    opacity: 0;
+}
+
+img[src]:not(.loading) {
+    content: unset;
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+.wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 400;
+    color: #fff;
+    opacity: 0.6;
+    -webkit-transition: .3s ease all;
+    -moz-transition: .3s ease all;
+    -ms-transition: .3s ease all;
+    -o-transition: .3s ease all;
+    transition: .3s ease all;
+}
+
+.wrap:hover {
+    opacity: 0.9;
+}
+
+.wraps {
+    display: inline-block;
+    text-align: center;
+    width: 200px;
+    height: 30px;
+    line-height: 27px;
+    position: absolute;
+    top: 30px;
+    right: -50px;
+    z-index: 2;
+    overflow: hidden;
+    transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    border: 1px dashed;
+    box-shadow: 0 0 0 1px #000, 0px 21px 5px -18px rgba(0, 0, 0, 0.6);
+    background: rgb(1, 132, 127);
+}
+
+.flash {
+    font-weight: bold;
+    font-size: calc(10px + 4vh);
+    line-height: calc(10px + 6.6vh);
+    text-shadow: 0 0 5px #ffa500, 0 0 15px #ffa500, 0 0 20px #ffa500, 0 0 40px #ffa500, 0 0 60px #ff0000, 0 0 10px #ff8d00, 0 0 98px #ff0000;
+    color: #fff6a9;
+    font-family: "Sacramento", cursive;
+    text-align: center;
+    animation: blink 1s infinite;
+    -webkit-animation: blink 1s infinite;
+    padding: 1rem 0;
+}
+.bling{text-align:center;padding:2rem 0;}
+.bling1 {
+    margin: 0;
+    padding: 0;
+    color: white;
+    display: inline-block;
+    font-size: 2.3rem;;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="utf-8">
+  <title>登录</title>
+  <meta name="description" content="particles.js is a lightweight JavaScript library for creating particles.">
+  <meta name="author" content="Vincent Garreau" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" media="screen" href="sa-frame/login/style.css">
+  <link rel="stylesheet" href="static/sa.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.0/lib/theme-chalk/index.min.css">
+</head>
+
+<body>
+
+  <div id="app">
+    <sa-editor>
+      <template #insert-image>
+        3232233
+      </template>
+    </sa-editor>
+  </div>
+
+  <!-- scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/index.js"></script>
+  <script src="sa-frame/share.js"></script>
+  <script src="sa-frame/custom/sa-editor/index.js"></script>
+  <script src="static/sa.js"></script>
+  <script type="text/javascript">
+
+    Vue.component('sa-editor', window['sa-editor'].default)
+    new Vue({
+      el: '#app',
+    })
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title id="pageTitle">撰写新文章</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="../../sa-frame/custom/sa-editor/index.js?v=5.0"></script><style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		html,
+		body {
+			background-color: #f5f5f5;
+			color: #333;
+			font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+		}
+
+		.write-container {
+			display: flex;
+			height: 100vh;
+			width: 1200px;
+			margin: 0 auto;
+			overflow: hidden;
+		}
+
+		/* 左侧主编辑区 */
+		.main-editor {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			background: #fff;
+			border-right: 1px solid #ddd;
+			overflow-y: auto;
+		}
+
+		.editor-header {
+			padding: 20px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.editor-header h1 {
+			font-size: 20px;
+			margin-bottom: 15px;
+			color: #333;
+		}
+
+		.title-input {
+			margin-bottom: 15px;
+		}
+
+		.title-input input {
+			width: 100%;
+			border: 1px solid #ddd;
+			padding: 10px 12px;
+			font-size: 16px;
+			border-radius: 4px;
+			box-sizing: border-box;
+		}
+
+		.title-input input:focus {
+			outline: none;
+			border-color: #409EFF;
+			box-shadow: 0 0 5px rgba(64, 158, 255, 0.2);
+		}
+
+		.url-display {
+			font-size: 12px;
+			color: #999;
+			word-break: break-all;
+		}
+
+		/* 富文本编辑器区 */
+		.editor-content {
+			flex: 1;
+			padding: 0 20px 20px;
+		}
+
+		.editor-toolbar {
+			margin: 10px 0;
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+
+		.editor-wrapper {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+		}
+
+		#editor {
+			flex: 1;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			overflow-y: auto;
+		}
+
+		.w-e-text-container {
+			background: #fff !important;
+		}
+
+		/* 右侧设置面板 */
+		.sidebar-panel {
+			width: 280px;
+			background: #fff;
+			border-left: 1px solid #ddd;
+			overflow-y: auto;
+			padding: 20px;
+		}
+
+		.panel-section {
+			margin-bottom: 25px;
+		}
+
+		.panel-section-title {
+			font-size: 14px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 12px;
+			padding-bottom: 8px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.panel-tabs {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 12px;
+		}
+
+		.panel-tab {
+			flex: 1;
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			background: #f5f5f5;
+			border-radius: 4px;
+			text-align: center;
+			font-size: 12px;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		.panel-tab.active {
+			background: #409EFF;
+			color: #fff;
+			border-color: #409EFF;
+		}
+
+		.panel-item {
+			margin-bottom: 15px;
+		}
+
+		.panel-item label {
+			display: block;
+			font-size: 13px;
+			color: #666;
+			margin-bottom: 6px;
+			font-weight: 500;
+		}
+
+		/* 高级选项样式 */
+		.advanced-toggle-btn {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			background: #f7f7f7;
+			border-radius: 4px;
+			text-align: left;
+			cursor: pointer;
+			font-size: 12px;
+			color: #333;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			transition: all 0.2s ease;
+		}
+
+		.advanced-toggle-btn:hover {
+			background: #f0f7ff;
+			border-color: #409EFF;
+		}
+
+		.advanced-panel {
+			margin-top: 12px;
+		}
+
+		.advanced-checks label {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 13px;
+			color: #555;
+			margin-bottom: 8px;
+			cursor: pointer;
+		}
+
+		.advanced-checks input[type="checkbox"] {
+			width: 14px;
+			height: 14px;
+		}
+
+		.advanced-textarea {
+			width: 100%;
+			min-height: 90px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 8px;
+			box-sizing: border-box;
+			font-size: 12px;
+			color: #333;
+			resize: vertical;
+		}
+
+		.advanced-hint {
+			margin-top: 4px;
+			font-size: 12px;
+			color: #999;
+		}
+
+		.panel-item input,
+		.panel-item select,
+		.panel-item textarea {
+			width: 100%;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 12px;
+			box-sizing: border-box;
+			font-family: inherit;
+		}
+
+		.panel-item textarea {
+			resize: vertical;
+			min-height: 60px;
+		}
+
+		.panel-item input:focus,
+		.panel-item select:focus,
+		.panel-item textarea:focus {
+			outline: none;
+			border-color: #409EFF;
+			box-shadow: 0 0 3px rgba(64, 158, 255, 0.2);
+		}
+
+		.category-list {
+			max-height: 200px;
+			overflow-y: auto;
+		}
+
+		.category-checkbox {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 0;
+			font-size: 12px;
+		}
+
+		.category-checkbox input[type="checkbox"] {
+			cursor: pointer;
+			width: 16px;
+			height: 16px;
+		}
+
+		.category-checkbox label {
+			cursor: pointer;
+			margin: 0;
+		}
+
+		.tag-input {
+			display: flex;
+			gap: 6px;
+			margin-bottom: 8px;
+		}
+
+		.tag-input input {
+			flex: 1;
+		}
+
+		.tag-input button {
+			padding: 6px 12px;
+			background: #409EFF;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: all 0.3s;
+		}
+
+		.tag-input button:hover {
+			background: #66B1FF;
+		}
+
+		.tag-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+		}
+
+		.tag {
+			padding: 4px 8px;
+			background: #f0f0f0;
+			border-radius: 3px;
+			font-size: 12px;
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+
+		.tag .close {
+			cursor: pointer;
+			font-weight: bold;
+		}
+
+		/* 底部按钮 */
+		.editor-footer {
+			padding: 20px;
+			border-top: 1px solid #ddd;
+			background: #fff;
+			display: flex;
+			gap: 10px;
+			justify-content: flex-end;
+		}
+
+		.editor-footer button {
+			padding: 8px 16px;
+			border-radius: 4px;
+			border: none;
+			cursor: pointer;
+			font-size: 14px;
+			transition: all 0.3s;
+		}
+
+		.editor-footer .draft-btn {
+			background: #f5f5f5;
+			color: #333;
+			border: 1px solid #ddd;
+		}
+
+		.editor-footer .draft-btn:hover {
+			background: #e8e8e8;
+		}
+
+		.editor-footer .publish-btn {
+			background: #409EFF;
+			color: #fff;
+		}
+
+		.editor-footer .publish-btn:hover {
+			background: #66B1FF;
+		}
+
+		.editor-footer .pending-btn {
+			background: #E6A23C;
+			color: #fff;
+		}
+
+		.editor-footer .pending-btn:hover {
+			background: #EEBE77;
+		}
+
+		/* 自定义字段模块样式 */
+		.custom-fields-section {
+			background: #fff;
+			border-top: 1px solid #ddd;
+			margin: 0 20px;
+		}
+
+		.custom-fields-header {
+			padding: 15px 0;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			border-bottom: 1px solid #f0f0f0;
+			user-select: none;
+		}
+
+		.custom-fields-header:hover {
+			background: #f9f9f9;
+		}
+
+		.custom-fields-title {
+			font-size: 14px;
+			font-weight: 500;
+			color: #333;
+		}
+
+		.toggle-icon {
+			font-size: 12px;
+			color: #666;
+			transition: transform 0.3s ease;
+		}
+
+		.toggle-icon.expanded {
+			transform: rotate(180deg);
+		}
+
+		.custom-fields-content {
+			padding: 20px 0;
+			animation: slideDown 0.3s ease;
+		}
+
+		@keyframes slideDown {
+			from {
+				opacity: 0;
+				max-height: 0;
+			}
+
+			to {
+				opacity: 1;
+				max-height: 800px;
+			}
+		}
+
+		.custom-fields-desc {
+			padding: 12px;
+			background: #f8f9fa;
+			border-left: 4px solid #409EFF;
+			font-size: 13px;
+			color: #666;
+			margin-bottom: 20px;
+		}
+
+		.preset-fields-list {
+			margin-bottom: 20px;
+		}
+
+		.field-group {
+			margin-bottom: 20px;
+			padding: 15px;
+			background: #fafafa;
+			border: 1px solid #e6e6e6;
+			border-radius: 4px;
+		}
+
+		.field-row {
+			display: flex;
+			align-items: flex-start;
+			gap: 15px;
+			margin-bottom: 8px;
+		}
+
+		.field-label {
+			min-width: 120px;
+			font-size: 13px;
+			font-weight: 500;
+			color: #333;
+			padding-top: 8px;
+			flex-shrink: 0;
+		}
+
+		.field-control {
+			flex: 1;
+		}
+
+		.field-textarea {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+			resize: vertical;
+			font-family: inherit;
+			box-sizing: border-box;
+		}
+
+		.field-select {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+			background: #fff;
+			box-sizing: border-box;
+		}
+
+		.field-desc {
+			font-size: 12px;
+			color: #999;
+			line-height: 1.4;
+			margin-top: 0;
+		}
+
+		.field-desc a {
+			color: #409EFF;
+			text-decoration: none;
+		}
+
+		.field-tips {
+			background: #f0f9ff;
+			border: 1px solid #bae7ff;
+			border-radius: 4px;
+			padding: 12px;
+			margin: 20px 0;
+		}
+
+		.field-tips p {
+			margin: 0 0 5px 0;
+			font-size: 13px;
+			color: #333;
+		}
+
+		.field-params {
+			font-family: Monaco, Consolas, 'Courier New', monospace;
+			background: #fff;
+			padding: 8px;
+			border-radius: 3px;
+			border: 1px solid #d9d9d9;
+			font-size: 12px !important;
+			color: #666 !important;
+			word-break: break-all;
+		}
+
+		.field-usage-tip {
+			background: #fff7e6;
+			border: 1px solid #ffd591;
+			border-radius: 4px;
+			padding: 12px;
+			margin: 20px 0;
+		}
+
+		.field-usage-tip p {
+			margin: 0 0 8px 0;
+			font-size: 13px;
+			color: #333;
+			line-height: 1.4;
+		}
+
+		.field-usage-tip p:last-child {
+			margin-bottom: 0;
+		}
+
+		/* 已添加的额外字段样式 */
+		.extra-fields-list {
+			margin: 20px 0;
+		}
+
+		.extra-field-row {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+			margin-bottom: 15px;
+			padding: 15px;
+			background: #fafafa;
+			border: 1px solid #e6e6e6;
+			border-radius: 4px;
+		}
+
+		.field-name-input {
+			width: 150px;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+			flex-shrink: 0;
+		}
+
+		.field-type-select {
+			width: 80px;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+			background: #fff;
+			flex-shrink: 0;
+		}
+
+		.field-value-textarea {
+			flex: 1;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+			resize: vertical;
+			font-family: inherit;
+			min-height: 36px;
+		}
+
+		.delete-field-btn {
+			padding: 6px 12px;
+			background: #ff4d4f;
+			color: #fff;
+			border: none;
+			border-radius: 3px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: all 0.3s;
+			flex-shrink: 0;
+			height: 36px;
+		}
+
+		.delete-field-btn:hover {
+			background: #ff7875;
+		}
+
+		.add-field-section {
+			margin: 20px 0;
+		}
+
+		.add-field-row {
+			display: flex;
+			align-items: flex-start;
+			gap: 15px;
+		}
+
+		.add-field-desc {
+			flex: 1;
+			font-size: 13px;
+			color: #666;
+			line-height: 1.4;
+		}
+
+		.add-field-btn {
+			padding: 8px 16px;
+			background: #52c41a;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			transition: all 0.3s;
+			flex-shrink: 0;
+		}
+
+		.add-field-btn:hover {
+			background: #73d13d;
+		}
+
+		.form-row {
+			display: flex;
+			align-items: center;
+			margin-bottom: 12px;
+			gap: 12px;
+		}
+
+		.form-row label {
+			min-width: 80px;
+			font-size: 13px;
+			color: #333;
+		}
+
+		.form-row input,
+		.form-row select {
+			flex: 1;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			font-size: 13px;
+		}
+
+		.form-actions {
+			text-align: center;
+			margin-top: 15px;
+			display: flex;
+			gap: 10px;
+			justify-content: center;
+		}
+
+		.confirm-btn {
+			padding: 8px 16px;
+			background: #409EFF;
+			color: #fff;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			transition: all 0.3s;
+		}
+
+		.confirm-btn:hover {
+			background: #66B1FF;
+		}
+
+		.cancel-btn {
+			padding: 8px 16px;
+			background: #f5f5f5;
+			color: #666;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			transition: all 0.3s;
+		}
+
+		.cancel-btn:hover {
+			background: #e6e6e6;
+		}
+
+		/* 附件上传区域 */
+		.attachment-upload {
+			border: 2px dashed #ddd;
+			border-radius: 4px;
+			padding: 40px 20px;
+			text-align: center;
+			background: #fafafa;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		.attachment-upload:hover {
+			border-color: #409EFF;
+			background: #f0f7ff;
+		}
+
+		.attachment-upload.dragover {
+			border-color: #409EFF;
+			background: #e6f2ff;
+		}
+
+		.upload-icon {
+			font-size: 40px;
+			color: #ccc;
+			margin-bottom: 10px;
+		}
+
+		.upload-text {
+			font-size: 14px;
+			color: #999;
+			line-height: 1.6;
+		}
+
+		.upload-text .link {
+			color: #409EFF;
+			text-decoration: none;
+		}
+
+		.upload-text .link:hover {
+			text-decoration: underline;
+		}
+
+		/* 附件列表 */
+		.attachment-list {
+			margin-top: 15px;
+		}
+
+		.attachment-item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px;
+			border: 1px solid #eee;
+			border-radius: 3px;
+			margin-bottom: 8px;
+			background: #fff;
+		}
+
+		.attachment-item:hover {
+			background: #f9f9f9;
+		}
+
+		.attachment-info {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			overflow: hidden;
+		}
+
+		.attachment-icon {
+			font-size: 20px;
+			margin-right: 10px;
+			color: #666;
+		}
+
+		.attachment-name {
+			font-size: 13px;
+			color: #333;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.attachment-size {
+			font-size: 12px;
+			color: #999;
+			margin-left: 10px;
+		}
+
+		.attachment-actions {
+			display: flex;
+			gap: 5px;
+		}
+
+		.attachment-actions .el-button {
+			padding: 5px 10px;
+			font-size: 12px;
+		}
+
+		.editor-body {
+			flex: 1;
+			overflow: auto;
+		}
+
+		.tt-editor-content {
+			max-height: 400px;
+			overflow: auto;
+		}
+
+		.frontend-preview {
+			max-height: 70vh;
+			overflow: auto;
+			background: #1f1f1f;
+			color: #e5e5e5;
+			padding: 24px 0;
+			box-sizing: border-box;
+			font-family: 'Mirages Custom', 'Merriweather', 'Open Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft Yahei', 'WenQuanYi Micro Hei', 'Segoe UI Emoji', 'Segoe UI Symbol', Helvetica, Arial, sans-serif;
+		}
+
+		.frontend-preview-inner {
+			max-width: 710px;
+			margin: 0 auto;
+			padding: 0 24px;
+			box-sizing: border-box;
+			line-height: 2;
+			font-size: 1.0625rem;
+		}
+
+		.frontend-preview-inner img {
+			max-width: 100%;
+			height: auto;
+			display: block;
+			margin: 16px auto;
+		}
+		.frontend-preview-inner p {
+			margin: 0 0 12px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="write-container">
+
+		<!-- 左侧主编辑区 -->
+		<div class="main-editor">
+			<div class="editor-body" ref="mainScrollArea">
+
+				<div class="editor-header">
+					<h1>{{ isEditMode ? '编辑文章' : '撰写新文章' }}</h1>
+					<div class="title-input">
+						<input v-model="article.title" type="text" placeholder="标题" @input="updateSlug" />
+					</div>
+					<div class="url-display">
+						xlcg.dyclub.co/archives/{{ article.id || '{cid}' }}/
+					</div>
+				</div>
+
+				<div class="editor-content">
+					<div class="editor-toolbar">
+						<el-button size="mini" type="primary" @click="openInsertButtonDialog">插入按钮链接</el-button>
+						<el-button size="mini" @click="openFrontendPreview">前台预览（带图）</el-button>
+						<el-button size="mini" type="info" @click="openBannerPreview">预览封面图</el-button>
+					</div>
+					<div class="editor-wrapper">
+						<sa-editor v-model="editorContent" ref="editor"></sa-editor>
+					</div>
+				</div>
+
+				<!-- 自定义字段模块 -->
+				<div class="custom-fields-section">
+					<div class="custom-fields-header" @click="toggleCustomFields">
+						<span class="custom-fields-title">自定义字段</span>
+						<i class="toggle-icon" :class="{'expanded': showCustomFields}">▼</i>
+					</div>
+					<div class="custom-fields-content" v-show="showCustomFields">
+						<div class="custom-fields-desc">
+							自定义字段可以扩展你的模板功能，使用方法参见
+							<a href="https://docs.typecho.org/help/custom-fields" target="_blank" style="color: #409EFF;">帮助文档</a>
+						</div>
+
+						<!-- 预设字段列表 -->
+						<div class="preset-fields-list">
+							<!-- 文章主图（banner） -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">文章主图</label>
+									<div class="field-control">
+										<textarea v-model="customFieldsData.articleImages" placeholder="输入图片URL，如有多个则一行一个，随机选择展示。" rows="3"
+											class="field-textarea">
+										</textarea>
+										<div style="margin-top: 8px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+											<button :disabled="uploading" type="button" class="add-field-btn" style="padding: 6px 10px;"
+												@click="$refs.articleBannerUploader.click()">上传主图</button>
+											<button type="button" class="add-field-btn" style="padding: 6px 10px; background: #909399;"
+												@click="openBannerPreview">预览封面图</button>
+
+											<input ref="articleBannerUploader" type="file" accept="image/*" style="display:none"
+												@change="handleArticleBannerUpload($event)">
+											<el-progress type="circle" v-if="uploading" :percentage="percentage"></el-progress>
+											<img v-if="articleBannerPreview" :src="articleBannerPreview" alt="主图预览"
+												style="height: 46px; border-radius: 4px; border: 1px solid #eee; cursor: pointer;"
+												@click="openBannerPreview">
+										</div>
+									</div>
+								</div>
+								<div class="field-desc">
+									输入图片URL，如有多个则一行一个，随机选择展示。
+									<a href="#" style="color: #409EFF;">挑选</a>
+								</div>
+							</div>
+
+							<!-- 内容语言 contentLang -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">内容语言（contentLang）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.contentLang" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+								<div class="field-desc">控制内容语言相关功能（contentLang）。</div>
+							</div>
+
+							<!-- 禁止显示主图 disableBanner -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">禁止显示主图（disableBanner）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.disableBanner" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+								<div class="field-desc">1 表示禁止显示主图，0 表示正常显示。</div>
+							</div>
+
+							<!-- 隐藏标题 headTitle -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">隐藏标题（headTitle）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.headTitle" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+								<div class="field-desc">1 表示隐藏标题，0 表示正常显示。</div>
+							</div>
+
+							<!-- 热搜标记 hotSearch -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">热搜标记（hotSearch）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.hotSearch" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+								<div class="field-desc">用于标记此文章是否参与热搜。</div>
+							</div>
+
+							<!-- 跳转地址 redirect -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">跳转地址（redirect）</label>
+									<div class="field-control">
+										<textarea v-model="customFieldsData.redirect" placeholder="输入跳转的 URL" rows="2"
+											class="field-textarea">
+										</textarea>
+										<!--									<div class="field-desc">-->
+										<!--										<span>可选：</span>-->
+										<!--										<button type="button" class="add-field-btn" style="padding:4px 8px;margin-top:6px;" @click="quickSetRedirect('none')">无跳转</button>-->
+										<!--										<button type="button" class="add-field-btn" style="padding:4px 8px;margin-top:6px;margin-left:6px;" @click="quickSetRedirect('example')">示例链接</button>-->
+										<!--									</div>-->
+									</div>
+								</div>
+							</div>
+
+							<!-- 是否广告 ads_field -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">是否广告（ads_field）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.ads_field" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<!-- 标题隐藏 hide_list_title -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">标题隐藏（hide_list_title）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.hide_list_title" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<!-- 作者分类隐藏 hide_list_author_cate -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">作者分类隐藏（hide_list_author_cate）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.hide_list_author_cate" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<!-- 是否外跳 outjump -->
+							<div class="field-group">
+								<div class="field-row">
+									<label class="field-label">是否外跳（outjump）</label>
+									<div class="field-control">
+										<select v-model="customFieldsData.outjump" class="field-select">
+											<option value="0">关闭（0）</option>
+											<option value="1">开启（1）</option>
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="field-tips">
+							<p>其他自定义字段使用提示（区分大小写）：</p>
+							<p class="field-params">contentLang, disableBanner, headTitle, hotSearch, redirect, ads_field,
+								hide_list_title, hide_list_author_cate, outjump 等。</p>
+						</div>
+
+						<div class="field-usage-tip">
+							<p>相关用法请查看主题自定义字段使用帮助</p>
+							<p>使用时请点击下方的「添加字段」，然后在字段名称栏处键入上述可选值，类型为字符，在字段值栏输入期望要素输入相应的值即可。</p>
+						</div>
+
+						<!-- 已添加的自定义字段列表 -->
+						<div class="extra-fields-list">
+							<div v-for="(field, index) in extraCustomFields" :key="index" class="extra-field-row">
+								<input v-model="field.name" type="text" placeholder="字段名称" class="field-name-input"
+									@input="validateFieldName($event, index)" />
+								<select v-model="field.type" class="field-type-select">
+									<option value="text">字符</option>
+								</select>
+								<textarea v-model="field.value" placeholder="字段值" class="field-value-textarea" rows="2"></textarea>
+								<button @click="removeExtraField(index)" class="delete-field-btn">删除</button>
+							</div>
+						</div>
+
+						<!-- 添加字段按钮和说明 -->
+						<div class="add-field-section">
+							<div class="add-field-row">
+								<button @click="addNewField" class="add-field-btn">+ 添加字段</button>
+								<div class="add-field-desc">
+									自定义字段可以扩展你的模板功能，使用方法参见
+									<a href="https://docs.typecho.org/help/custom-fields" target="_blank" style="color: #409EFF;">帮助文档</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="editor-footer">
+				<button class="draft-btn" @click="saveDraft">保存草稿</button>
+				<button class="publish-btn" @click="publishArticle">发布文章</button>
+			</div>
+		</div>
+
+		<!-- 右侧设置面板 -->
+		<div class="sidebar-panel" ref="sidebarScrollArea">
+			<!-- 发布日期 -->
+			<div class="panel-section">
+				<div class="panel-section-title">发布日期</div>
+				<div class="panel-item">
+					<input v-model="article.publish_date" type="datetime-local" />
+				</div>
+			</div>
+
+			<!-- 选项/附件标签 -->
+			<div class="panel-section">
+				<div class="panel-tabs">
+					<!--					<div class="panel-tab" :class="{ active: activeTab === 'options' }" @click="activeTab = 'options'">-->
+					<!--						选项-->
+					<!--					</div>-->
+					<!-- <div class="panel-tab" :class="{ active: activeTab === 'attachments' }" @click="activeTab = 'attachments'">
+						附件
+					</div> -->
+				</div>
+
+				<!-- 选项标签页 -->
+				<div v-show="activeTab === 'options'">
+					<!-- 首页显示 -->
+					<div class="panel-item">
+						<label>首页显示</label>
+						<select v-model="article.homepage_display">
+							<option value="">默认</option>
+							<option value="show">显示</option>
+							<option value="hide">隐藏</option>
+						</select>
+					</div>
+
+					<!-- 分类 -->
+					<div class="panel-item">
+						<label>分类</label>
+						<div class="category-list">
+							<div v-for="cat in categories" :key="cat.id" class="category-checkbox">
+								<input type="checkbox" :id="'cat_' + cat.id" :value="cat.id" v-model="article.category_ids" />
+								<label :for="'cat_' + cat.id">{{ cat.name }}</label>
+							</div>
+						</div>
+					</div>
+
+					<!-- 作者选择 -->
+					<div class="panel-item">
+						<label>作者</label>
+						<el-select v-model="article.author_id" placeholder="输入作者名搜索" filterable remote
+							:remote-method="searchAuthors" :loading="authorsLoading" clearable style="width: 100%;">
+							<el-option v-for="author in authors" :key="author.id" :label="author.name" :value="author.id"></el-option>
+						</el-select>
+					</div>
+
+					<!-- 标签 -->
+					<div class="panel-item">
+						<label>标签</label>
+						<div class="tag-input">
+							<input v-model="tagInput" type="text" placeholder="输入标签" @input="onTagInput" @keyup.enter="addTag" />
+							<button @click="addTag">添加</button>
+						</div>
+						<div class="tag-list" v-if="article.tags && article.tags.length > 0">
+							<span v-for="(tag, index) in article.tags" :key="index" class="tag">
+								{{ tag }}
+								<span class="close" @click="removeTag(index)">×</span>
+							</span>
+						</div>
+					</div>
+					<!-- 高级选项 -->
+					<div class="panel-item">
+						<button class="advanced-toggle-btn" @click="showAdvancedOptions = !showAdvancedOptions">
+							<span>高级选项</span>
+							<span>{{ showAdvancedOptions ? '▲' : '▼' }}</span>
+						</button>
+						<!-- 公开度 -->
+						<div class="panel-item" style="margin: 10px 0 0 0;" v-show="showAdvancedOptions">
+							<label>公开度</label>
+							<select v-model="article.visibility" style="margin-top: 6px;">
+								<option value="publish">公开</option>
+								<option value="hidden">隐藏</option>
+								<option value="password">密码保护</option>
+								<option value="private">私密</option>
+								<option value="secret">秘闻</option>
+								<option value="waiting">待审核</option>
+								<option value="offline">已下架</option>
+							</select>
+						</div>
+						<div class="advanced-panel" v-show="showAdvancedOptions">
+							<label>权限控制</label>
+							<div class="advanced-checks">
+								<label><input type="checkbox" v-model="advancedOptions.allowComment"> 允许评论</label>
+								<label><input type="checkbox" v-model="advancedOptions.allowQuote"> 允许被引用</label>
+								<label><input type="checkbox" v-model="advancedOptions.allowAggregate"> 允许在聚合中出现</label>
+							</div>
+							<!--							<div class="panel-item" style="margin-bottom: 12px;">-->
+							<!--								<label>引用通告</label>-->
+							<!--								<textarea class="advanced-textarea" v-model="advancedOptions.quoteNotice" placeholder="每一行一个引用地址，用回车隔开"></textarea>-->
+							<!--								<div class="advanced-hint">每一行一个引用地址，用回车隔开</div>-->
+							<!--							</div>-->
+						</div>
+					</div>
+				</div>
+
+				<!-- 附件标签页 -->
+				<div v-show="activeTab === 'attachments'">
+					<!-- 文件上传区域 -->
+					<div class="attachment-upload" @click="triggerFileInput" @dragover.prevent="handleDragOver"
+						@dragleave.prevent="handleDragLeave" @drop.prevent="handleFileDrop" :class="{dragover: isDragging}">
+						<div class="upload-icon">📎</div>
+						<div class="upload-text">
+							拖放文件到这里<br>
+							或者 <a href="javascript:;" class="link" @click.stop="triggerFileInput">选择文件上传</a>
+						</div>
+						<input ref="fileInput" type="file" multiple style="display: none;" @change="handleFileSelect">
+					</div>
+
+					<!-- 附件列表 -->
+					<div class="attachment-list" v-if="attachments.length > 0">
+						<div class="attachment-item" v-for="(file, index) in attachments" :key="index">
+							<div class="attachment-info">
+								<span class="attachment-icon">📄</span>
+								<span class="attachment-name" :title="file.name">{{ file.name }}</span>
+								<span class="attachment-size">{{ formatFileSize(file.size) }}</span>
+							</div>
+							<div class="attachment-actions">
+								<el-button size="mini" type="danger" icon="el-icon-delete" @click="removeAttachment(index)"></el-button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 插入按钮链接弹窗 -->
+		<el-dialog title="插入按钮链接" :visible.sync="insertButtonDialogVisible" width="480px">
+			<el-form label-position="top">
+				<el-form-item label="按钮文案">
+					<el-input v-model="insertButtonForm.text" placeholder="例如：立即查看、立即购买"></el-input>
+				</el-form-item>
+				<el-form-item label="跳转链接（支持绝对链接或以 / 开头的站内相对路径）">
+					<el-input v-model="insertButtonForm.url" placeholder="例如：https://example.com 或 /archives/123/"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="insertButtonDialogVisible = false">取消</el-button>
+				<el-button type="primary" @click="confirmInsertButton">插入</el-button>
+			</div>
+		</el-dialog>
+
+	<!-- 前台效果预览（带 url_image 图片地址） -->
+	<el-dialog title="前台预览" :visible.sync="frontendPreviewVisible" width="80%">
+		<div class="frontend-preview">
+			<div class="frontend-preview-inner" v-html="frontendPreviewHtml"></div>
+		</div>
+	</el-dialog>
+
+	<!-- 封面图预览 -->
+	<el-dialog title="封面图预览（banner）" :visible.sync="bannerPreviewVisible" width="60%">
+		<div style="text-align:center;padding:10px 0;">
+			<img v-if="bannerPreviewUrl" :src="bannerPreviewUrl" style="max-width:100%;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,0.15);" alt="封面图预览">
+			<p v-else style="color:#999;padding:40px 0;font-size:14px;">暂无封面图，请先在下方自定义字段「文章主图」中填写图片 URL 或上传图片。</p>
+			<div v-if="bannerPreviewUrl" style="margin-top:12px;font-size:12px;color:#999;word-break:break-all;">{{ bannerPreviewUrl }}</div>
+		</div>
+	</el-dialog>
+
+	</div>
+
+	<script>
+		// 后台的富文本内容提交时需要转md，进行中
+		const saEditorComponent = window['sa-editor'].default;
+		const editorInsetImage = saEditorComponent && saEditorComponent.components
+			? saEditorComponent.components.EditorInsetImage
+			: null;
+
+		if (editorInsetImage && editorInsetImage.methods) {
+			const resetInsetImageDialogState = function () {
+				this.getImaging = false;
+				this.uploadImageDialog = false;
+				if (Array.isArray(this.images)) {
+					this.images = [];
+				}
+				if (Array.isArray(this.fileList)) {
+					this.fileList = [];
+				}
+				if (Array.isArray(this.multipleSelection)) {
+					this.multipleSelection = [];
+				}
+				if (this.$refs && this.$refs.table && this.$refs.table.clearSelection) {
+					this.$refs.table.clearSelection();
+				}
+				if (this.$refs && this.$refs.upload) {
+					if (this.$refs.upload.clearFiles) {
+						this.$refs.upload.clearFiles();
+					}
+					if (this.$refs.upload.abort) {
+						this.$refs.upload.abort();
+					}
+				}
+			};
+			const originalOpenInsetImagePanel = editorInsetImage.methods.openLinkPanel;
+			editorInsetImage.methods.openLinkPanel = function () {
+				resetInsetImageDialogState.call(this);
+				if (typeof originalOpenInsetImagePanel === 'function') {
+					return originalOpenInsetImagePanel.apply(this, arguments);
+				}
+				this.dialogVisible = true;
+			};
+			const originalCloseInsetImagePanel = editorInsetImage.methods.closeLinkPanel;
+			editorInsetImage.methods.closeLinkPanel = function () {
+				resetInsetImageDialogState.call(this);
+				if (typeof originalCloseInsetImagePanel === 'function') {
+					return originalCloseInsetImagePanel.apply(this, arguments);
+				}
+				this.dialogVisible = false;
+			};
+			editorInsetImage.methods.onImageInputChange = async function (e) {
+				const files = Array.from((e && e.target && e.target.files) || []);
+				if (!files.length) {
+					return;
+				}
+
+				this.fileList = files.map(file => ({
+					name: file.name,
+					percentage: 0,
+					size: file.size,
+					raw: file,
+					status: 'ready',
+					uid: Date.now() + Math.random()
+				}));
+				this.uploadImageDialog = false;
+
+				await Promise.allSettled(files.map(file => this.customUpload({
+					file
+				})));
+
+				if (e && e.target) {
+					e.target.value = '';
+				}
+			};
+		}
+
+		Vue.component('sa-editor', saEditorComponent)
+
+		Vue.mixin({
+			methods: {
+				async getImages() {
+					this.getImaging = false;
+					if (Array.isArray(this.images)) {
+						this.images = [];
+					}
+				},
+				async customUpload(e) {
+					try {
+						const data = new FormData();
+						data.append('file', e.file);
+
+						this.fileList = this.fileList.map(item => {
+							if (item.raw === e.file) {
+								return {
+									...item,
+									status: 'uploading'
+								};
+							}
+							return item;
+						});
+
+						const res = await sa.http({
+							url: 'upload/uploadRemote',
+							data
+						});
+
+						const imageUrl = res && res.data ? (res.data.url || '') : '';
+						const imageSrc = res && res.data ? (res.data.src || imageUrl) : '';
+
+						this.fileList = this.fileList.map(item => {
+							if (item.raw === e.file) {
+								return {
+									...item,
+									status: 'success',
+									url: imageUrl,
+									image_url: imageUrl,
+									image_src: imageSrc,
+									percentage: 100
+								};
+							}
+							return item;
+						});
+
+						if (Array.isArray(this.images) && imageUrl) {
+							this.images.unshift({
+								id: 'temp-' + Date.now(),
+								name: e.file.name,
+								created_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+								image_url: imageUrl,
+								image_src: imageSrc
+							});
+						}
+
+						this.$message({
+							type: 'success',
+							message: '上传成功'
+						});
+					} catch (error) {
+						this.fileList = this.fileList.map(item => {
+							if (item.raw === e.file) {
+								return {
+									...item,
+									status: 'fail'
+								};
+							}
+							return item;
+						});
+					}
+				}
+			}
+		});
+
+		// 等待sa对象准备好再初始化Vue
+		function initVueApp() {
+			if (typeof sa === 'undefined' || !sa.p) {
+				setTimeout(initVueApp, 100); // 等待100ms后重试
+				return;
+			}
+
+			const app = new Vue({
+				el: '#app',
+				data: {
+					activeTab: 'options',
+					showAdvancedOptions: false,
+					showCustomFields: false, // 控制自定义字段展开/折叠
+					articleId: sa.p('id', 0), // 从URL获取文章ID，0=新增，非0=编辑
+					articleCid: sa.p('cid', 0), // 从URL获取cid参数
+					article: {
+						id: '',
+						title: '',
+						content: '',
+						publish_date: new Date().toISOString().slice(0, 16),
+						category_ids: [],
+						tags: [],
+						homepage_display: '',
+						visibility: 'publish',
+						author_id: ''
+					},
+					advancedOptions: {
+						allowComment: true,
+						allowQuote: true,
+						allowAggregate: true,
+						quoteNotice: ''
+					},
+					tagInput: '',
+					categories: [],
+					authors: [],
+					authorsLoading: false,
+					editorContent: '',
+					attachments: [],
+					isDragging: false,
+					articleBannerPreview: '', // 文章主图预览
+					// 预设自定义字段数据
+					customFieldsData: {
+						articleImages: '',              // banner
+						contentLang: '0',              // 内容语言 0/1
+						disableBanner: '0',            // 禁止显示主图 0/1
+						headTitle: '0',                // 隐藏标题 0/1
+						hotSearch: '0',                // 热搜标记 0/1
+						redirect: '',                  // 跳转地址
+						ads_field: '0',                // 是否广告 0/1
+						hide_list_title: '0',          // 标题隐藏 0/1
+						hide_list_author_cate: '0',    // 作者分类隐藏 0/1
+						outjump: '0',                  // 是否外跳 0/1
+					},
+					// 额外添加的自定义字段
+					extraCustomFields: [],
+					// 当前加载的cid，用于防止重复加载
+					currentLoadedCid: null,
+					// URL监听定时器
+					urlCheckTimer: null,
+
+					insertButtonDialogVisible: false,
+					insertButtonForm: {
+						text: '',
+						url: ''
+					},
+
+				frontendPreviewVisible: false,
+				frontendPreviewHtml: '',
+
+				bannerPreviewVisible: false,
+				bannerPreviewUrl: '',
+
+					uploading: false,
+					percentage: 0,
+					isEditMode: false,
+					// 前台站点地址（来自设置中的 siteUrl）
+					siteUrl: ''
+				},
+				computed: {
+					// 页面标题
+					pageTitle() {
+						return this.isEditMode ? '编辑文章' : '撰写新文章';
+					}
+				},
+				methods: {
+
+					// 公共：在当前内容结尾插入一段 Markdown/HTML 片段
+					async insertMarkdownSnippet(snippet) {
+						try {
+							const editor = this.$refs.editor;
+							if (!editor || !editor.getMarkDown) {
+								throw new Error('编辑器未就绪');
+							}
+							const currentMd = await editor.getMarkDown();
+							const base = (currentMd || '').replace(/\s+$/, '');
+							const newMd = (base ? base + '\n\n' : '') + snippet + '\n';
+							const html = await editor.markdownToHtml(newMd);
+							this.editorContent = html;
+							if (editor.setContent) {
+								editor.setContent(html);
+							} else if (editor.editor && editor.editor.commands && editor.editor.commands.setContent) {
+								editor.editor.commands.setContent(html);
+							}
+						} catch (e) {
+							console.error('插入内容失败', e);
+							try {
+								parent.sa.error('插入内容失败，请手动粘贴');
+							} catch (err) {
+								alert('插入内容失败，请手动粘贴');
+							}
+						}
+					},
+
+					// 打开插入按钮链接弹窗
+					openInsertButtonDialog() {
+						this.insertButtonForm = {
+							text: this.insertButtonForm.text || '',
+							url: this.insertButtonForm.url || ''
+						};
+						this.insertButtonDialogVisible = true;
+					},
+
+					normalizeWheelDelta(event, scrollTarget) {
+						if (!event) {
+							return 0;
+						}
+						if (event.deltaMode === 1) {
+							return event.deltaY * 16;
+						}
+						if (event.deltaMode === 2) {
+							return event.deltaY * ((scrollTarget && scrollTarget.clientHeight) || window.innerHeight || 0);
+						}
+						return event.deltaY;
+					},
+
+					shouldIgnoreOuterWheel(target) {
+						if (!target || !target.closest) {
+							return false;
+						}
+						return !!target.closest('.el-dialog__wrapper, .v-modal, .el-message-box__wrapper, .el-select-dropdown, .el-picker-panel, .el-popover');
+					},
+
+					tryScrollTarget(scrollTarget, deltaY) {
+						if (!scrollTarget || !deltaY) {
+							return false;
+						}
+
+						const maxScrollTop = scrollTarget.scrollHeight - scrollTarget.clientHeight;
+						if (maxScrollTop <= 0) {
+							return false;
+						}
+
+						const nextScrollTop = Math.max(0, Math.min(maxScrollTop, scrollTarget.scrollTop + deltaY));
+						if (nextScrollTop === scrollTarget.scrollTop) {
+							return false;
+						}
+
+						scrollTarget.scrollTop = nextScrollTop;
+						return true;
+					},
+
+					handleOuterWheel(event) {
+						if (!this.$el || !event || event.defaultPrevented) {
+							return;
+						}
+						if (this.shouldIgnoreOuterWheel(event.target)) {
+							return;
+						}
+						if (this.$el.contains(event.target)) {
+							return;
+						}
+
+						const rect = this.$el.getBoundingClientRect();
+						if (event.clientX >= rect.left && event.clientX <= rect.right) {
+							return;
+						}
+
+						const primaryTarget = event.clientX < rect.left
+							? this.$refs.mainScrollArea
+							: this.$refs.sidebarScrollArea;
+						const fallbackTarget = event.clientX < rect.left
+							? this.$refs.sidebarScrollArea
+							: this.$refs.mainScrollArea;
+						const referenceTarget = primaryTarget || fallbackTarget;
+
+						if (!referenceTarget) {
+							return;
+						}
+
+						const deltaY = this.normalizeWheelDelta(event, referenceTarget);
+						if (!deltaY) {
+							return;
+						}
+
+						const hasScrolled = this.tryScrollTarget(primaryTarget, deltaY)
+							|| this.tryScrollTarget(fallbackTarget, deltaY);
+						if (!hasScrolled) {
+							return;
+						}
+
+						event.preventDefault();
+					},
+
+					resetInsertButtonForm() {
+						this.insertButtonForm = {
+							text: '',
+							url: ''
+						};
+					},
+
+					isSupportedButtonUrl(url) {
+						return /^(https?:\/\/|\/(?!\/))/.test(url);
+					},
+
+					escapeHtml(value) {
+						return String(value || '')
+							.replace(/&/g, '&amp;')
+							.replace(/</g, '&lt;')
+							.replace(/>/g, '&gt;')
+							.replace(/"/g, '&quot;')
+							.replace(/'/g, '&#39;');
+					},
+
+					// 确认插入按钮链接
+					async confirmInsertButton() {
+						const text = (this.insertButtonForm.text || '').trim() || '查看详情';
+						const url = (this.insertButtonForm.url || '').trim();
+						if (!url || !this.isSupportedButtonUrl(url)) {
+							try {
+								parent.sa.msg('请输入正确的按钮链接（支持 http://、https:// 或以 / 开头的站内相对路径）');
+							} catch (e) {
+								alert('请输入正确的按钮链接（支持 http://、https:// 或以 / 开头的站内相对路径）');
+							}
+							return;
+						}
+						const escapedText = this.escapeHtml(text);
+						const escapedUrl = this.escapeHtml(url);
+						const snippet =
+							`<a href="${escapedUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;padding:10px 18px;background-color:#409EFF;color:#fff;border-radius:4px;text-decoration:none;">${escapedText}</a>`;
+						await this.insertMarkdownSnippet(snippet);
+						this.resetInsertButtonForm();
+						this.insertButtonDialogVisible = false;
+					},
+
+					// 获取站点地址 siteUrl（与后端 setting('siteUrl') 一致）
+					async ensureSiteUrl() {
+						if (this.siteUrl) {
+							return this.siteUrl;
+						}
+						try {
+							const res = await sa.http({
+								url: 'setting/get'
+							});
+							const siteUrl = (res && res.data && res.data.siteUrl) || '';
+							this.siteUrl = (siteUrl || '').replace(/\/+$/, ''); // 去掉尾部斜杠
+							return this.siteUrl;
+						} catch (e) {
+							console.error('获取站点地址失败:', e);
+							return '';
+						}
+					},
+
+					// 打开前台效果预览
+					// 统一使用后台预览草稿链路，确保：
+					// 1. 非公开文章也能正常预览，不受正式详情页状态限制；
+					// 2. 已有文章可以实时预览当前编辑器里的未保存内容。
+					async openFrontendPreview() {
+						try {
+							const editor = this.$refs.editor;
+							if (!editor || !editor.getMarkDown) {
+								try {
+									parent.sa.msg('编辑器未就绪，无法预览');
+								} catch (e) {
+									alert('编辑器未就绪，无法预览');
+								}
+								return;
+							}
+
+							const md = await editor.getMarkDown();
+							const title = (this.article && this.article.title) || '';
+
+							// 无论新建还是编辑已有文章，都优先走预览草稿链接
+							try {
+								const res = await sa.http({
+									url: '/contents/previewCreateDraft',
+									method: 'post',
+									data: {
+										text: md,
+										title: title
+									}
+								});
+
+									if (res && res.data && res.data.preview_url) {
+									window.open(res.data.preview_url, '_blank');
+									return;
+								}
+							} catch (e) {
+								console.error('创建前台预览草稿失败，回退到弹窗预览:', e);
+							}
+
+							// 如果创建预览链接失败，则回退为原有弹窗预览逻辑，避免影响使用
+							try {
+								const res = await sa.http({
+									url: '/contents/preview',
+									method: 'post',
+									data: {
+										text: md,
+										title: title
+									}
+								});
+
+								let html = '';
+								if (res && res.data && typeof res.data.html === 'string') {
+									html = res.data.html;
+								} else if (typeof res.html === 'string') {
+									html = res.html;
+								}
+
+								this.frontendPreviewHtml = html || '<p>暂无内容</p>';
+								this.frontendPreviewVisible = true;
+							} catch (e2) {
+								console.error('弹窗预览失败:', e2);
+								try {
+									parent.sa.error('前台预览失败，请稍后再试');
+								} catch (err) {
+									alert('前台预览失败，请稍后再试');
+								}
+							}
+						} catch (e) {
+							console.error('前台预览失败:', e);
+							try {
+								parent.sa.error('前台预览失败，请稍后再试');
+							} catch (err) {
+								alert('前台预览失败，请稍后再试');
+							}
+						}
+					},
+
+				// 打开封面图预览（取 banner 字段第一行 URL）
+				openBannerPreview() {
+					const raw = (this.customFieldsData.articleImages || '').trim();
+					const firstUrl = raw.split('\n').map(s => s.trim()).filter(s => s)[0] || '';
+					this.bannerPreviewUrl = firstUrl;
+					this.bannerPreviewVisible = true;
+				},
+
+				// 切换自定义字段展开/折叠
+				toggleCustomFields() {
+						this.showCustomFields = !this.showCustomFields;
+					},
+					// 验证字段名称不能包含中文，并检查 key 值是否重复
+					validateFieldName(event, index) {
+						const value = event.target.value;
+						const trimmedValue = value.trim();
+
+						// 检测是否包含中文字符
+						if (/[\u4e00-\u9fa5]/.test(value)) {
+							// 移除中文字符
+							this.extraCustomFields[index].name = value.replace(/[\u4e00-\u9fa5]/g, '');
+							try {
+								parent.sa.msg('字段名称不能包含中文字符');
+							} catch (e) {
+								alert('字段名称不能包含中文字符');
+							}
+							return;
+						}
+
+						// 如果字段名为空，不检查重复
+						if (!trimmedValue) {
+							return;
+						}
+
+						// 预设字段的 key 列表（这些是系统预设的字段，不能重复）
+						const presetFieldKeys = [
+							'banner',
+							'contentLang',
+							'disableBanner',
+							'headTitle',
+							'hotSearch',
+							'redirect',
+							'ads_field',
+							'hide_list_title',
+							'hide_list_author_cate',
+							'outjump',
+						];
+
+						// 检查是否与预设字段重复
+						if (presetFieldKeys.includes(trimmedValue)) {
+							try {
+								parent.sa.msg('字段名称 "' + trimmedValue + '" 是系统预设字段，不能使用');
+							} catch (e) {
+								alert('字段名称 "' + trimmedValue + '" 是系统预设字段，不能使用');
+							}
+							// 清空字段名
+							this.extraCustomFields[index].name = '';
+							return;
+						}
+
+						// 检查是否与其他额外字段的 key 重复
+						for (let i = 0; i < this.extraCustomFields.length; i++) {
+							if (i !== index && this.extraCustomFields[i].name &&
+								this.extraCustomFields[i].name.trim() === trimmedValue) {
+								try {
+									parent.sa.msg('字段名称 "' + trimmedValue + '" 已存在，不能重复');
+								} catch (e) {
+									alert('字段名称 "' + trimmedValue + '" 已存在，不能重复');
+								}
+								// 清空当前字段名
+								this.extraCustomFields[index].name = '';
+								return;
+							}
+						}
+					},
+					// 添加新的空白字段
+					addNewField() {
+						this.extraCustomFields.push({
+							name: '',
+							type: 'text',
+							value: ''
+						});
+					},
+					// 删除额外自定义字段
+					removeExtraField(index) {
+						this.extraCustomFields.splice(index, 1);
+						try {
+							parent.sa.msg('字段已删除');
+						} catch (e) {
+						}
+					},
+					// 触发文件选择
+					triggerFileInput: function () {
+						this.$refs.fileInput.click();
+					},
+					// 处理文件选择
+					handleFileSelect: function (e) {
+						var files = e.target.files;
+						this.addFiles(files);
+						e.target.value = '';
+					},
+					// 处理拖拽悬停
+					handleDragOver: function (e) {
+						this.isDragging = true;
+					},
+					// 处理拖拽离开
+					handleDragLeave: function (e) {
+						this.isDragging = false;
+					},
+					// 处理文件拖放
+					handleFileDrop: function (e) {
+						this.isDragging = false;
+						var files = e.dataTransfer.files;
+						this.addFiles(files);
+					},
+					// 添加文件到附件列表
+					addFiles: function (files) {
+						for (var i = 0; i < files.length; i++) {
+							this.attachments.push(files[i]);
+						}
+					},
+					// 移除附件
+					removeAttachment: function (index) {
+						this.attachments.splice(index, 1);
+					},
+					// 格式化文件大小
+					formatFileSize: function (bytes) {
+						if (bytes === 0) return '0 B';
+						var k = 1024;
+						var sizes = ['B', 'KB', 'MB', 'GB'];
+						var i = Math.floor(Math.log(bytes) / Math.log(k));
+						return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+					},
+					updateSlug() {
+						// 根据标题生成slug
+					},
+					// 标签输入实时过滤，只允许：中文、英文、数字、短横线(-)、中英文逗号（不允许空格）
+					onTagInput(event) {
+						const raw = event.target.value || '';
+						// 去掉不允许的字符（移除空格），短横线 - 放在字符类末尾表示字面量
+						const cleaned = raw.replace(/[^a-zA-Z0-9\u4e00-\u9fa5,，-]/g, '');
+						this.tagInput = cleaned;
+					},
+				// 上传文章主图，与 txt.tpl 保持一致，调用 upload/upload 上传到远程存储
+				async handleArticleBannerUpload(event) {
+					this.percentage = 0
+					this.uploading = true
+					const file = event && event.target && event.target.files ? event.target.files[0] : null;
+					if (!file) return;
+
+					const formData = new FormData();
+					formData.append('file', file);
+
+					try {
+						const res = await sa.http({
+							url: '/upload/uploadRemote',
+							method: 'post',
+							data: formData,
+							onUploadProgress: progressEvent => {
+								this.percentage = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+							}
+						});
+						const responseData = res.data || res;
+
+						// src：经 url_image() 处理的完整可访问地址，前端展示/预览直接使用
+						// url：远程存储原始路径（备用）
+						const srcUrl = responseData.src || responseData.url || '';
+
+						if (srcUrl) {
+							// 写入自定义字段的文章主图，使用 src（完整可访问地址，前端可直接展示）
+							this.customFieldsData.articleImages = srcUrl;
+							// 缩略图预览同样使用 src
+							this.articleBannerPreview = srcUrl;
+							try {
+								sa.ok(`上传成功！URL: ${srcUrl}`);
+							} catch (e) {
+								alert(`上传成功！URL: ${srcUrl}`);
+							}
+						} else {
+							try {
+								sa.ok((res && res.data && res.data.msg ? res.data.msg : '上传成功') + ' - banner');
+							} catch (e) {
+								alert((res && res.data && res.data.msg ? res.data.msg : '上传成功') + ' - banner');
+							}
+						}
+					} catch (err) {
+						console.error('upload/upload error for banner:', err);
+						try {
+							sa.error('上传失败，请稍后再试 - banner');
+						} catch (e) {
+							alert('上传失败，请稍后再试 - banner');
+						}
+					} finally {
+						if (event && event.target) {
+							event.target.value = '';
+						}
+						this.uploading = false
+					}
+				},
+					addTag() {
+						if (!this.tagInput || !this.tagInput.trim()) {
+							return;
+						}
+
+						// 原始输入（去掉首尾空格）
+						const input = this.tagInput.trim();
+
+						// 支持中英文逗号分割：, 和 ，
+						// 先替换中文逗号为英文逗号，然后分割
+						const normalizedInput = input.replace(/，/g, ',');
+						// 用英文逗号分割
+						const tags = normalizedInput.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+
+						if (tags.length === 0) {
+							this.tagInput = '';
+							return;
+						}
+
+						// 添加标签，避免重复
+						tags.forEach(tag => {
+							if (tag && !this.article.tags.includes(tag)) {
+								this.article.tags.push(tag);
+							}
+						});
+
+						// 清空输入框
+						this.tagInput = '';
+					},
+					removeTag(index) {
+						this.article.tags.splice(index, 1);
+					},
+					// 统一的保存文章方法
+					async saveArticle(status, messages) {
+						if (!this.article.title.trim()) {
+							try {
+								parent.sa.msg('请输入标题');
+							} catch (e) {
+								alert('请输入标题');
+							}
+							return;
+						}
+
+						try {
+							// 获取markdown内容
+							const md = await this.$refs.editor.getMarkDown();
+
+							// 构建保存数据
+							const rawData = this.buildSaveData(md, status);
+
+							// 格式化数据为对象，清理空值和确保类型正确
+							const saveData = this.formatSaveData(rawData);
+							console.log(saveData, "saveData");
+
+							// 如果有附件，使用带附件的上传方式
+							if (this.attachments.length > 0) {
+								this.uploadArticleWithAttachments('/contents/save', saveData, status, messages);
+								return;
+							}
+
+							// 调用保存接口
+							const res = await sa.http({
+								url: '/contents/save',
+								data: saveData
+							});
+
+							// 如果是新增，更新文章ID
+							const isNew = !this.article.id;
+							if (isNew && res.data && res.data.cid) {
+								this.article.id = res.data.cid;
+							}
+
+							// 支持函数形式的 success 消息，可以根据 isNew 动态生成
+							const successMsg = typeof messages.success === 'function'
+								? messages.success(isNew)
+								: (messages.success || '操作成功');
+							try {
+								// 如果是发布或待审核，清除草稿缓存和URL中的cid参数
+								if (status === 'publish' || status === 'waiting') {
+									sessionStorage.removeItem('editArticleData');
+									sessionStorage.removeItem('needLoadEditData');
+									// 清除URL中的cid参数
+									this.clearUrlCid();
+									// 发布成功后，清空当前页面表单变量
+									this.resetForm();
+								}
+								parent.sa.msg(successMsg);
+								// 如果是发布或待审核，跳转到3-3路由
+								if (status === 'publish' || status === 'waiting') {
+									setTimeout(() => {
+										if (window.parent && window.parent.sa_admin) {
+											window.parent.sa_admin.showMenu
+											window.parent.sa_admin.showMenuById('3-3');
+										} else if (window.parent && window.parent.location) {
+											window.parent.location.reload();
+										}
+									}, 500);
+								}
+							} catch (e) {
+								alert(successMsg);
+							}
+						} catch (e) {
+							console.error(messages.error || '操作失败:', e);
+							try {
+								parent.sa.error(messages.error || '操作失败');
+							} catch (err) {
+								alert(messages.error || '操作失败');
+							}
+						}
+					},
+					// 带附件上传文章
+					uploadArticleWithAttachments: function (url, saveData, status, messages) {
+						var formData = new FormData();
+						formData.append('data', JSON.stringify(saveData));
+						for (var i = 0; i < this.attachments.length; i++) {
+							formData.append('attachments', this.attachments[i]);
+						}
+						var self = this;
+						$.ajax({
+							url: url,
+							type: 'POST',
+							data: formData,
+							processData: false,
+							contentType: false,
+							success: function (res) {
+								// 如果是新增，更新文章ID
+								const isNew = !self.article.id;
+								if (isNew && res.data && res.data.cid) {
+									self.article.id = res.data.cid;
+								}
+
+								const successMsg = typeof messages.success === 'function'
+									? messages.success(isNew)
+									: (messages.success || '操作成功');
+								const finalMsg = successMsg + '（含附件）';
+								try {
+									if (status === 'publish' || status === 'waiting') {
+										sessionStorage.removeItem('editArticleData');
+										sessionStorage.removeItem('needLoadEditData');
+										self.clearUrlCid();
+										self.resetForm();
+									}
+									parent.sa.msg(finalMsg);
+									if (status === 'publish' || status === 'waiting') {
+										setTimeout(() => {
+											if (window.parent && window.parent.sa_admin) {
+												window.parent.sa_admin.showMenuById('3-3');
+											} else if (window.parent && window.parent.location) {
+												window.parent.location.reload();
+											}
+										}, 500);
+									}
+								} catch (e) {
+									alert(finalMsg);
+								}
+							},
+							error: function () {
+								try {
+									parent.sa.error('网络错误，上传失败');
+								} catch (e) {
+									alert('网络错误，上传失败');
+								}
+							}
+						});
+					},
+					// 保存草稿（必须传 status='draft'，后端据此写入 admin_latest_draft 表）
+					async saveDraft() {
+						// 先缓存到本地
+						this.cacheCurrentForm();
+						try {
+							await this.saveArticle('draft', {
+								success: '草稿已保存',
+								error: '保存草稿失败'
+							});
+							parent.sa.msg('草稿已保存成功！');
+						} catch (error) {
+							parent.sa.msg('草稿已缓存到本地，刷新页面后内容依然保留');
+						}
+					},
+					// 缓存当前表单数据
+					cacheCurrentForm() {
+						// 构建自定义字段对象
+						const customFields = {};
+
+						// 文章主图 banner
+						if (this.customFieldsData.articleImages && this.customFieldsData.articleImages.trim()) {
+							customFields.banner = this.customFieldsData.articleImages.trim();
+						}
+
+						// 内容语言 contentLang 0/1
+						customFields.contentLang = Number(this.customFieldsData.contentLang || 0);
+
+						// 禁止显示主图 disableBanner 0/1
+						customFields.disableBanner = Number(this.customFieldsData.disableBanner || 0);
+
+						// 隐藏标题 headTitle 0/1
+						customFields.headTitle = Number(this.customFieldsData.headTitle || 0);
+
+						// 热搜标记 hotSearch 0/1
+						customFields.hotSearch = Number(this.customFieldsData.hotSearch || 0);
+
+						// 跳转地址 redirect
+						if (this.customFieldsData.redirect && this.customFieldsData.redirect.trim()) {
+							customFields.redirect = this.customFieldsData.redirect.trim();
+						}
+
+						// 是否广告 ads_field 0/1
+						customFields.ads_field = Number(this.customFieldsData.ads_field || 0);
+
+						// 标题隐藏 hide_list_title 0/1
+						customFields.hide_list_title = Number(this.customFieldsData.hide_list_title || 0);
+
+						// 作者分类隐藏 hide_list_author_cate 0/1
+						customFields.hide_list_author_cate = Number(this.customFieldsData.hide_list_author_cate || 0);
+
+						// 是否外跳 outjump 0/1
+						customFields.outjump = Number(this.customFieldsData.outjump || 0);
+
+						// 处理额外添加的自定义字段
+						if (this.extraCustomFields && this.extraCustomFields.length > 0) {
+							this.extraCustomFields.forEach(function (field) {
+								if (field.name && field.value !== undefined && field.value !== null && field.value !== '') {
+									var fieldName = field.name.trim();
+									if (fieldName) {
+										customFields[fieldName] = field.value;
+									}
+								}
+							});
+						}
+
+						const cacheData = {
+							...this.article,
+							category_ids: this.article.category_ids || [],
+							tags: this.article.tags || [],
+							content: this.editorContent,
+							allowComment: this.advancedOptions.allowComment ? 1 : 0,
+							allowFeed: this.advancedOptions.allowAggregate ? 1 : 0,
+							allowPing: this.advancedOptions.allowQuote ? 1 : 0,
+							ping_urls: this.advancedOptions.quoteNotice || '',
+							custom_fields: customFields
+						};
+						sessionStorage.setItem('editArticleData', JSON.stringify(cacheData));
+					},
+					async initEditorContent() {
+						// 请求数据后，把后台返回的markdown格式化成html
+						this.editorContent = await this.$refs.editor.markdownToHtml('3333')
+					},
+					// 构建保存数据的辅助方法
+					buildSaveData(markdownContent, status) {
+						// 构建数据对象
+						const data = {};
+
+						// 如果是编辑模式，传入cid
+						// 优先从URL参数获取cid，其次使用 article.id，最后尝试从 sessionStorage 中获取
+						var cid = sa.p('cid', 0);
+						if (!cid || cid === 0) {
+							cid = this.article.id;
+						}
+						if (!cid) {
+							try {
+								var storedData = sessionStorage.getItem('editArticleData');
+								if (storedData) {
+									var articleData = JSON.parse(storedData);
+									cid = articleData.cid || articleData.id;
+								}
+							} catch (e) {
+								console.warn('从sessionStorage获取cid失败:', e);
+							}
+						}
+						if (cid && cid !== 0) {
+							data.cid = cid;
+						}
+
+						// 左侧字段：标题和内容
+						data.title = this.article.title || '';
+						data.content = markdownContent || '';
+
+						// 右侧字段
+						data.publish_date = this.article.publish_date;
+						data.is_home = this.article.homepage_display === 'show' ? 1 : (this.article.homepage_display === 'hide' ? 0 : null);
+
+						// 分类IDs数组
+						if (this.article.category_ids && this.article.category_ids.length > 0) {
+							data.category_ids = this.article.category_ids;
+						}
+
+						// 标签（逗号分隔）
+						if (this.article.tags && this.article.tags.length > 0) {
+							data.tags = this.article.tags.join(',');
+						}
+
+						// 公开度status：保存草稿时必须以传入的 draft 为准，不被 visibility 覆盖
+						data.status = (status === 'draft') ? 'draft' : (this.article.visibility || status || 'publish');
+
+						// 作者ID
+						if (this.article.author_id) {
+							data.author_id = this.article.author_id;
+						}
+
+						// 高级选项
+						data.allowComment = this.advancedOptions.allowComment ? 1 : 0;
+						data.allowFeed = this.advancedOptions.allowAggregate ? 1 : 0;
+						data.allowPing = this.advancedOptions.allowQuote ? 1 : 0;
+
+						// 自定义字段 - 统一放到 custom_fields 对象里面
+						const customFields = {};
+
+						// 文章主图 - banner
+						if (this.customFieldsData.articleImages && this.customFieldsData.articleImages.trim()) {
+							customFields.banner = this.customFieldsData.articleImages.trim();
+						}
+
+						// 内容语言 contentLang 0/1
+						customFields.contentLang = Number(this.customFieldsData.contentLang || 0);
+
+						// 禁止显示主图 disableBanner 0/1
+						customFields.disableBanner = Number(this.customFieldsData.disableBanner || 0);
+
+						// 隐藏标题 headTitle 0/1
+						customFields.headTitle = Number(this.customFieldsData.headTitle || 0);
+
+						// 热搜标记 hotSearch 0/1
+						customFields.hotSearch = Number(this.customFieldsData.hotSearch || 0);
+
+						// 跳转地址 redirect
+						if (this.customFieldsData.redirect && this.customFieldsData.redirect.trim()) {
+							customFields.redirect = this.customFieldsData.redirect.trim();
+						}
+
+						// 是否广告 ads_field 0/1
+						customFields.ads_field = Number(this.customFieldsData.ads_field || 0);
+
+						// 标题隐藏 hide_list_title 0/1
+						customFields.hide_list_title = Number(this.customFieldsData.hide_list_title || 0);
+
+						// 作者分类隐藏 hide_list_author_cate 0/1
+						customFields.hide_list_author_cate = Number(this.customFieldsData.hide_list_author_cate || 0);
+
+						// 是否外跳 outjump 0/1
+						customFields.outjump = Number(this.customFieldsData.outjump || 0);
+
+						// 处理额外添加的自定义字段
+						if (this.extraCustomFields && this.extraCustomFields.length > 0) {
+							this.extraCustomFields.forEach(function (field) {
+								if (field.name && field.value !== undefined && field.value !== null && field.value !== '') {
+									var fieldName = field.name.trim();
+									if (fieldName) {
+										customFields[fieldName] = field.value;
+									}
+								}
+							});
+						}
+
+						// 将 custom_fields 对象添加到 data 中
+						data.custom_fields = customFields;
+
+						return data;
+					},
+					// 格式化保存数据，确保所有字段格式正确
+					formatSaveData(data) {
+						const formatted = {};
+
+						// 遍历所有字段，清理和格式化
+						for (const key in data) {
+							if (data.hasOwnProperty(key)) {
+								const value = data[key];
+
+								// 跳过 null 和 undefined
+								if (value === null || value === undefined) {
+									continue;
+								}
+
+							// 特殊处理 custom_fields
+							if (key === 'custom_fields') {
+								const formattedCustomFields = this.formatCustomFields(value);
+								// 如果格式化后为 null，跳过该字段
+								if (formattedCustomFields !== null) {
+									// 后端 handleCustomFields 期望 [{name, value}] 数组格式
+									formatted[key] = Object.entries(formattedCustomFields).map(([name, val]) => ({
+										name: name,
+										value: String(val)
+									}));
+								}
+								continue;
+							}
+
+								// 处理不同类型的值
+								if (Array.isArray(value)) {
+									// 数组：过滤空值，保留非空数组
+									const filtered = value.filter(item => item !== null && item !== undefined && item !== '');
+									if (filtered.length > 0) {
+										formatted[key] = filtered;
+									}
+								} else if (value instanceof Date) {
+									// Date 对象：转为 ISO 字符串
+									formatted[key] = value.toISOString();
+								} else if (typeof value === 'object') {
+									// 普通对象：转为 JSON 字符串
+									formatted[key] = JSON.stringify(value);
+								} else if (typeof value === 'string') {
+									// 字符串：去除首尾空格，空字符串跳过
+									const trimmed = value.trim();
+									if (trimmed !== '') {
+										formatted[key] = trimmed;
+									}
+								} else {
+									// 其他类型（数字、布尔值等）：直接保留
+									formatted[key] = value;
+								}
+							}
+						}
+
+						return formatted;
+					},
+					// 格式化 custom_fields，清理空值并返回对象
+					formatCustomFields(value) {
+						try {
+							let customFieldsObj;
+
+							// 如果已经是字符串，尝试解析为对象
+							if (typeof value === 'string') {
+								const trimmed = value.trim();
+								if (trimmed === '') {
+									return null; // 返回 null 表示空对象，formatSaveData 会跳过
+								}
+								try {
+									customFieldsObj = JSON.parse(trimmed);
+								} catch (e) {
+									// 如果解析失败，返回 null
+									console.warn('custom_fields JSON 解析失败:', e);
+									return null;
+								}
+							} else if (typeof value === 'object' && value !== null) {
+								// 如果已经是对象，直接使用
+								customFieldsObj = value;
+							} else {
+								// 其他类型，返回 null
+								return null;
+							}
+
+							// 清理空值：移除 null、undefined、空字符串的字段
+							const cleaned = {};
+							for (const key in customFieldsObj) {
+								if (customFieldsObj.hasOwnProperty(key)) {
+									const val = customFieldsObj[key];
+									// 保留非空值（null、undefined、空字符串都跳过）
+									if (val !== null && val !== undefined && val !== '') {
+										// 如果是字符串，去除首尾空格
+										if (typeof val === 'string') {
+											const trimmed = val.trim();
+											if (trimmed !== '') {
+												cleaned[key] = trimmed;
+											}
+										} else {
+											cleaned[key] = val;
+										}
+									}
+								}
+							}
+
+							// 如果清理后没有字段，返回 null
+							if (Object.keys(cleaned).length === 0) {
+								return null;
+							}
+
+							// 返回清理后的对象
+							return cleaned;
+						} catch (e) {
+							console.error('格式化 custom_fields 失败:', e);
+							return null;
+						}
+					},
+					// 发布文章
+					async publishArticle() {
+						await this.saveArticle('publish', {
+							success: (isNew) => isNew ? '文章发布成功' : '文章更新成功',
+							error: '发布文章失败'
+						});
+					},
+					// 获取分类数据
+					async fetchCategories() {
+						try {
+							const res = await sa.http({
+								url: '/contents/categories',
+								data: {}
+							});
+							this.categories = Array.isArray(res && res.data) ? res.data : [];
+							return Promise.resolve();
+						} catch (error) {
+							console.error('获取分类数据失败:', error);
+							this.categories = [];
+							return Promise.reject(error);
+						}
+					},
+					// 搜索作者（远程搜索）
+					async searchAuthors(keyword) {
+						if (keyword === '') {
+							this.authors = [];
+							return;
+						}
+						this.authorsLoading = true;
+						try {
+							const res = await sa.http({
+								url: '/contents/authors',
+								method: 'post',
+								data: {
+									keyword: keyword,
+									limit: 50
+								}
+							});
+							// 处理返回的数据格式
+							let authorsList = Array.isArray(res && res.data) ? res.data : [];
+							// 确保每个作者都有必要的字段
+							this.authors = authorsList.map(author => ({
+								id: author.id || author.uid,
+								name: author.name || author.screenName || '未知作者'
+							}));
+						} catch (error) {
+							console.error('搜索作者失败:', error);
+							this.authors = [];
+						} finally {
+							this.authorsLoading = false;
+						}
+					},
+					// 获取作者列表（初始加载，只加载前50个）
+					async fetchAuthors() {
+						try {
+							const res = await sa.http({
+								url: '/contents/authors',
+								method: 'post',
+								data: {
+									limit: 50
+								}
+							});
+							// 处理返回的数据格式
+							let authorsList = Array.isArray(res && res.data) ? res.data : [];
+							// 确保每个作者都有必要的字段
+							this.authors = authorsList.map(author => ({
+								id: author.id || author.uid,
+								name: author.name || author.screenName || '未知作者'
+							}));
+						} catch (error) {
+							console.error('获取作者列表失败:', error);
+							this.authors = [];
+						}
+					},
+					// 重置表单数据
+					resetForm() {
+						// 先清空编辑器内容
+						this.editorContent = '';
+						this.article.content = '';
+
+						// 重置文章基本信息
+						this.article = {
+							id: '',
+							title: '',
+							content: '',
+							publish_date: new Date().toISOString().slice(0, 16),
+							category_ids: [],
+							tags: [],
+							homepage_display: '',
+							visibility: 'publish',
+							author_id: ''
+						};
+
+						this.tagInput = '';
+
+						// 清空附件
+						this.attachments = [];
+						this.isDragging = false;
+
+						this.customFieldsData = {
+							articleImages: '',
+							contentLang: '0',
+							disableBanner: '0',
+							headTitle: '0',
+							hotSearch: '0',
+							redirect: '',
+							ads_field: '0',
+							hide_list_title: '0',
+							hide_list_author_cate: '0',
+							outjump: '0'
+						};
+						this.advancedOptions = {
+							allowComment: true,
+							allowQuote: true,
+							allowAggregate: true,
+							quoteNotice: ''
+						};
+						this.showAdvancedOptions = false;
+						this.extraCustomFields = [];
+
+						// 强制更新视图
+						this.$nextTick(() => {
+							// 确保编辑器内容被清空
+							if (this.$refs.editor) {
+								try {
+									// 如果编辑器有清空方法，调用它
+									if (this.$refs.editor.setContent) {
+										this.$refs.editor.setContent('');
+									} else if (this.$refs.editor.editor && this.$refs.editor.editor.commands) {
+										this.$refs.editor.editor.commands.setContent('');
+									}
+								} catch (e) {
+								}
+							}
+						});
+
+						console.log('表单已重置');
+					},
+					// 清除URL中的cid参数
+					clearUrlCid() {
+						console.log('🗑️ 清除URL中的cid参数和相关数据');
+
+						// 清除currentLoadedCid标记
+						this.currentLoadedCid = null;
+
+						try {
+							if (window.parent && window.parent.location) {
+								var hash = window.parent.location.hash;
+								if (hash) {
+									// 移除cid参数
+									var hashParts = hash.split('?');
+									var baseHash = hashParts[0];
+									if (hashParts.length > 1) {
+										var params = new URLSearchParams(hashParts[1]);
+										params.delete('cid');
+										var newParams = params.toString();
+										var newHash = newParams ? baseHash + '?' + newParams : baseHash;
+										window.parent.location.hash = newHash;
+									} else {
+										window.parent.location.hash = baseHash;
+									}
+								}
+							} else if (window.location) {
+								var hash = window.location.hash;
+								if (hash) {
+									var hashParts = hash.split('?');
+									var baseHash = hashParts[0];
+									if (hashParts.length > 1) {
+										var params = new URLSearchParams(hashParts[1]);
+										params.delete('cid');
+										var newParams = params.toString();
+										var newHash = newParams ? baseHash + '?' + newParams : baseHash;
+										window.location.hash = newHash;
+									} else {
+										window.location.hash = baseHash;
+									}
+								}
+							}
+							console.log('✅ cid参数已清除');
+						} catch (e) {
+							console.warn('清除URL中的cid参数失败:', e);
+						}
+					},
+					// 从 sessionStorage 加载编辑的文章数据
+					loadEditArticleData() {
+						// 优先检查URL中的cid参数
+						var urlCid = sa.p('cid', 0);
+						if (urlCid && urlCid > 0) {
+							this.loadArticleById(urlCid);
+						}
+					},
+					// 根据ID从API加载文章数据
+					async loadArticleById(id) {
+						try {
+							this.dataLoaded = false;
+
+							// 先设置文章ID，确保保存时能传递cid
+							this.article.id = id;
+
+							const res = await sa.http({
+								url: '/contents/getById',
+								data: { id: id }
+							});
+							if (res && res.data) {
+								this.fillArticleData(res.data);
+								// 确保ID被设置（fillArticleData可能会覆盖）
+								if (!this.article.id) {
+									this.article.id = id;
+								}
+								// 数据加载完成后，立即标记为已加载
+								this.dataLoaded = true;
+							}
+						} catch (error) {
+							console.error('从API加载文章数据失败:', error);
+							this.dataLoaded = false;
+						}
+					},
+					// 填充文章数据到表单
+					async fillArticleData(articleData) {
+
+						// 填充文章基本信息
+						var articleId = articleData.cid || articleData.id;
+						if (articleId) {
+							this.article.id = articleId;
+							console.log('✅ 设置 article.id =', articleId);
+
+							// 立即检查isEditMode状态
+							console.log('📌 检查isEditMode:', this.isEditMode);
+							console.log('📌 当前article.id:', this.article.id);
+							console.log('📌 当前currentLoadedCid:', this.currentLoadedCid);
+						}
+
+						if (articleData.title) {
+							this.article.title = articleData.title;
+							console.log('✅ 设置 article.title =', articleData.title);
+						}
+
+						// 公开度 / 状态
+						if (articleData.status) {
+							this.article.visibility = articleData.status;
+						}
+
+						// 处理文章内容 - 支持 content 和 text 字段（优先使用 text）
+						var articleContent = null;
+						if (articleData.text !== undefined && articleData.text !== null) {
+							articleContent = articleData.text;
+						} else if (articleData.content !== undefined && articleData.content !== null) {
+							articleContent = articleData.content;
+						}
+
+						if (articleContent !== null && articleContent !== undefined) {
+							// 转换为字符串（可能是数字或其他类型）
+							articleContent = String(articleContent);
+							this.article.content = articleContent;
+							// 设置编辑器内容（通过 v-model 绑定）
+							this.editorContent = await this.$refs.editor.markdownToHtml(articleContent);
+							console.log('设置文章内容，长度:', articleContent.length, '内容预览:', articleContent.substring(0, 50));
+
+							// 使用 $nextTick 确保编辑器已初始化后再设置内容
+							this.$nextTick(() => {
+								// 确保 editorContent 被设置
+								if (this.editorContent !== articleContent) {
+
+									this.$refs.editor.markdownToHtml(articleContent).then(res => {
+										this.editorContent = res;
+
+									})
+								}
+							});
+						} else {
+							this.article.content = '';
+							this.editorContent = '';
+						}
+
+						// 处理分类IDs - 支持数组多选
+						var categoryIds = [];
+						if (articleData.category_ids && Array.isArray(articleData.category_ids)) {
+							categoryIds = articleData.category_ids.map(id => {
+								const numId = Number(id);
+								return !isNaN(numId) ? numId : String(id);
+							});
+						} else if (articleData.category_id) {
+							// 如果是单个分类ID，转为数组
+							const numId = Number(articleData.category_id);
+							categoryIds = [!isNaN(numId) ? numId : String(articleData.category_id)];
+						} else if (articleData.categories && Array.isArray(articleData.categories) && articleData.categories.length > 0) {
+							// 如果有categories数组，提取所有ID
+							categoryIds = articleData.categories.map(cat => {
+								const id = cat.id || cat.value || cat;
+								const numId = Number(id);
+								return !isNaN(numId) ? numId : String(id);
+							});
+						}
+
+						this.article.category_ids = categoryIds;
+
+						// 处理标签 - tags 可能是对象数组或字符串数组
+						if (articleData.tags && Array.isArray(articleData.tags) && articleData.tags.length > 0) {
+							// 如果是对象数组，提取标签文本字段
+							this.article.tags = articleData.tags.map(function (tag) {
+								// 如果是对象，尝试提取可能的字段名（name, title, tag, label, text等）
+								if (typeof tag === 'object' && tag !== null) {
+									return tag.name || tag.title || tag.tag || tag.label || tag.text || tag.value || '';
+								}
+								// 如果是字符串，直接使用
+								return String(tag).trim();
+							}).filter(function (tag) {
+								// 过滤空值
+								return tag !== null && tag !== undefined && String(tag).trim() !== '';
+							}).map(function (tag) {
+								// 统一转换为字符串并去除空格
+								return String(tag).trim();
+							});
+						} else {
+							// 如果tags是空数组或不存在，不设置（保持当前值，如果是新增模式则为空数组）
+							// 只有在编辑模式下才设置为空数组，新增模式保持原样
+							if (this.article.id) {
+								this.article.tags = [];
+							}
+							// 否则不修改tags，保持默认值
+						}
+
+						if (articleData.created) {
+							// 处理日期格式
+							var date = new Date(articleData.created);
+							if (!isNaN(date.getTime())) {
+								this.article.publish_date = date.toISOString().slice(0, 16);
+							}
+						}
+						if (articleData.is_home !== undefined) {
+							this.article.homepage_display = articleData.is_home ? 'show' : 'hide';
+						}
+
+						// 处理作者ID - 支持 author_id, authorId, author 三种字段名
+						var authorId = articleData.author_id ?? articleData.authorId ?? articleData.author;
+						if (authorId !== undefined && authorId !== null) {
+							this.article.author_id = parseInt(authorId) || 0;
+							console.log('✅ 设置 author_id =', this.article.author_id);
+						}
+
+					// 填充自定义字段数据
+					// 优先使用 custom_fields（下划线命名，与缓存保存的格式一致）
+					var customFields = articleData.custom_fields || articleData.customFields;
+
+					// 兼容 Typecho 原生 fields 数组格式：[{ name, str_value, int_value, float_value }, ...]
+					// 若 custom_fields 不存在，则尝试从 fields 数组构建
+					if (!customFields && articleData.fields && Array.isArray(articleData.fields) && articleData.fields.length > 0) {
+						customFields = {};
+						articleData.fields.forEach(function(field) {
+							var key = field.name || field.str_name || field.key;
+							if (!key) return;
+							var value;
+							if (field.str_value !== undefined && field.str_value !== null && field.str_value !== '') {
+								value = field.str_value;
+							} else if (field.int_value !== undefined && field.int_value !== null && field.int_value !== '') {
+								value = field.int_value;
+							} else if (field.float_value !== undefined && field.float_value !== null && field.float_value !== '') {
+								value = field.float_value;
+							}
+							if (value !== undefined) {
+								customFields[key] = value;
+							}
+						});
+					}
+
+					if (customFields && typeof customFields === 'object' && !Array.isArray(customFields)) {
+							// 文章主图 - banner -> articleImages
+							if (customFields.banner !== undefined && customFields.banner !== null && customFields.banner !== '') {
+								this.customFieldsData.articleImages = String(customFields.banner);
+							}
+
+							// 内容语言 contentLang 0/1
+							if (customFields.contentLang !== undefined) {
+								this.customFieldsData.contentLang = String(customFields.contentLang);
+							}
+
+							// 禁止显示主图 disableBanner 0/1
+							if (customFields.disableBanner !== undefined) {
+								this.customFieldsData.disableBanner = String(customFields.disableBanner);
+							}
+
+							// 隐藏标题 headTitle 0/1
+							if (customFields.headTitle !== undefined) {
+								this.customFieldsData.headTitle = String(customFields.headTitle);
+							}
+
+							// 热搜标记 hotSearch 0/1
+							if (customFields.hotSearch !== undefined) {
+								this.customFieldsData.hotSearch = String(customFields.hotSearch);
+							}
+
+							// 跳转地址 redirect
+							if (customFields.redirect !== undefined && customFields.redirect !== null && customFields.redirect !== '') {
+								this.customFieldsData.redirect = String(customFields.redirect);
+							}
+
+							// 是否广告 ads_field 0/1
+							if (customFields.ads_field !== undefined) {
+								this.customFieldsData.ads_field = String(customFields.ads_field);
+							}
+
+							// 标题隐藏 hide_list_title 0/1
+							if (customFields.hide_list_title !== undefined) {
+								this.customFieldsData.hide_list_title = String(customFields.hide_list_title);
+							}
+
+							// 作者分类隐藏 hide_list_author_cate 0/1
+							if (customFields.hide_list_author_cate !== undefined) {
+								this.customFieldsData.hide_list_author_cate = String(customFields.hide_list_author_cate);
+							}
+
+							// 是否外跳 outjump 0/1
+							if (customFields.outjump !== undefined) {
+								this.customFieldsData.outjump = String(customFields.outjump);
+							}
+
+							// 处理额外添加的自定义字段（从 custom_fields 中恢复）
+							// 预设字段的 key 列表
+							const presetFieldKeys = [
+								'banner',
+								'contentLang',
+								'disableBanner',
+								'headTitle',
+								'hotSearch',
+								'redirect',
+								'ads_field',
+								'hide_list_title',
+								'hide_list_author_cate',
+								'outjump',
+							];
+
+							// 清空现有的额外字段
+							this.extraCustomFields = [];
+
+							// 遍历 custom_fields，找出非预设字段，恢复为额外字段
+							for (const key in customFields) {
+								if (customFields.hasOwnProperty(key)) {
+									// 如果不是预设字段，则添加到额外字段列表
+									if (!presetFieldKeys.includes(key)) {
+										const value = customFields[key];
+										// 只有当值不为空时才添加
+										if (value !== undefined && value !== null && value !== '') {
+											this.extraCustomFields.push({
+												name: key,
+												type: 'text',
+												value: String(value)
+											});
+										}
+									}
+								}
+							}
+						}
+
+						// 处理其他可能的字段映射（兼容旧格式）
+						if (articleData.redirect) this.customFieldsData.redirect = articleData.redirect;
+						if (articleData.articleImages) this.customFieldsData.articleImages = articleData.articleImages;
+						if (articleData.hotSearch !== undefined) {
+							this.customFieldsData.hotSearch = articleData.hotSearch ? '1' : '0';
+						}
+
+						console.log('========== fillArticleData 完成 ==========');
+						console.log('当前表单状态:', {
+							'article.id': this.article.id,
+							'article.title': this.article.title,
+							'isEditMode': this.isEditMode
+						});
+
+					}
+				},
+
+				created: function () {
+					// 获取作者列表
+					this.isEditMode = !!sa.p('cid')
+					this.fetchAuthors();
+					// 在 created 钩子中获取分类数据，然后加载编辑数据
+					this.fetchCategories().finally(() => {
+						this.loadEditArticleData();
+
+					})
+				},
+
+				mounted: function () {
+					this._outerWheelHandler = this.handleOuterWheel.bind(this);
+					window.addEventListener('wheel', this._outerWheelHandler, { passive: false });
+				},
+
+				beforeDestroy: function () {
+					if (this._outerWheelHandler) {
+						window.removeEventListener('wheel', this._outerWheelHandler);
+						this._outerWheelHandler = null;
+					}
+				},
+
+				// 监听路由变化（如果使用路由）
+				watch: {
+					// 监听 articleId 变化
+					articleId: function (newVal, oldVal) {
+						this.loadEditArticleData();
+					}
+				}
+			});
+		}
+
+		// 开始初始化
+		initVueApp();
+	</script>
+</body>
+
+</html>

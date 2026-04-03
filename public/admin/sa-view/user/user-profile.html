@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>个人设置</title>
+	<script src="../../static/common-head.js"></script>
+	<script src="../../static/js/layer.js"></script><style>
+		html,
+		body {
+			background: #f5f5f5;
+			margin: 0;
+			padding: 0;
+			font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+		}
+
+		.profile-container {
+			display: flex;
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+			gap: 20px;
+		}
+
+		.profile-sidebar {
+			width: 280px;
+			background: #fff;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			padding: 30px 20px;
+			text-align: center;
+			height: fit-content;
+		}
+
+		.profile-avatar {
+			width: 160px;
+			height: 160px;
+			border-radius: 50%;
+			background: #ccc;
+			margin: 0 auto 20px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow: hidden;
+		}
+
+		.profile-avatar img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.profile-name {
+			font-size: 20px;
+			font-weight: bold;
+			margin-bottom: 10px;
+			color: #333;
+		}
+
+		.profile-username {
+			font-size: 14px;
+			color: #666;
+			margin-bottom: 15px;
+		}
+
+		.profile-stats {
+			font-size: 13px;
+			color: #999;
+			line-height: 1.8;
+			text-align: left;
+			padding: 15px 0;
+			border-top: 1px solid #eee;
+		}
+
+		.profile-main {
+			flex: 1;
+			background: #fff;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			padding: 30px;
+		}
+
+		.profile-title {
+			font-size: 20px;
+			font-weight: bold;
+			margin-bottom: 30px;
+			color: #333;
+		}
+
+		.section-title {
+			font-size: 16px;
+			font-weight: 600;
+			margin: 30px 0 20px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #eee;
+			color: #333;
+		}
+
+		.section-title:first-child {
+			margin-top: 0;
+		}
+
+		.form-group {
+			margin-bottom: 20px;
+		}
+
+		.form-label {
+			display: block;
+			margin-bottom: 8px;
+			font-size: 14px;
+			color: #333;
+			font-weight: 500;
+		}
+
+		.form-input {
+			width: 100%;
+			max-width: 500px;
+			padding: 10px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 14px;
+			transition: border-color 0.3s;
+		}
+
+		.form-input:focus {
+			outline: none;
+			border-color: #409EFF;
+		}
+
+		.form-help {
+			font-size: 12px;
+			color: #999;
+			margin-top: 6px;
+			line-height: 1.6;
+		}
+
+		.btn-primary {
+			background: #4a90e2;
+			color: #fff;
+			border: none;
+			padding: 10px 24px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+			transition: background 0.3s;
+		}
+
+		.btn-primary:hover {
+			background: #357abd;
+		}
+
+		.password-group {
+			display: flex;
+			gap: 15px;
+			flex-wrap: wrap;
+		}
+
+		.password-group .form-group {
+			flex: 1;
+			min-width: 240px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="profile-container">
+		<!-- 左侧个人信息卡片 -->
+		<div class="profile-sidebar">
+			<div class="profile-avatar">
+				<svg width="100" height="100" viewBox="0 0 100 100" style="fill: #fff;">
+					<circle cx="50" cy="35" r="18" />
+					<path d="M50,55 C30,55 20,65 20,80 L80,80 C80,65 70,55 50,55 Z" />
+				</svg>
+			</div>
+			<div class="profile-name">{{ profile.roleName }}</div>
+			<div class="profile-username">{{ profile.roleType }}</div>
+			<div class="profile-stats">
+				目前有 {{ siteOverview.articleCount }} 篇日志, 并有 {{ siteOverview.commentCount }} 条关于你的评论在 {{
+				siteOverview.categoryCount }} 个分类中<br><br>
+				最后登录: {{ profile.lastvisitText }}
+			</div>
+		</div>
+
+		<!-- 右侧表单区域 -->
+		<div class="profile-main">
+			<div class="profile-title">个人设置</div>
+
+			<!-- 个人资料 -->
+			<div class="section-title">个人资料</div>
+			<div class="form-group">
+				<label class="form-label">昵称</label>
+				<input type="text" class="form-input" v-model="nickname" placeholder="请输入昵称">
+				<div class="form-help">用户昵称可以与用户名不同, 用于前台显示<br>如果你将此项留空, 将默认使用用户名</div>
+			</div>
+			<div class="form-group" style="margin-top: 30px;">
+				<button class="btn-primary" @click="updateNickname">更新我的档案</button>
+			</div>
+
+			<!-- 密码修改 -->
+			<div class="section-title">密码修改</div>
+			<div class="form-group">
+				<label class="form-label">当前密码</label>
+				<input type="password" class="form-input" v-model="oldPassword" placeholder="请输入当前密码">
+				<div class="form-help">用于验证身份，确保密码修改的安全性</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">新密码</label>
+				<input type="password" class="form-input" v-model="newPassword" placeholder="请输入新密码">
+				<div class="form-help">建议使用特殊字符与字母、数字的混编样式,以增加系统安全性</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">新密码确认</label>
+				<input type="password" class="form-input" v-model="confirmPassword" placeholder="请再次输入密码">
+				<div class="form-help">请确认你的密码, 与上面输入的密码保持一致</div>
+			</div>
+			<div class="form-group" style="margin-top: 30px;">
+				<button class="btn-primary" @click="updatePassword">更新密码</button>
+			</div>
+			<div class="section-title">谷歌校验码</div>
+			<div class="form-group">
+				<label class="form-label">当前密码</label>
+				<input type="password" class="form-input" v-model="googlePassword" placeholder="请输入当前密码">
+				<div class="form-help">用于验证身份，确保谷歌校验码修改的安全性</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">当前动态码</label>
+				<input type="text" class="form-input" v-model="googleCode" placeholder="请输入6位动态码" maxlength="6">
+				<div class="form-help">如果已绑定密钥，请输入当前6位动态码进行验证</div>
+			</div>
+			<div class="form-group">
+				<label class="form-label">新密钥（可选）</label>
+				<input type="text" class="form-input" v-model="googleSecret" placeholder="留空则生成新密钥">
+				<div class="form-help">留空则系统自动生成新密钥，填写则使用你提供的密钥</div>
+			</div>
+			<div class="form-group" style="margin-top: 30px;">
+				<button class="btn-primary" @click="updateGoogleCode">更新谷歌校验码</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el: '#app',
+			data() {
+				return {
+					nickname: '',
+					oldPassword: '',
+					newPassword: '',
+					confirmPassword: '',
+					googlePassword: '',
+					googleCode: '',
+					googleSecret: '',
+					profile: {
+						roleName: '--',
+						roleType: '--',
+						lastvisitText: '--'
+					},
+					siteOverview: {
+						articleCount: '--',
+						commentCount: '--',
+						categoryCount: '--'
+					}
+				}
+			},
+			created() {
+				this.loadProfile();
+				this.loadSiteOverview();
+			},
+			methods: {
+				getErrorMessage(error, fallback) {
+					if (error && error.response && error.response.data) {
+						return error.response.data.msg || error.response.data.message || fallback;
+					}
+					return (error && error.msg) || fallback;
+				},
+				// 获取个人基本信息
+				async loadProfile() {
+					try {
+						const res = await sa.http({
+							url: '/account/profile',
+							method: 'post'
+						});
+
+						const data = (res && res.data) ? res.data : res;
+						this.profile = {
+							roleName: (data && data.nickname) || (data && data.role_name) || '--',
+							roleType: (data && data.role_type) || '--',
+							lastvisitText: (data && data.lastvisit_text) || '--'
+						};
+						this.nickname = (data && data.nickname) || '';
+					} catch (error) {
+						console.error('获取个人信息失败:', error);
+					}
+				},
+
+				// 获取网站概要数据
+				async loadSiteOverview() {
+					try {
+						const res = await sa.http({
+							url: '/statistics/siteOverview',
+						});
+
+						const data = (res && res.data) ? res.data : res;
+						this.siteOverview = {
+							articleCount: (data && data.published_contents) !== undefined ? data.published_contents : 0,
+							commentCount: (data && data.total_comments) !== undefined ? data.total_comments : 0,
+							categoryCount: (data && data.total_categories) !== undefined ? data.total_categories : 0
+						};
+					} catch (error) {
+						console.error('获取网站概要失败:', error);
+					}
+				},
+				// 更新昵称
+				async updateNickname() {
+					if (!this.nickname.trim()) {
+						layer.msg('请输入昵称', { icon: 2 });
+						return;
+					}
+
+					try {
+						const res = await sa.http({
+							url: '/setting/updateNickname',
+							method: 'post',
+							data: {
+								nickname: this.nickname
+							}
+						});
+
+						sa.ok((res && res.msg) ? res.msg : '昵称更新成功');
+						this.loadProfile();
+					} catch (error) {
+						console.error('更新昵称失败:', error);
+						sa.error(this.getErrorMessage(error, '网络错误，请稍后重试'));
+					}
+				},
+
+				// 更新密码
+				async updatePassword() {
+					// 验证表单
+					if (!this.oldPassword.trim()) {
+						sa.error('请输入当前密码');
+						return;
+					}
+
+					if (!this.newPassword.trim()) {
+						sa.error('请输入新密码');
+						return;
+					}
+
+					if (this.newPassword !== this.confirmPassword) {
+						sa.error('两次输入的密码不一致');
+						return;
+					}
+
+					if (this.newPassword.length < 6) {
+						sa.error('新密码长度至少6位');
+						return;
+					}
+
+					try {
+						const res = await sa.http({
+							url: '/setting/updatePassword',
+							method: 'post',
+							data: {
+								old_password: this.oldPassword,
+								new_password: this.newPassword,
+								confirm_password: this.confirmPassword
+							},
+							showError: false
+						});
+
+						sa.ok((res && res.msg) ? res.msg : '密码更新成功');
+						this.oldPassword = '';
+						this.newPassword = '';
+						this.confirmPassword = '';
+					} catch (error) {
+						console.error('更新密码失败:', error);
+						sa.error(this.getErrorMessage(error, '网络错误，请稍后重试'));
+					}
+				},
+
+				// 更新谷歌校验码
+				async updateGoogleCode() {
+					if (!this.googlePassword.trim()) {
+						sa.error('请输入当前密码');
+						return;
+					}
+
+					// 如果已绑定密钥，需要验证动态码
+					// 动态码是可选的，只有在已绑定密钥时才需要
+					if (this.googleCode && this.googleCode.trim().length !== 6) {
+						sa.error('动态码必须为6位数字');
+						return;
+					}
+
+					try {
+						var requestData = {
+							password: this.googlePassword
+						};
+
+						// 如果填写了动态码，则传入（用于验证已绑定的密钥）
+						if (this.googleCode && this.googleCode.trim()) {
+							requestData.card_num = this.googleCode.trim();
+						}
+
+						// 如果填写了新密钥，则传入
+						if (this.googleSecret && this.googleSecret.trim()) {
+							requestData.secret = this.googleSecret.trim();
+						}
+
+						const res = await sa.http({
+							url: '/setting/updateSecret',
+							method: 'post',
+							data: requestData,
+							showError: false
+						});
+
+						sa.ok((res && res.msg) ? res.msg : '谷歌校验码更新成功');
+						this.googlePassword = '';
+						this.googleCode = '';
+						this.googleSecret = '';
+					} catch (error) {
+						console.error('更新谷歌校验码失败:', error);
+						sa.error(this.getErrorMessage(error, '网络错误，请稍后重试'));
+					}
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="/sa-frame/custom/json-view/index.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">关键词：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">用户组：</label>
+					<el-select v-model="params.group" clearable>
+						<el-option v-for="item in groups" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</div>
+
+				<div class="c-item" style="min-width: 10px;">
+					<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+				</div>
+				<br>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+				<el-button type="info" icon="el-icon-refresh" @click="resetTableData">重置</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table v-loading="fetching" class="data-table" ref="data-table" :data="dataList" size="small">
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="UID" prop="uid" width="90px"></el-table-column>
+				<el-table-column label="用户名" prop="name"></el-table-column>
+				<el-table-column label="昵称" show-overflow-tooltip prop="screenName"></el-table-column>
+				<el-table-column label="电子邮件" prop="mail"></el-table-column>
+				<el-table-column label="用户组" show-overflow-tooltip prop="group">
+					<template slot-scope="scope">
+						<span>{{ getGroupLabel(scope.row.group) }}</span>
+					</template>
+				</el-table-column>
+
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<div class="page-box">
+				<el-pagination :key="dataCount" background layout="total, prev, pager, next, jumper"
+					:current-page.sync="pagination.page" :page-size.sync="pagination.limit" :total="dataCount"
+					@current-change="fetchTableData" @size-change="fetchTableData">
+				</el-pagination>
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+		Vue.component('json-viewer', window['json-view'].default)
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				params: {
+					keyword: '',
+					group: ''
+				},
+				context: '',
+				groups: []
+			},
+			methods: {
+				resetTableParams() {
+					this.params = {
+						keyword: '',
+						group: ''
+					}
+				},
+				async loadGroups() {
+					try {
+						const res = await sa.http({
+							url: 'users/groups'
+						})
+						this.groups = Array.isArray(res.data) ? res.data : []
+					} catch (error) {
+					}
+				},
+				getGroupLabel(value) {
+					const item = (this.groups || []).find(group => group.value === value)
+					return item ? item.label : (value || '')
+				},
+				async fetchList() {
+					this.fetching = true
+					try {
+						const res = await sa.http({
+							url: 'users/authors',
+							data: {
+								...this.pagination,
+								...this.params
+							}
+						})
+
+						return res
+					} catch (error) {
+						return Promise.reject(error)
+					} finally {
+						this.fetching = false
+					}
+				},
+			},
+			created() {
+				this.loadGroups()
+				sa.onInputEnter();
+			}
+		})
+	</script>
+
+</body>
+
+</html>

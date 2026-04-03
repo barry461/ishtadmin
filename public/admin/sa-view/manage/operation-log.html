@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="/sa-frame/custom/json-view/index.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">用户名：</label>
+					<el-input v-model="params.username" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">关键词：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">ip地址：</label>
+					<el-input v-model="params.ip" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">操作类型：</label>
+					<el-select v-model="params.action" clearable placeholder="请选择操作类型">
+						<el-option label="创建" value="created"></el-option>
+						<el-option label="更新" value="updated"></el-option>
+						<el-option label="删除" value="deleted"></el-option>
+						<el-option label="查看" value="view"></el-option>
+						<el-option label="访问" value="access"></el-option>
+					</el-select>
+				</div>
+				<div class="c-item">
+					<label class="c-label">操作时间：</label>
+					<el-date-picker v-model="range" value-format="yyyy-MM-dd" type="daterange" range-separator="至"
+						start-placeholder="开始日期" end-placeholder="结束日期">
+					</el-date-picker>
+				</div>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+				<el-button type="info" icon="el-icon-refresh" @click="resetTableData">重置</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table v-loading="fetching" class="data-table" ref="data-table" :data="dataList" size="small">
+				<el-table-column label="id" prop="id" width="100px"></el-table-column>
+				<el-table-column label="账户" prop="username"></el-table-column>
+				<el-table-column label="ip" show-overflow-tooltip prop="ip"></el-table-column>
+				<el-table-column label="操作" width="80px" prop="action_name"></el-table-column>
+				<el-table-column label="简介" show-overflow-tooltip prop="log"></el-table-column>
+				<el-table-column label="URL" show-overflow-tooltip prop="referrer"></el-table-column>
+				<el-table-column label="操作时间" prop="created_at"></el-table-column>
+				<el-table-column prop="address" fixed="right" align="center" label="操作" width="180px">
+					<template slot-scope="s">
+						<el-button class="c-btn" type="primary" icon="el-icon-view" @click="update(s.row.context)">查看详情</el-button>
+					</template>
+				</el-table-column>
+
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<div class="page-box">
+				<el-pagination background layout="total, prev, pager, next, jumper" :current-page.sync="pagination.page"
+					:page-size.sync="pagination.limit" :total="dataCount" @current-change="fetchTableData"
+					@size-change="fetchTableData">
+				</el-pagination>
+			</div>
+
+		</div>
+
+		<el-dialog title="数据操作详细信息" :visible.sync="dialogVisible" width="50%">
+
+			<json-viewer :value="context" :expand-depth="5" expanded boxed copyable sort>
+				<template v-slot:copy="{copied}">
+					{{ copied ? '已复制' : '复制' }}
+				</template>
+			</json-viewer>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+			</span>
+		</el-dialog>
+	</div>
+	<script>
+		Vue.component('json-viewer', window['json-view'].default)
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+
+				dialogVisible: false,
+				context: '',
+				params: {
+					username: '',
+					action: '',
+					keyword: '',
+					ip: '',
+				},
+				range: []
+			},
+			methods: {
+				async fetchList() {
+					this.fetching = true
+					try {
+						const [date_from, date_to] = (this.range || [])
+						const res = await sa.http({
+							url: 'adminlog/list',
+							data: {
+								...this.pagination,
+								...this.params,
+								date_from,
+								date_to
+							}
+						})
+
+						return res
+					} catch (error) {
+						return Promise.reject(error)
+					} finally {
+						this.fetching = false
+					}
+				},
+				resetTableParams() {
+					this.params = {
+						username: '',
+						action: '',
+						keyword: '',
+						ip: '',
+					}
+					this.range = []
+				},
+				// 修改
+				update: function (data) {
+					this.dialogVisible = true
+					if (!data) {
+						this.context = {}
+						return
+					}
+					if (typeof data === 'object') {
+						this.context = data
+						return
+					}
+					try {
+						this.context = JSON.parse(data)
+					} catch (e) {
+						this.context = {
+							raw: String(data)
+						}
+					}
+
+				},
+			},
+		})
+	</script>
+
+</body>
+
+</html>

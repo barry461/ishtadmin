@@ -1,0 +1,532 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 10px;
+  font: initial;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  line-height: 1;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+blockquote,
+q {
+  quotes: none;
+}
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+*::-webkit-scrollbar {
+  /* 隐藏滚动条 */
+  width: 0 !important;
+  display: none;
+}
+
+.body {
+  position: relative;
+  z-index: 1;
+}
+
+.page-body {
+  width: 100%;
+  height: 100%;
+}
+
+/* pc端 */
+@media screen and (min-width: 750px) {
+  .mobile {
+    display: none;
+  }
+
+  .pc {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pc-header {
+    padding: .1rem .5rem;
+    color: rgb(204, 204, 204);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .pc-header-logo {
+    width: auto;
+    height: 0.3rem;
+  }
+
+  .pc-header-server {
+    font-size: .075rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+  }
+
+  .pc-header-server>a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pc-header-server>a>img {
+    height: .15rem;
+    margin-right: 0.05rem;
+  }
+
+  .pc-center {
+    flex: 1;
+    padding-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pc-center-inner {
+    width: 3.6732558rem;
+    height: 2.25rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .pc-center-inner>img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .pc-download-btn-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: -.6rem;
+    right: .05rem;
+    z-index: 3;
+  }
+
+  .pc-download-btn {
+    width: .789rem;
+    height: .25rem;
+    margin: 0 .05rem .8rem .05rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pc-download-btn-android {
+    background: center/contain no-repeat url("../image/pc/download-android.png");
+  }
+
+  .pc-download-btn-ios {
+    background: center/contain no-repeat url("../image/pc/download-ios.png");
+  }
+
+  .pc-download-qrcode {
+    width: .75rem;
+    height: .75rem;
+    padding: .025rem;
+    background: #fff;
+    border-radius: .025rem;
+    display: none;
+    position: absolute;
+    top: .25rem;
+    left: 0;
+    z-index: 2;
+  }
+
+  .pc-qrcode-inner {
+    width: 100%;
+    height: 100%;
+    font: initial;
+  }
+
+  .pc-qrcode-inner>canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .pc-bottom {
+    padding: .05rem 0;
+    font-size: .05rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    -moz-backdrop-filter: blur(2px);
+    -ms-backdrop-filter: blur(2px);
+  }
+}
+
+/* 移动端 */
+@media screen and (max-width: 750px) {
+  .pc {
+    display: none;
+  }
+
+  .mobile {
+    width: 100%;
+    height: 100%;
+    background: center/cover no-repeat url("../image/mobile/bg.jpg");
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+
+  .mobile-header {
+    padding: .125rem .125rem 0 .125rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .mobile-header img {
+    height: .5rem;
+  }
+
+  .mobile-header-active {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .mobile-header-active>a {
+    width: .25rem;
+    height: .25rem;
+    margin-left: .125rem;
+    display: block;
+  }
+
+  .mobile-header-active>a>img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .mobile-center {
+    padding: 0 .375rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-center img {
+    width: 100%;
+  }
+
+  .mobile-bottom {
+    padding-bottom: .125rem;
+  }
+
+  .mobile-bottom-btn-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-bottom-btn {
+    width: 1.5rem;
+    margin: .25rem .0625rem 0 .0625rem;
+    display: none;
+  }
+
+  .mobile-bottom-btn img {
+    width: 100%;
+    display: block;
+  }
+
+  .mobile-prompt-box {
+    padding-top: .1rem;
+    display: none;
+  }
+
+  .mobile-prompt-text {
+    text-align: center;
+    font-size: .15rem;
+    font-weight: normal;
+    color: rgb(255, 95, 162);
+    display: block;
+  }
+
+  .mobile-download {
+    width: 100%;
+    height: 100%;
+    background: center/cover no-repeat url("../image/mobile/bg.jpg");
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    z-index: 2;
+  }
+
+  .mobile-download-back {
+    width: .5rem;
+    height: .5rem;
+    background: center/.2rem no-repeat url('../image/mobile/back.png');
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+  }
+
+  .mobile-download-content {
+    flex: 1;
+    margin: 0 .375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-download-box {
+    padding: .125rem;
+    background: #fff;
+    border-radius: .05rem;
+  }
+
+  .mobile-download-title {
+    text-align: center;
+    padding: .05rem 0 .1rem 0;
+    font-size: .125rem;
+  }
+
+  .mobile-download-list-title {
+    padding: .05rem 0;
+    font-size: .05rem;
+  }
+
+  .mobile-download-list-desc {
+    margin: 0 0 .125rem 0;
+  }
+
+  .mobile-download-list-desc img {
+    width: 100%;
+    display: block;
+  }
+}
+
+/* 公共swiper样式 */
+.swiper-container {
+  width: 100%;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* 设置 swiper 的 fade 选中序号显示时其他透明度为0 */
+.swiper-container-fade .swiper-slide {
+  opacity: 0 !important;
+}
+
+.swiper-container-fade .swiper-slide-active {
+  opacity: 1 !important;
+}
+
+/* 公共界面布局 */
+.layout-box {
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* 公共头部 */
+.header-back {
+  width: 100%;
+  display: flex;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.header-back-left,
+.header-back-right {
+  width: .5rem;
+  height: .5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-left {
+  background: center/0.2rem no-repeat url(../image/mobile/back.png);
+}
+
+.header-back-center {
+  flex: 1;
+  height: .5rem;
+  line-height: .5rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.header-back.fixed {
+  position: fixed;
+  top: 0;
+}
+
+.header-back.white {
+  background: #fff;
+}
+
+.header-back.white .header-back-left {
+  background: center/0.2rem no-repeat url(../image/mobile/back-black.png);
+}
+
+/* 安卓报毒界面 */
+.android-poisoning-main {
+  margin-top: .5rem;
+  padding: 0 .125rem .25rem .125rem;
+}
+
+.android-poisoning-main>.item {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.android-poisoning-main>.item>img {
+  width: 100%;
+  height: 100%;
+}

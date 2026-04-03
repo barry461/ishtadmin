@@ -1,0 +1,266 @@
+### 获取超值金币卡状态
+POST {{host}}/api/user/getCoinCardStatus
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+### 领取金币卡/user/getCoinFromCoinCard
+POST {{host}}/api/user/getCoinFromCoinCard
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 金币明细
+POST {{host}}/api/user/listMoneyDetail
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 修改用户信息
+POST {{host}}/api/user/updateUserInfo
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "nickname": "aaaaa",
+  "thumb": "1111"
+}
+
+### 填写邀请码
+POST {{host}}/api/user/invitation
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "aff_code": "aaaaa"
+}
+
+
+### 我的邀请列表
+POST {{host}}/api/user/listInvitation
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 用户信息
+POST {{host}}/api/user/userInfo
+Content-Type: application/json
+
+{
+  "oauth_id": "b91524d2fcd0ad89",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 用户信息
+POST {{host}}/api/user/getIm
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 获取别人的用户信息
+POST {{host}}/api/user/getUserInfo
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "uuid": [1,2,3,4,5]
+}
+
+
+### 获取用户收藏/user/getUserFavor
+### type: enum(UserFavoritesLogModel::TYPE_*)
+POST {{host}}/api/user/getUserFavor
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "type": 1
+}
+
+
+### 获取用户收藏/user/getUserFavor
+### type: enum(UserFavoritesLogModel::TYPE_*)
+POST {{host}}/api/user/getUserFavor
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "type": 1
+}
+
+
+### 触发收藏
+### type: enum(UserFavoritesLogModel::TYPE_*)
+### relatedId: 收藏的数据id
+POST {{host}}/api/user/favorites
+Content-Type: application/json
+
+{
+  "env": "prod",
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "token": "84AA55F56122629DA855327DE8274A17D3B6D0CDBC726508A132172F88C15D824128722F998DECD18CAF70F59F560CE69567E36BFBE1D593580E8D53F062C414A2044D1978311F87341AF7C320C49ACFCF3245EF9D4E46A921F51E4018F59F4E59C136C7B6CBDEAAE0",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "type": 1,
+  "relatedId": 109008
+}
+
+
+
+### 获取用户购买/user/getUserBuy
+### type: enum(UserFavoritesLogModel::TYPE_*，99=打折包)
+### relatedId: 收藏的数据id
+POST {{host}}/api/user/getUserBuy
+Content-Type: application/json
+
+{
+  "env": "prod",
+  "oauth_id": "b91524d2fcd0ad89",
+  "oauth_type": "android",
+  "token": "DBC890B5E3D24594F8C49823A741F859222D5663486E21C369E3E0C8A816B58DF07B36C9693DD948EA69CBC177AF32A97323C316DCDB6351744140326A62489DE6CDA6E274C8F917A24054EDEC8428F6EDA35F335AA7D11830E2D323DFA3B060",
+  "version": "1.0.1",
+  "type": 11,
+  "page": 1,
+  "limit": 24
+}
+
+
+
+### 我的邀请信息/user/myInvitation
+POST {{host}}/api/user/myInvitation
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 我的邀请奖励/user/getMyReward
+POST {{host}}/api/user/myInvitation
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+
+### 获取用户卡包/user/getUserProductList
+POST {{host}}/api/user/getUserProductList
+Content-Type: application/json
+
+{
+  "oauth_id": "sdfsfsddfdsfsdsdfsdf11212",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 添加银行卡/user/add_bankcard
+# @name=添加银行卡/user/add_bankcard
+POST {{host}}/api/user/add_bankcard
+Content-Type: application/json
+
+{
+  "oauth_id": "13642b69e33e7a53",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "bank": "农业银行",
+  "card": "6217991410001451943",
+  "name": "王立锟"
+}
+
+
+### 银行卡列表/user/list_bankcard
+POST {{host}}/api/user/list_bankcard
+Content-Type: application/json
+
+{
+  "oauth_id": "13642b69e33e7a53",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "page": 1,
+  "limit": 15
+}
+
+### 删除银行卡
+POST {{host}}/api/user/del_bankcard
+Content-Type: application/json
+
+{
+  "oauth_id": "13642b69e33e7a53",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "id": 20
+}
+
+
+### 关注用户 / 取消关注
+POST {{host}}/api/user/toggle_follow
+Content-Type: application/json
+
+{
+  "aff": 20
+}
+
+
+
+### 关注用户 / 取消关注
+POST {{host}}/api/user/list_fans
+Content-Type: application/json
+
+{
+  "aff": 20
+}
+
+
+### 关注用户 / 取消关注
+POST {{host}}/api/user/list_follow
+Content-Type: application/json
+
+{
+  "env": "prod",
+  "token": "6F1365E87F67889E3BD2F420DB70E7F20CB9BFCC7F4D562AD5C9E7B79C1B476B67AAE5DA525A87C55FB83F5ABFE220D6F4D1D8FB37B35A68C801798FE758D8EEC8FE3F1CD267D6C818C424C3B79863896DC0F004EBC48466B54503FD4D22EFCFDD7829B05D55C557C36C418FC1",
+  "page": 1
+}
+

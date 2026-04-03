@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>商品分类表-添加/修改</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<!-- 所有的 css js 资源 -->
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		.c-panel .el-form .c-label {
+			width: 6em !important;
+		}
+
+		.c-panel .el-form .el-input {
+			width: 250px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" :class="{sbot: id}" style="display: none;" :style="'display: block;'">
+		<!-- ------- 内容部分 ------- -->
+		<div class="s-body">
+			<div class="c-panel">
+				<div class="c-title">角色信息</div>
+				<el-form v-if="m">
+					<div class="c-item br" v-if="m.role_id">
+						<label class="c-label">角色id：</label>
+						<el-input v-model="m.role_id" disabled></el-input>
+					</div>
+					<div class="c-item br">
+						<label class="c-label">角色名称：</label>
+						<el-input v-model="m.role_name"></el-input>
+					</div>
+					<div class="c-item br s-ok">
+						<label class="c-label"></label>
+						<el-button type="primary" icon="el-icon-plus" @click="ok()">保存</el-button>
+					</div>
+				</el-form>
+			</div>
+		</div>
+		<!-- ------- 底部按钮 ------- -->
+		<div class="s-foot">
+			<el-button type="primary" @click="ok()">确定</el-button>
+			<el-button @click="sa.closeCurrIframe()">取消</el-button>
+		</div>
+	</div>
+	<script>
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				id: parseInt(sa.p('role_id', sa.p('id', 0))),
+				m: null,		// 实体对象 
+			},
+			methods: {
+				// 创建一个 默认Model 
+				createModel: function () {
+					return {
+						role_id: 0,
+						role_name: '',
+						permission_ids: [],
+					}
+				},
+				loadDetail: async function () {
+					if (!this.id) {
+						this.m = this.createModel();
+						return;
+					}
+					try {
+						const res = await sa.http({
+							url: '/role/detail',
+							method: 'get',
+							data: { role_id: this.id }
+						});
+						this.m = Object.assign(this.createModel(), res.data || {});
+					} catch (e) {
+						console.error(e);
+						sa.error('加载角色详情失败');
+					}
+				},
+				// 提交数据 
+				ok: async function () {
+					sa.checkNull(this.m.role_name, '请输入角色名称');
+					try {
+						await sa.http({
+							url: '/role/save',
+							method: 'post',
+							data: {
+								role_id: this.m.role_id || 0,
+								role_name: this.m.role_name,
+								permission_ids: this.m.permission_ids || []
+							},
+							showSuccess: true
+						});
+						if (parent.app && parent.app.f5) {
+							parent.app.f5();
+						}
+						sa.closeCurrIframe();
+					} catch (e) {
+						console.error(e);
+					}
+				}
+			},
+			mounted: function () {
+				this.loadDetail();
+			}
+		})
+	</script>
+</body>
+
+</html>

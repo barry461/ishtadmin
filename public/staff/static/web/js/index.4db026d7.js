@@ -1,0 +1,1 @@
+const initSwiper=()=>{let e;if(e=document.querySelector(".mobile-box .swiper"),window.Swiper){new Swiper(e,{loop:!0,autoplay:{delay:3000,disableOnInteraction:!1}})}};window.onload=()=>{initRenderDOM({isHideEmptyValueNode:!0}),processPlatformNodeVisible(),RouterHandle(),window.ClipboardJS&&new ClipboardJS("body"),initSwiper(),window.addEventListener("hashchange",RouterHandle)};

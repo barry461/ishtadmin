@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>帖子列表</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+    /* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+    .data-table {
+      width: 100%;
+    }
+
+    .code-container {
+      height: 300px;
+      overscroll-behavior: contain;
+    }
+
+    .code-container .monaco-editor {
+      border: 1px solid #fcfcfc;
+    }
+
+    .margin-view-overlays {
+      background-color: #ccc;
+    }
+
+    .editor-form {
+      width: 60%;
+      min-width: 400px;
+      margin: auto;
+    }
+
+    .editor-dialog .el-dialog__header {
+      background-color: #fff;
+      min-width: 400px;
+      margin: auto;
+      width: 60%;
+      position: relative;
+    }
+
+    .el-dialog__header .el-dialog__close {
+      font-size: 32px;
+    }
+
+    .editor-dialog .el-dialog__footer {
+      position: sticky;
+      background-color: #fff;
+      bottom: 0;
+      width: 60%;
+      padding-top: 16px;
+      border-top: 1px solid #ccc;
+      min-width: 400px;
+      margin: auto;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div class="vue-box" style="display: none;" :style="'display: block;'">
+    <el-tabs v-model="activeTab">
+      <el-tab-pane label="SEO 模板" name="tpl">
+        <div class="c-panel">
+          <!-- ------------- 检索参数 ------------- -->
+          <el-form>
+
+            <div class="c-item">
+              <label class="c-label">关键词：</label>
+              <el-input v-model="params.keyword" clearable></el-input>
+            </div>
+            <div class="c-item" style="min-width: 10px;">
+
+            </div>
+            <br>
+
+          </el-form>
+          <!-- ------------- 快捷按钮 ------------- -->
+          <div class="fast-btn">
+            <el-button type="danger" :disabled="!multipleSelection.length" icon="el-icon-delete"
+              @click="onDelete(multipleSelection)">批量删除</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="update()">新增</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+          </div>
+          <!-- ------------- 数据列表 ------------- -->
+          <el-table v-loading="fetching" @selection-change="handleSelectionChange" class="data-table" ref="data-table"
+            :data="dataList" size="small">
+            <el-table-column type="selection" width="45px"></el-table-column>
+            <el-table-column label="id" prop="id" width="100px"></el-table-column>
+            <el-table-column label="名称" prop="desc"></el-table-column>
+            <el-table-column label="key" prop="key"></el-table-column>
+            <el-table-column prop="操作" fixed="right" align="center" label="操作" width="180px">
+              <template slot-scope="s">
+                <el-button class="c-btn" type="primary" icon="el-icon-edit" @click="update(s.row)">修改</el-button>
+                <el-button class="c-btn" type="danger" icon="el-icon-delete" @click="onDelete(s.row)">删除</el-button>
+              </template>
+            </el-table-column>
+
+          </el-table>
+          <!-- ------------- 分页 ------------- -->
+          <div class="page-box">
+            <el-pagination background layout="total, prev, pager, next, jumper" :current-page.sync="pagination.page"
+              :page-size.sync="pagination.limit" :total="dataCount" @current-change="fetchTableData"
+              @size-change="fetchTableData">
+            </el-pagination>
+          </div>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane label="统计与验证代码" name="stat">
+        <div class="c-panel">
+          <el-alert
+            title="Head 代码：插入至 </head> 前，用于站长验证、meta 验证等；Footer 代码：插入至 </body> 前，用于 GA/GTM/像素/热力图等统计脚本。请仅粘贴 <meta>/<script> 片段，不要包含 <html>/<head>/<body> 标签。"
+            type="info"
+            show-icon
+            :closable="false">
+          </el-alert>
+
+          <el-form class="mt16">
+            <div class="c-item">
+              <label class="c-label">位置：</label>
+              <el-select v-model="statParams.position" clearable placeholder="全部位置">
+                <el-option label="Head 代码（</head> 前）" value="head"></el-option>
+                <el-option label="Footer 代码（</body> 前）" value="footer"></el-option>
+              </el-select>
+            </div>
+            <div class="c-item">
+              <label class="c-label">关键词：</label>
+              <el-input v-model="statParams.keyword" clearable placeholder="按名称搜索"></el-input>
+            </div>
+            <br>
+          </el-form>
+
+          <div class="fast-btn">
+            <el-button type="danger" :disabled="!statMultipleSelection.length" icon="el-icon-delete"
+              @click="onStatDelete(statMultipleSelection)">批量删除</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="openStatDialog()">新增</el-button>
+            <el-button type="primary" icon="el-icon-search" @click="fetchStatTableData">查询</el-button>
+          </div>
+
+          <el-table v-loading="statFetching" @selection-change="handleStatSelectionChange" class="data-table"
+            ref="stat-table" :data="statDataList" size="small">
+            <el-table-column type="selection" width="45px"></el-table-column>
+            <el-table-column label="ID" prop="id" width="80px"></el-table-column>
+            <el-table-column label="名称" prop="name"></el-table-column>
+            <el-table-column label="位置" prop="position" width="120px">
+              <template slot-scope="s">
+                <el-tag size="mini" type="info" v-if="s.row.position === 'head'">Head 区</el-tag>
+                <el-tag size="mini" type="success" v-else>Footer 区</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" prop="status" width="100px">
+              <template slot-scope="s">
+                <el-tag size="mini" type="success" v-if="s.row.status == 1">启用</el-tag>
+                <el-tag size="mini" type="info" v-else>禁用</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="排序" prop="sort" width="80px"></el-table-column>
+            <el-table-column prop="操作" fixed="right" align="center" label="操作" width="200px">
+              <template slot-scope="s">
+                <el-button class="c-btn" type="primary" icon="el-icon-edit" @click="openStatDialog(s.row)">修改</el-button>
+                <el-button class="c-btn" type="danger" icon="el-icon-delete" @click="onStatDelete(s.row)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+
+          <div class="page-box">
+            <el-pagination
+              background
+              layout="total, prev, pager, next, jumper"
+              :current-page.sync="statPagination.page"
+              :page-size.sync="statPagination.limit"
+              :total="statDataCount"
+              @current-change="fetchStatTableData"
+              @size-change="fetchStatTableData">
+            </el-pagination>
+          </div>
+        </div>
+
+        <!-- 统计与验证代码编辑弹窗 -->
+        <el-dialog
+          title="统计 / 验证代码"
+          :visible.sync="statDialogVisible"
+          width="600px">
+          <el-form :model="statState" label-width="110px">
+            <el-form-item label="名称">
+              <el-input v-model="statState.name" placeholder="例如：GA4 全站 / Google Site Verification"></el-input>
+            </el-form-item>
+            <el-form-item label="位置">
+              <el-select v-model="statState.position">
+                <el-option label="Head 代码（</head> 前）" value="head"></el-option>
+                <el-option label="Footer 代码（</body> 前）" value="footer"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-switch
+                v-model="statState.status"
+                :active-value="1"
+                :inactive-value="0">
+              </el-switch>
+            </el-form-item>
+            <el-form-item label="排序">
+              <el-input-number v-model="statState.sort" :min="0"></el-input-number>
+            </el-form-item>
+            <el-form-item label="代码内容">
+              <el-input
+                type="textarea"
+                :rows="8"
+                v-model="statState.code"
+                placeholder="粘贴 &lt;meta&gt;/&lt;script&gt; 片段，不要包含 &lt;html&gt;/&lt;head&gt;/&lt;body&gt; 标签">
+              </el-input>
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="statDialogVisible = false">取 消</el-button>
+            <el-button type="primary" :loading="statSaving" @click="onStatSave">确 定</el-button>
+          </span>
+        </el-dialog>
+      </el-tab-pane>
+    </el-tabs>
+
+    <el-dialog class="editor-dialog" fullscreen :title="state.id ? '编辑SEO模板' : '新增SEO模板'" :visible.sync="dialogVisible"
+      width="50%" @close="onClose">
+
+      <el-form ref="form" class="editor-form" :model="state" label-position="top" :rules="rules">
+        <el-form-item label="名称" prop="desc">
+          <el-input class="w-full" v-model="state.desc" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="KEY" prop="key">
+          <el-input class="w-full" v-model="state.key" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="值" prop="val">
+          <div class="code-container" ref="valRef"></div>
+
+        </el-form-item>
+        <el-form-item label="配置" prop="config">
+          <div class="code-container" ref="configRef"></div>
+          <p class="description">用于定义SEO变量模板，格式：{变量名} = 值.</p>
+        </el-form-item>
+        <el-form-item label="备注" prop="mark">
+          <div class="code-container" ref="markRef"></div>
+          <p class="description">纯文本说明，不影响实际功能.</p>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" :loading="saving" @click="onSave">确 定</el-button>
+      </div>
+    </el-dialog>
+  </div>
+
+  <script src="https://registry.npmmirror.com/monaco-editor/0.52.2/files/min/vs/loader.js"></script>
+  <script>
+
+    const BASE_MIN = "https://registry.npmmirror.com/monaco-editor/0.52.2/files/min";
+    const BASE_VS = BASE_MIN + "/vs";
+
+    // AMD 路径
+    require.config({ paths: { vs: BASE_VS } });
+
+    // ✅ 最稳：只加载 workerMain.js（不要去拼 json.worker.js 等）
+    window.MonacoEnvironment = {
+      getWorkerUrl: function () {
+        const code =
+          'self.MonacoEnvironment={baseUrl:"' + BASE_MIN + '/"};' +
+          'importScripts("' + BASE_VS + '/base/worker/workerMain.js");';
+        return "data:text/javascript;charset=utf-8," + encodeURIComponent(code);
+      }
+    };
+
+    require(["vs/editor/editor.main"], function () {
+
+      var app = new Vue({
+        el: '.vue-box',
+        data: {
+          sa: sa,
+          activeTab: 'tpl',
+          dialogVisible: false,
+          params: {
+            keyword: '',
+          },
+          // 模板列表
+          multipleSelection: [],
+          state: {
+            desc: '',
+            key: '',
+            val: '',
+            mark: '',
+            config: ''
+          },
+          rules: {
+            key: [
+              { required: true, message: '请输入模板key', trigger: 'blur' },
+            ],
+            desc: [
+              { required: true, message: '请输入模板名称', trigger: 'blur' },
+            ],
+          },
+          _valEditor: null,
+          _configEditor: null,
+          _markEditor: null,
+          saving: false,
+
+          // 统计与验证代码
+          statParams: {
+            position: '',
+            keyword: ''
+          },
+          statPagination: {
+            page: 1,
+            limit: 20
+          },
+          statDataList: [],
+          statDataCount: 0,
+          statFetching: false,
+          statMultipleSelection: [],
+          statDialogVisible: false,
+          statSaving: false,
+          statState: {
+            id: null,
+            name: '',
+            position: 'head',
+            code: '',
+            status: 1,
+            sort: 0
+          }
+        },
+        methods: {
+          async fetchList() {
+            this.fetching = true
+            try {
+              const [date_from, date_to] = (this.range || [])
+              const res = await sa.http({
+                url: 'seotpl/list',
+                data: {
+                  ...this.pagination,
+                  ...this.params,
+                  date_from,
+                  date_to
+                }
+              })
+
+              return res
+            } catch (error) {
+              return Promise.reject(error)
+            } finally {
+              this.fetching = false
+            }
+          },
+          resetTableParams() {
+            this.params = {
+              keyword: '',
+            }
+          },
+          handleSelectionChange(val) {
+            this.multipleSelection = val;
+          },
+      disposeEditor(type) {
+      const editor = this[type]
+      if (!editor) {
+        return
+      }
+      const model = editor.getModel && editor.getModel()
+      if (model) {
+        model.dispose()
+      }
+      editor.dispose()
+      this[type] = null
+      },
+          initEditor(type, el, value) {
+      this.disposeEditor(type)
+            this.$nextTick(() => {
+              const editor = monaco.editor.create(el, {
+                value,
+                language: 'html',
+                theme: "vs-light",
+                fontSize: 14,
+                tabSize: 2,
+                minimap: {
+                  enabled: false
+                },
+                scrollbar: { alwaysConsumeMouseWheel: false },
+                quickSuggestions: true,
+                suggestOnTriggerCharacters: true
+              })
+              this[type] = editor
+              editor.updateOptions({
+                quickSuggestions: true,
+                suggestOnTriggerCharacters: true
+              });
+
+            })
+          },
+          // 新增 / 修改 SEO 模板
+          async update(data) {
+			if (this.dialogVisible) {
+			  this.onClose()
+			}
+            // 如果是编辑，优先从接口获取最新详情，避免列表缓存导致数据不一致
+            if (data && data.id) {
+              try {
+                const res = await sa.http({
+                  url: 'seotpl/detail',
+                  data: { id: data.id }
+                })
+                if (res && res.data) {
+                  this.state = {
+                    ...res.data
+                  }
+                } else {
+                  // 兜底：接口异常时仍然使用当前行数据
+                  this.state = {
+                    ...data
+                  }
+                }
+              } catch (e) {
+                // 接口报错时提示一下，并回退到当前行数据
+                this.$message && this.$message.error('获取最新模板详情失败，已使用当前列表数据')
+                this.state = {
+                  ...data
+                }
+              }
+            } else {
+              // 新增
+              this.state = {
+                desc: '',
+                key: '',
+                val: '',
+                mark: '',
+                config: ''
+              }
+            }
+
+            this.dialogVisible = true
+            this.$nextTick(() => {
+            this.$refs.form && this.$refs.form.clearValidate()
+            })
+
+            this.$nextTick(() => {
+              const val = this.state.val || ''
+              const config = this.state.config || ''
+              const mark = this.state.mark || ''
+              this.initEditor('_valEditor', this.$refs.valRef, val)
+              this.initEditor('_configEditor', this.$refs.configRef, config)
+              this.initEditor('_markEditor', this.$refs.markRef, mark)
+            })
+          },
+          onSave() {
+            this.$refs.form.validate(async valid => {
+              if (valid) {
+
+                try {
+                  this.saving = true;
+
+                  await sa.http({
+                    url: 'seotpl/save',
+                    data: {
+                      ...this.state,
+                      val: this._valEditor.getValue(),
+                      mark: this._markEditor.getValue(),
+                      config: this._configEditor.getValue()
+                    },
+                    showSuccess: true
+                  })
+                  // 保存成功后关闭弹窗并刷新列表，确保下次编辑使用最新数据
+                  this.dialogVisible = false
+                  this.resetTableData()
+                } catch (error) {
+
+                } finally {
+                  this.saving = false
+                }
+              }
+            })
+          },
+          onDelete(s) {
+            const res = Array.isArray(s) ? s : [s]
+            this.$confirm(`确定删除模板：${res.map(item => item.desc).join(',')}?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(async () => {
+              try {
+                await sa.http({
+                  url: 'seotpl/delete',
+                  data: {
+                    ids: res.map(item => item.id)
+                  },
+                  showSuccess: true
+                })
+                this.resetTableData()
+              } catch (error) {
+
+              }
+            }).catch(() => {
+
+            });
+          },
+          onClose() {
+      this.disposeEditor('_valEditor')
+      this.disposeEditor('_configEditor')
+      this.disposeEditor('_markEditor')
+          },
+
+          // ---------- 统计与验证代码 ----------
+          async fetchStatList() {
+            this.statFetching = true
+            try {
+              const res = await sa.http({
+                url: 'seostatcode/list',
+                data: {
+                  ...this.statPagination,
+                  ...this.statParams
+                }
+              })
+              return res
+            } catch (error) {
+              return Promise.reject(error)
+            } finally {
+              this.statFetching = false
+            }
+          },
+          async fetchStatTableData() {
+            try {
+              const res = await this.fetchStatList()
+              const pageData = res && res.data ? res.data : {}
+              this.statDataList = Array.isArray(pageData.list) ? pageData.list : []
+              this.statDataCount = pageData.total || 0
+              if (pageData.page) {
+                this.statPagination.page = pageData.page
+              }
+            } catch (e) { }
+          },
+          handleStatSelectionChange(val) {
+            this.statMultipleSelection = val
+          },
+          openStatDialog(row) {
+            if (row) {
+              this.statState = {
+                id: row.id,
+                name: row.name,
+                position: row.position,
+                code: row.code,
+                status: row.status,
+                sort: row.sort
+              }
+            } else {
+              this.statState = {
+                id: null,
+                name: '',
+                position: 'head',
+                code: '',
+                status: 1,
+                sort: 0
+              }
+            }
+            this.statDialogVisible = true
+          },
+          async onStatSave() {
+            if (!this.statState.name) {
+              this.$message.error('请输入名称')
+              return
+            }
+            if (!this.statState.position) {
+              this.$message.error('请选择位置')
+              return
+            }
+            if (!this.statState.code) {
+              this.$message.error('请输入代码内容')
+              return
+            }
+            this.statSaving = true
+            try {
+              await sa.http({
+                url: 'seostatcode/save',
+                data: this.statState,
+                showSuccess: true
+              })
+              this.statDialogVisible = false
+              this.fetchStatTableData()
+            } catch (e) {
+            } finally {
+              this.statSaving = false
+            }
+          },
+          onStatDelete(s) {
+            const rows = Array.isArray(s) ? s : [s]
+            if (!rows.length) return
+            this.$confirm(`确定删除配置：${rows.map(item => item.name).join(',')}?`, '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(async () => {
+              try {
+                await sa.http({
+                  url: 'seostatcode/delete',
+                  data: {
+                    ids: rows.map(item => item.id)
+                  },
+                  showSuccess: true
+                })
+                this.fetchStatTableData()
+              } catch (e) { }
+            }).catch(() => { })
+          }
+        },
+        mounted() {
+          monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+            validate: false,
+          });
+          this.fetchStatTableData()
+        }
+      })
+    })
+  </script>
+
+</body>
+
+</html>

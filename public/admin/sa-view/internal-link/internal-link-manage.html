@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>站内内链管理</title>
+  <meta charset="utf-8">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style>
+    .il-config-card {
+      margin-bottom: 16px;
+    }
+
+    .il-config-inline {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .il-config-inline .el-input-number {
+      max-width: 160px;
+    }
+
+    .il-config-desc {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .il-filter-bar {
+      margin-bottom: 10px;
+    }
+
+    .il-filter-bar .el-form-item {
+      margin-right: 10px;
+      margin-bottom: 0;
+    }
+
+    .il-fast-btn {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="vue-box" style="display:none;" :style="'display:block;'">
+    <div class="c-panel">
+      <div class="c-title">站内链接 &gt; 内链管理</div>
+
+      <!-- 全局规则设置 -->
+      <el-card class="il-config-card" shadow="never">
+        <div slot="header">
+          <span>内链规则设置</span>
+        </div>
+        <el-form inline label-position="left" @submit.native.prevent>
+          <div class="il-config-inline">
+            <el-form-item label="每篇文章最多自动插入内链数量">
+              <el-input-number v-model="config.max_auto_links_per_article"
+                :min="1" :max="20"></el-input-number>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :loading="configLoading"
+                @click="saveConfig">保存</el-button>
+            </el-form-item>
+          </div>
+          <div class="il-config-desc">
+            该数量仅限制插件自动插入的内链数量，不统计人工已存在的链接。
+          </div>
+        </el-form>
+      </el-card>
+
+      <!-- 搜索条件 -->
+      <el-form class="il-filter-bar" @submit.native.prevent inline label-position="left">
+        <el-form-item label="关键词">
+          <el-input v-model="query.like_keyword" clearable placeholder="请输入关键词"></el-input>
+        </el-form-item>
+        <el-form-item label="指向链接">
+          <el-input v-model="query.like_target_url" clearable
+            placeholder="例如 /seo-plugin"></el-input>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="query.status" clearable placeholder="全部">
+            <el-option :value="1" label="启用"></el-option>
+            <el-option :value="0" label="暂停"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          <el-button @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+
+      <!-- 快捷按钮 -->
+      <div class="il-fast-btn">
+        <el-button type="primary" icon="el-icon-plus" @click="openEditDialog()">
+          + 添加内链
+        </el-button>
+        <el-button type="danger" icon="el-icon-delete"
+          :disabled="!multipleSelection.length"
+          @click="batchDelete">删除所选</el-button>
+      </div>
+
+      <!-- 列表 -->
+      <el-table v-loading="loading" class="data-table"
+        ref="table" :data="list" size="small"
+        @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="45"></el-table-column>
+        <el-table-column label="ID" prop="id" width="70" align="center"></el-table-column>
+        <el-table-column label="关键词" prop="keyword" min-width="160"></el-table-column>
+        <el-table-column label="指向链接" prop="target_url" min-width="200"></el-table-column>
+        <el-table-column label="单篇最多插入" prop="max_per_article"
+          width="120" align="center"></el-table-column>
+        <el-table-column label="优先级" prop="priority"
+          width="100" align="center" sortable></el-table-column>
+        <el-table-column label="已插入文章数" prop="inserted_article_count"
+          width="140" align="center" sortable></el-table-column>
+        <el-table-column label="状态" prop="status" width="100" align="center">
+          <template slot-scope="s">
+            <el-tag v-if="s.row.status == 1" type="success" size="mini">启用</el-tag>
+            <el-tag v-else type="info" size="mini">暂停</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="创建时间" prop="created_at"
+          width="160" align="center"></el-table-column>
+        <el-table-column label="操作" fixed="right" width="160" align="center">
+          <template slot-scope="s">
+            <el-button type="text" size="mini" @click="openEditDialog(s.row)">编辑</el-button>
+            <el-button type="text" size="mini" style="color:#f56c6c"
+              @click="deleteOne(s.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 分页 -->
+      <div class="page-box">
+        <el-pagination background
+          layout="total, prev, pager, next, sizes, jumper"
+          :current-page.sync="pagination.page"
+          :page-size.sync="pagination.limit"
+          :total="total"
+          :page-sizes="[10,20,30,50]"
+          @current-change="fetchList"
+          @size-change="fetchList">
+        </el-pagination>
+      </div>
+    </div>
+
+    <!-- 新增/编辑弹窗 -->
+    <el-dialog :title="form.id ? '编辑内链规则' : '新增内链规则'"
+      :visible.sync="dialogVisible" width="520px">
+      <el-form :model="form" :rules="rules" ref="form" label-width="110px">
+        <el-form-item label="关键词" prop="keyword">
+          <el-input v-model="form.keyword" placeholder="文章正文中需要匹配的文字"></el-input>
+        </el-form-item>
+        <el-form-item label="指向链接" prop="target_url">
+          <el-input v-model="form.target_url" placeholder="站内相对路径，例如 /seo-plugin"></el-input>
+        </el-form-item>
+        <el-form-item label="单篇最多插入" prop="max_per_article">
+          <el-input-number v-model="form.max_per_article" :min="1" :max="10"></el-input-number>
+          <div class="il-config-desc">当前版本逻辑仍限制为单篇每个关键词最多 1 次，此字段为预留扩展。</div>
+        </el-form-item>
+        <el-form-item label="优先级" prop="priority">
+          <el-input-number v-model="form.priority" :min="0" :max="100000"></el-input-number>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio :label="1">启用</el-radio>
+            <el-radio :label="0">暂停</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" :loading="saveLoading" @click="submitForm">保 存</el-button>
+      </span>
+    </el-dialog>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '.vue-box',
+      data() {
+        return {
+          sa: sa,
+          loading: false,
+          list: [],
+          total: 0,
+          pagination: {
+            page: 1,
+            limit: 20
+          },
+          query: {
+            like_keyword: '',
+            like_target_url: '',
+            status: ''
+          },
+          multipleSelection: [],
+          // 全局配置
+          config: {
+            max_auto_links_per_article: 3
+          },
+          configLoading: false,
+          // 编辑表单
+          dialogVisible: false,
+          saveLoading: false,
+          form: {
+            id: null,
+            keyword: '',
+            target_url: '',
+            max_per_article: 1,
+            priority: 0,
+            status: 1
+          },
+          rules: {
+            keyword: [
+              { required: true, message: '请输入关键词', trigger: 'blur' }
+            ],
+            target_url: [
+              { required: true, message: '请输入指向链接', trigger: 'blur' },
+              {
+                validator: function (rule, value, callback) {
+                  if (!value) return callback();
+                  if (!/^\//.test(value) && !/^https?:\/\//i.test(value)) {
+                    return callback(new Error('必须是以 / 开头的相对路径或 http(s) 链接'));
+                  }
+                  callback();
+                },
+                trigger: 'blur'
+              }
+            ]
+          }
+        }
+      },
+      methods: {
+        async loadConfig() {
+          try {
+            this.configLoading = true;
+            const res = await sa.http({
+              url: 'internallink/config',
+              method: 'GET'
+            });
+            if (res && res.data) {
+              this.config.max_auto_links_per_article = parseInt(res.data.max_auto_links_per_article || 3, 10);
+            }
+          } catch (e) {
+          } finally {
+            this.configLoading = false;
+          }
+        },
+        async saveConfig() {
+          try {
+            this.configLoading = true;
+            await sa.http({
+              url: 'internallink/saveConfig',
+              data: {
+                max_auto_links_per_article: this.config.max_auto_links_per_article
+              },
+              showSuccess: true
+            });
+          } catch (e) {
+          } finally {
+            this.configLoading = false;
+          }
+        },
+        buildListParams() {
+          const where = {};
+          const like = {};
+          if (this.query.status !== '' && this.query.status !== null && this.query.status !== undefined) {
+            where.status = this.query.status;
+          }
+          if (this.query.like_keyword) {
+            like.keyword = this.query.like_keyword;
+          }
+          if (this.query.like_target_url) {
+            like.target_url = this.query.like_target_url;
+          }
+          const params = {
+            page: this.pagination.page,
+            limit: this.pagination.limit
+          };
+          if (Object.keys(where).length) {
+            params.where = where;
+          }
+          if (Object.keys(like).length) {
+            params.like = like;
+          }
+          return params;
+        },
+        handleSearch() {
+          this.pagination.page = 1;
+          this.fetchList();
+        },
+        async fetchList() {
+          try {
+            this.loading = true;
+            const res = await sa.http({
+              url: 'internallink/listAjax',
+              data: this.buildListParams()
+            });
+            const data = res && res.data ? res.data : {};
+            this.list = Array.isArray(data.list) ? data.list : [];
+            this.total = Number(data.total || 0);
+            sa.f5TableHeight();
+          } catch (e) {
+            this.list = [];
+            this.total = 0;
+          } finally {
+            this.loading = false;
+          }
+        },
+        resetQuery() {
+          this.query = {
+            like_keyword: '',
+            like_target_url: '',
+            status: ''
+          };
+          this.pagination.page = 1;
+          this.fetchList();
+        },
+        handleSelectionChange(val) {
+          this.multipleSelection = val;
+        },
+        openEditDialog(row) {
+          if (row) {
+            this.form = {
+              id: row.id,
+              keyword: row.keyword,
+              target_url: row.target_url,
+              max_per_article: row.max_per_article || 1,
+              priority: row.priority || 0,
+              status: row.status
+            };
+          } else {
+            this.form = {
+              id: null,
+              keyword: '',
+              target_url: '',
+              max_per_article: 1,
+              priority: 0,
+              status: 1
+            };
+          }
+          this.dialogVisible = true;
+          this.$nextTick(() => {
+            if (this.$refs.form) {
+              this.$refs.form.clearValidate();
+            }
+          });
+        },
+        submitForm() {
+          this.$refs.form.validate(async valid => {
+            if (!valid) return;
+            try {
+              this.saveLoading = true;
+              const payload = {
+                _pk: this.form.id || '',
+                keyword: this.form.keyword,
+                target_url: this.form.target_url,
+                max_per_article: this.form.max_per_article,
+                priority: this.form.priority,
+                status: this.form.status
+              };
+              await sa.http({
+                url: 'internallink/save',
+                data: payload,
+                showSuccess: true
+              });
+              this.dialogVisible = false;
+              this.fetchList();
+            } catch (e) {
+            } finally {
+              this.saveLoading = false;
+            }
+          });
+        },
+        deleteOne(row) {
+          this.$confirm(`确定删除“${row.keyword}”这条内链规则吗？`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            try {
+              await sa.http({
+                url: 'internallink/del',
+                data: { _pk: row.id },
+                showSuccess: true
+              });
+              this.fetchList();
+            } catch (e) {
+            }
+          }).catch(() => { });
+        },
+        batchDelete() {
+          if (!this.multipleSelection.length) {
+            return sa.msg('请先选择要删除的内链规则');
+          }
+          const ids = this.multipleSelection.map(item => item.id);
+          this.$confirm(`确定删除选中的 ${ids.length} 条内链规则吗？`, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(async () => {
+            try {
+              await sa.http({
+                url: 'internallink/delAll',
+                data: { value: ids.join(',') },
+                showSuccess: true
+              });
+              this.multipleSelection = [];
+              this.fetchList();
+            } catch (e) {
+            }
+          }).catch(() => { });
+        }
+      },
+      created() {
+        this.loadConfig();
+        this.fetchList();
+      }
+    });
+  </script>
+</body>
+
+</html>
+

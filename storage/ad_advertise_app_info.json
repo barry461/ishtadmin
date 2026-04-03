@@ -1,0 +1,639 @@
+[
+  {
+    "app_code": "tj_appid01",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "uQnR8weQSuRzQuz8lgBwkGQQOMxl+X/l+dFQkImSEBE",
+    "app_name": "911"
+  },
+  {
+    "app_code": "TJ-001",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Nljsiu6nSxQekN4BskekgopL0cLHcn/p7+mpvw/5yg8",
+    "app_name": "51吃瓜网"
+  },
+  {
+    "app_code": "TJ-002",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "l1GOsc7wgOwIeam0We9LGBbu+lXeWN2+nf5mKFNPxoA",
+    "app_name": "51吃瓜网app"
+  },
+  {
+    "app_code": "TJ-003",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "sAUq14XF0C6mF3VDO+AAx3VL6qbvumol+jW9VA3cuH0",
+    "app_name": "黑料网"
+  },
+  {
+    "app_code": "TJ-004",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "LNpY9GsR3aFi+dYJbbUPfrhqI0KwoBQJv2m5NfY3eT0",
+    "app_name": "黑料网app"
+  },
+  {
+    "app_code": "TJ-005",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "5SjjJzm4+rfrMbY8T9e9coUAxJgjguPsdc3PmsY2Qu4",
+    "app_name": "黑料不打烊"
+  },
+  {
+    "app_code": "TJ-006",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "3QHS2DnrKRFGyL/XRfVwuWNoRsalFgmbSYehLPROIV0",
+    "app_name": "黑料不打烊app"
+  },
+  {
+    "app_code": "TJ-007",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "S8ey56I/7YSCRIXxgg3zPaVfIXVXTYA7DPYAq9VdBt4",
+    "app_name": "每日大赛"
+  },
+  {
+    "app_code": "TJ-008",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "2u+IfDjsYgdnE0uOsOXl6saA5P8IzV/kxK7VtTG2zqs",
+    "app_name": "每日大赛app"
+  },
+  {
+    "app_code": "TJ-009",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Z30UOldeE/HJaADnGrALtpUjy0m6DheeTkee96+0pd8",
+    "app_name": "草榴社区"
+  },
+  {
+    "app_code": "TJ-010",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "rd+lYbyEit5hAaq63KNUEIdFndFy+qsQxquAaqHLxis",
+    "app_name": "51资源网"
+  },
+  {
+    "app_code": "TJ-011",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "TTbLqvit5tmpQKgU357n6W+tEGjcdPKOYml9+Jxum7A",
+    "app_name": "吃瓜网"
+  },
+  {
+    "app_code": "TJ-012",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "6qM8UTIqm5eYD+XAF4wxpvzugKlEByWdxAMyb7LtZls",
+    "app_name": "911爆料"
+  },
+  {
+    "app_code": "TJ-013",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "pMQThe6BQJhLNAgxYNDb4PbkviiY9DPnBqVS3RQFFAM",
+    "app_name": "91暗网"
+  },
+  {
+    "app_code": "TJ-014",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "16bwvB0H8K5gbLstOhv0el2hQlrRNqEij5g4H+lMrcU",
+    "app_name": "51暗网"
+  },
+  {
+    "app_code": "TJ-015",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "j48cxNfAtemFtoj5X9smdNTpgiRlQ3OvzyulnQCSCms",
+    "app_name": "91吃瓜网"
+  },
+  {
+    "app_code": "TJ-016",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "sUrMAfEXYKLUqMCkye+vDRUSCU68monVUc+llQtav1c",
+    "app_name": "吃瓜头条"
+  },
+  {
+    "app_code": "TJ-017",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "7TRmH2/i9Dbpua+VBWL1DPS2AKQ/RrlwgucJvjSVhxg",
+    "app_name": "91视频"
+  },
+  {
+    "app_code": "TJ-019",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "1u5uIWWun6JzpvQB8DTS9WmgRz7I/Rbvy62+Xgzk/+4",
+    "app_name": "51爆料"
+  },
+  {
+    "app_code": "TJ-020",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "bxkheIQ7Tf0ZWIvhNy+cXmdSaLTho4bi/aRbUyFRGWc",
+    "app_name": "51黑料"
+  },
+  {
+    "app_code": "TJ-021",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "i4BGKMnY56+1AtpaWSWC/hKiXYc2qFK+atcab35/Bbs",
+    "app_name": "91爆料"
+  },
+  {
+    "app_code": "TJ-022",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "DdPI1mK7bhOOlzJDC7bVCQtqBz5aXyoNofsy4hoYbco",
+    "app_name": "17吃瓜"
+  },
+  {
+    "app_code": "TJ-023",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "+l2CwX1P/9FaC+P2Ec/ZK4b38xUmSrgupcLok18IfB0",
+    "app_name": "91大赛"
+  },
+  {
+    "app_code": "TJ-024",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "mxqNZdl1RR9QzUMitFmmPHagQ52J8JzTh5AtARCVxcQ",
+    "app_name": "每日大乱斗"
+  },
+  {
+    "app_code": "TJ-025",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "M041dnFccSpfg8n8MO7NvUWXVQ1B8nmEMCc8iSm63PE",
+    "app_name": "51大赛"
+  },
+  {
+    "app_code": "TJ-026",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "SLiaXtjfkT/BkB/iQoha2Fr7GQ30pkbGfLHiQC8GDpQ",
+    "app_name": "91大事件"
+  },
+  {
+    "app_code": "TJ-027",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "OKlBR8i4wROp4WH+Hy+vzVevpckENvQB48mPIn9AgHw",
+    "app_name": "51视频"
+  },
+  {
+    "app_code": "TJ-028",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "A7vn+j9FHByS8yKbIhJgIe0HNgv0Mxy4MP2vvm4IRic",
+    "app_name": "51吃瓜轻量版"
+  },
+  {
+    "app_code": "TJ-029",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "JbOQlppuTBbUeBsNF1TP/Rn19rBCeYT92DfwgooGJVE",
+    "app_name": "小黄书"
+  },
+  {
+    "app_code": "TJ-030",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "fO/Z8Y/gaIwkEdb7YOqJ2BVD4nZYrqO88bmJiIdTpSc",
+    "app_name": "小黑书"
+  },
+  {
+    "app_code": "TJ-031",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "l8yJ/FlwA1eGidrq7IhViQYs5tCKDvAcbuTc7gXenB4",
+    "app_name": "黑料社"
+  },
+  {
+    "app_code": "TJ-032",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "/6VcA5/1+Q9/SeaM69t02TkrQHRZ+IcUdyz+HIQOoc0",
+    "app_name": "抖瓜网"
+  },
+  {
+    "app_code": "TJ-033",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "v92gIXUepiEnqs1xZw6mtiJT1Azl1Rfu/2cJaz8dCnY",
+    "app_name": "吃瓜黑料"
+  },
+  {
+    "app_code": "TJ-034",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "ZyVaIwzLEm5yM7AILAL/KNw3ZlneecbHzHs6I8byBn8",
+    "app_name": "爆瓜网"
+  },
+  {
+    "app_code": "TJ-035",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "IUMedzhEQGjXiT58067Z8ODDXcuVcoQMhbyHTmLpWc4",
+    "app_name": "51八卦"
+  },
+  {
+    "app_code": "TJ-036",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Aqo5MhuZC/ncLh7S2+CDCRs+7It5/hlA56G73zMUjeE",
+    "app_name": "51动漫网"
+  },
+  {
+    "app_code": "TJ-037",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "68kugh4P+LgSHbOdNd5yPf6W9B4Q7mYe6U2Svc1QFmg",
+    "app_name": "911爆料app"
+  },
+  {
+    "app_code": "TJ-038",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "kg9+b6i25HbN57JCvEPsqjHrTwqdSVeOSOs16MA+xGs",
+    "app_name": "51爆料APP"
+  },
+  {
+    "app_code": "TJ-039",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "dwOCqBH7p2JMIqxScIrEPxoh5LSLukEKVPcW6LqQV6M",
+    "app_name": "91黑料APP"
+  },
+  {
+    "app_code": "TJ-040",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "yC28H3QWYzQvd0lG7A8x/EcFFGWyG2kewlSwaoByrtU",
+    "app_name": "91爆料APP"
+  },
+  {
+    "app_code": "TJ-041",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "QvxUpCwVB+D/020TetF1Z+vOOgCW+g9WoVr9SyMZhxQ",
+    "app_name": "51TV"
+  },
+  {
+    "app_code": "TJ-042",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "JNoxc5eP54LN/Gb3n5ir6Yn5ZXYgbwsOND34bkhhNtg",
+    "app_name": "51视频APP"
+  },
+  {
+    "app_code": "TJ-043",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "iJm/Fm/msIUaemEBqGm8axRWOYRT0bIWd4Gvv3oBN0s",
+    "app_name": "91吃瓜app"
+  },
+  {
+    "app_code": "TJ-044",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "RuixY2V0fOEZhSEDsn+PHK59vCJ9uubv/QoWR/Mvubw",
+    "app_name": "吃瓜网app"
+  },
+  {
+    "app_code": "TJ-045",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "UqCs4QVEVTZ2Uw4oRmZ9QQoC1xx3TYoj7/1RIHcAIEY",
+    "app_name": "海角网app"
+  },
+  {
+    "app_code": "TJ-046",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Ibdf2/70HKAWh2KuXK4+O175ltbRdq2YCW3AcKhToBc",
+    "app_name": "51暗网app"
+  },
+  {
+    "app_code": "TJ-047",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "RnD7L5U/eC3ETJe0aJ5+vP9/4n8zS/jlDmfvScbYbj8",
+    "app_name": "海角网"
+  },
+  {
+    "app_code": "TJ-048",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "sFaaB9vHMyhOwiy++DfMK98PuenlqJufZAxCYXIyRMI",
+    "app_name": "51fans"
+  },
+  {
+    "app_code": "TJ-049",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "oWHvBUZzgzqg/+Bcax/Fyg+msHOBCpcZnZE7XfKF7IY",
+    "app_name": "私房KTV"
+  },
+  {
+    "app_code": "TJ-050",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "zODEy0SbzjgAksaDUn4q8ro9AMEhG5B3nHOKq9I6fu4",
+    "app_name": "绿帽社"
+  },
+  {
+    "app_code": "TJ-051",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "JXnkoxTD3DJQShl5ZVIwsFcP5u6dZLY1sJWcybz7FDA",
+    "app_name": "蜜桃网"
+  },
+  {
+    "app_code": "TJ-052",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "6VijRch0Wafczcd2w1QbR42QWmmIrRugLcJsGfQPHpA",
+    "app_name": "杏吧网"
+  },
+  {
+    "app_code": "TJ-053",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Ut87umV+P4bNGE7SB7p5yBg3NKeHoimLLaGp6MNWjq8",
+    "app_name": "91jav"
+  },
+  {
+    "app_code": "TJ-054",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "JFxoVCSZ9+sn/peE0af6GiUC6p0UV/pzaxoaWJKyVHc",
+    "app_name": "91javapp"
+  },
+  {
+    "app_code": "TJ-055",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Eijg7p+svFyWY4IaFx0zeaxuTaN8kJO+ET+wImGnkPw",
+    "app_name": "porntv"
+  },
+  {
+    "app_code": "TJ-057",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "GpM1mx/b/OIEGgCROHXAvdDLXJlRoyOXX0MUb6b5adE",
+    "app_name": "007吃瓜网"
+  },
+  {
+    "app_code": "TJ-060",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "go+1Yi4UqMhV/XVC6ru+TUaNelh29tRygCjgzUkYI+U",
+    "app_name": "818黑料网"
+  },
+  {
+    "app_code": "TJ-062",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "41agbKGkolUJlwpZQffstFH68Hvh7eM6qQ1jeEan858",
+    "app_name": "51凤楼"
+  },
+  {
+    "app_code": "TJ-063",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "/4cERqrgpsgMs1PW4TuSgb3RM3ifVl+4XdIWsEhaQR0",
+    "app_name": "51凤楼app"
+  },
+  {
+    "app_code": "TJ-065",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "P1qnOSv4pzs4v+rYLcQZ1xEOF0z+WcmIcmKGhEubVF8",
+    "app_name": "禁漫网"
+  },
+  {
+    "app_code": "TJ-066",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "4k/r0lyNTMNzxDz7GsPyEyJc0Tat7/gsZvHlRDoXqkQ",
+    "app_name": "撸友导航"
+  },
+  {
+    "app_code": "TJ-067",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "3yyEW1DBZ/0gsjlsLwhtJ2hEuXyNnhoEiJK2P0XT0uM",
+    "app_name": "51精选"
+  },
+  {
+    "app_code": "TJ-068",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "9laa1/oiXtT6vhM+h+Ijh8aVlbFg2oDyFJpzlpTnhBc",
+    "app_name": "章鱼导航"
+  },
+  {
+    "app_code": "TJ-069",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "8HH/Cq1UBQaON8qw7eZ4K0WCam1PhFnUSGpHqrCIbxg",
+    "app_name": "涩涩导航"
+  },
+  {
+    "app_code": "TJ-070",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "8+BIIyhJxvu15rWQw1VoFS9787Vrk1xtuOt6n/bGRFQ",
+    "app_name": "麻豆导航"
+  },
+  {
+    "app_code": "TJ-071",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "ly6VnuezxVn+Lj+OMbJN0RgHX2pZ8me3F+P3pA+OgY4",
+    "app_name": "91成人导航"
+  },
+  {
+    "app_code": "TJ-072",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "XJ6sI49yMrW2mUEYQTLxGJDMvAFyQ0U5qFWckWYLIlE",
+    "app_name": "51福利导航"
+  },
+  {
+    "app_code": "TJ-073",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "WtgoEJEfWaVwYqB+K4Cr0I3LIrqNhEXy1hlH5PnsgLw",
+    "app_name": "吃瓜导航"
+  },
+  {
+    "app_code": "TJ-079",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "drW8VCoBMOm6WIMzSHEh8iNEeJEDCtkDFQss82almck",
+    "app_name": "蘑菇视频"
+  },
+  {
+    "app_code": "TJ-080",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "1+a7k9zJH/HrIzdh7lKEQM2jfSWLhxOFymieBxpVd2E",
+    "app_name": "东京热"
+  },
+  {
+    "app_code": "TJ-081",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "7gz6QNCA5VuIAxUBZ0ZbCs7a5Es6xF4sPSGsOGiJvCA",
+    "app_name": "xporn导航"
+  },
+  {
+    "app_code": "TJ-082",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "8N0/c6dfoIi+SSIrPu/ZIMCkuiRs7oBnU3vo9LC+sS8",
+    "app_name": "xp天堂"
+  },
+  {
+    "app_code": "TJ-083",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "xKaVEvRn8d0ZpP5o8YhhcyMmPHwZ9gKYn+Lu2u1fVBs",
+    "app_name": "avhub"
+  },
+  {
+    "app_code": "TJ-078",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "34NklneEyRMXdYs4HdOKdiZ+6zTwF6VWc2EYqKMsvKw",
+    "app_name": "51头条"
+  },
+  {
+    "app_code": "TJ-076",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "AWdhY07XoZkTWBMNeeNBLbjL8RysT/6gNPVlNUJLcR0",
+    "app_name": "51AV"
+  },
+  {
+    "app_code": "TJ-075",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "O33voMKX1MELNBJ+tZLA3dtXipOtebVzqzjDQWm21lo",
+    "app_name": "小男娘"
+  },
+  {
+    "app_code": "TJ-084",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "5YQjBfPsaRtT3BCkuKiper0F0pMBID9FVBojSz4o3lA",
+    "app_name": "51短剧"
+  },
+  {
+    "app_code": "TJ-077",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "Fhn2HdJ1na1ehzDvBZJqaiLhCtUQ87Gj/CE8pluuEXc",
+    "app_name": "猎奇社"
+  },
+  {
+    "app_code": "TJ-058",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "razSirI/jc+m7pDa2TIr7cFMikJHL+7jZwxC2Z+DTeU",
+    "app_name": "911吃瓜网"
+  },
+  {
+    "app_code": "TJ-059",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "9xAbGsoMkwOrhmz7Eh/Sy1oAQpbyXdbXVmLclrlAGws",
+    "app_name": "84吃瓜网"
+  },
+  {
+    "app_code": "TJ-061",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "8LRleAt2ep0OJms31b9ssoKzGRNmi2jzm9KHY0+xVg8",
+    "app_name": "17黑料网"
+  },
+  {
+    "app_code": "TJ-056",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "zhD7uxqa1KJHLRyl3m5XUCw08RIrenPVIBmf6pOyX1M",
+    "app_name": "黄料网"
+  },
+  {
+    "app_code": "TJ-064",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "KLryKkIks4B2po+uC/QTOyF0cZxEKnPfAVYkID0JRzM",
+    "app_name": "活码平台"
+  },
+  {
+    "app_code": "TJ-074",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "RuLjWL7hN17m6AN7+xssiMd8iuvuiUzuEoAOjPDlqnQ",
+    "app_name": "男同视界"
+  },
+  {
+    "app_code": "TJ-018",
+    "merchant_code": "1991015570819227648",
+    "dept_code": "1990985731052380160",
+    "secret_key": "jjp8G2nAQi5Rlbn1wSjB/ghoRXVyUyY1+GK7O2fJCro",
+    "app_name": "彩虹星球"
+  },
+  TJ-085    51成人导航
+  TJ-086    17色导航
+  TJ-087    18se导航
+  TJ-088    黑料网纯享版
+  TJ-089    17爆料网
+  TJ-090    91黑料网
+  TJ-091    911大事件
+  TJ-092    51吃瓜轻量版App
+  TJ-093    51FansApp,
+  {
+    "app_code": "TJ-086",
+    "secret_key": "oygEo3RKPp6VqTJXZZ3CeqtBT/RVdZBU6bJo0I0N2OI"
+  },
+  {
+    "app_code": "TJ-087",
+    "secret_key": "mPKQ0prixMNJu0onxPm27lHlOYR/u0cH9JK3XxtTTys"
+  },
+  {
+    "app_code": "TJ-088",
+    "secret_key": "4CFW5HWsgJ1ZALsq/nTpqYXJ5qsCED9YQ647MYqSNdk"
+  },
+  {
+    "app_code": "TJ-089",
+    "secret_key": "OUoF6jzgeCDPw8UNIzKrv1904hWDyJb+pSW9Nh30RBM"
+  },
+  {
+    "app_code": "TJ-090",
+    "secret_key": "LXaaA2pflCBDiwW5LpUGVLOTCQzYcdRlGdFjNNZZ7Lo"
+  },
+  {
+    "app_code": "TJ-091",
+    "secret_key": "gAh7Kr9e7+W20BGisGZU4BU2ALpqhl42jV7N7PHBr2Q"
+  },
+  {
+    "app_code": "TJ-092",
+    "secret_key": "dJwdgpFgwmdEG01O9pcPZVqSH3dDaafe7SP8/FT0svw"
+  },
+  {
+    "app_code": "TJ-093",
+    "secret_key": "efo984If8tv6Tmn6OyhgWE4hmq/cmMVE692Y7mI2gSw"
+  }
+
+]

@@ -1,0 +1,238 @@
+### 获取全部话题类型
+POST {{host}}/api/community/list_cate
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+### 分页获取话题
+POST {{host}}/api/community/list_topic
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "cate_id": 6
+}
+
+### 获取话题详情
+POST {{host}}/api/community/topic_detail
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "topic_id": 37
+}
+
+### 获取话题帖子列表
+POST {{host}}/api/community/list_topic_post
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "topic_id": 37,
+  "cate": "new"
+}
+
+### 获取帖子列表
+POST {{host}}/api/community/list_post
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "cate": "recommend",
+  "cate_sec": "new"
+}
+
+### 社区发帖
+POST {{host}}/api/community/create_post
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "topic_id": 37,
+  "title": "这是一个XXXXX的东西",
+  "content": "你好啊你好你你你你牛"
+}
+
+### 帖子详情
+POST {{host}}/api/community/post_detail
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "id": 1370
+}
+
+### 点赞/取消点赞
+POST {{host}}/api/community/like
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "type": "post",
+  "id": 1368
+}
+
+### 个人中心帖子列表
+POST {{host}}/api/community/list_my
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "cate": "unpass"
+}
+
+### 热搜页面接口
+POST {{host}}/api/community/search_options
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+### 搜索接口
+POST {{host}}/api/community/search
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "word": "漫展"
+}
+
+### 获取评论列表
+POST {{host}}/api/community/post_comments
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "id": 1348
+}
+
+### 发布评论
+POST {{host}}/api/community/create_comment
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "content": "你好www你wwwwwwwwwwwww好",
+  "post_id":1384
+}
+
+### 他人中心
+POST {{host}}/api/community/peer_center_post
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "aff": 9721064
+}
+
+### 收藏/取消收藏
+POST {{host}}/api/community/favorite
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "id": 1368
+}
+
+### 收藏列表
+POST {{host}}/api/community/list_favorite
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+### 发布评论
+POST {{host}}/api/community/create_comment
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "comment_id": 1,
+  "content": "CCCCXXX这是一个好东西,CCCCCC"
+}
+
+### 评论列表
+POST {{host}}/api/community/post_comments
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "id": 1376
+}
+
+### 评论列表
+POST {{host}}/api/community/comments
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "comment_id": 1
+}
+
+
+### 设置订阅价格
+POST {{host}}/api/postclub/create_club
+Content-Type: application/json
+
+{
+  "oauth_id": "868f84be9184024d029ef1bae40db9af",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "month": 200,
+  "quarter": 100,
+  "year": 300
+}
+
+### 设置订阅价格
+POST {{host}}/api/postclub/join_club
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1",
+  "post_aff": 662,
+  "type": "month"
+}

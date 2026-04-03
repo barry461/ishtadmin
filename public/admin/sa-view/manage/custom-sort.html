@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label"> 名称：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">状态：</label>
+					<el-select v-model="params.status" clearable>
+						<el-option v-for="item in positions" v-bind="item"></el-option>
+					</el-select>
+				</div>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="danger" :disabled="!multipleSelection.length" icon="el-icon-delete"
+					@click="onDelete(multipleSelection)">批量删除</el-button>
+				<el-button type="primary" icon="el-icon-plus" @click="add">新增</el-button>
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+				<el-button type="info" icon="el-icon-refresh" @click="resetTableData">重置</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table @selection-change="handleSelectionChange" v-loading="fetching" class="data-table" ref="data-table"
+				:data="dataList" size="small">
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="排序名称" prop="name"></el-table-column>
+				<el-table-column label="标识" prop="slug"></el-table-column>
+				<el-table-column prop="status" align="center" label="状态" width="180px">
+					<template slot-scope="s">
+						<el-tag :type="s.row.status === 1 ? 'success' : 'info'" style="cursor: pointer;"
+							@click.native="toggleStatus(s.row)">{{s.row.status_text}}</el-tag>
+					</template>
+				</el-table-column>
+				<el-table-column prop="address" align="center" label="操作" width="180px">
+					<template slot-scope="s">
+						<el-button class="c-btn" type="primary" icon="el-icon-edit" @click="update(s.row)">编辑</el-button>
+						<el-button class="c-btn" type="danger" @click="onDelete(s.row)" icon="el-icon-delete">删除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<div class="page-box">
+				<el-pagination :key="dataCount" background layout="total, prev, pager, next, jumper"
+					:current-page.sync="pagination.page" :page-size.sync="pagination.limit" :total="dataCount"
+					@current-change="fetchTableData" @size-change="fetchTableData">
+				</el-pagination>
+			</div>
+
+		</div>
+		<el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%">
+
+			<el-form ref="form" :model="state" label-position="top" :rules="rules">
+				<el-form-item label="字段名称" prop="name">
+					<el-input class="w-full" v-model="state.name" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="字段别名" prop="slug">
+					<el-input class="w-full" v-model="state.slug" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="状态">
+					<el-select v-model="state.status" clearable>
+						<el-option v-for="item in positions" v-bind="item"></el-option>
+					</el-select>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" :loading="submiting" @click="submit">确 定</el-button>
+			</span>
+		</el-dialog>
+
+	</div>
+	<script>
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				dialogVisible: false,
+				state: {
+					name: '',
+					slug: '',
+					status: ''
+				},
+				rules: {
+					name: [
+						{ required: true, message: '请输入标签名称', trigger: 'blur' },
+					],
+					slug: [
+						{ required: true, message: '请输入标签别名', trigger: 'blur' },
+					],
+				},
+				params: {
+					keyword: '',
+					status: ''
+				},
+				multipleSelection: [],
+
+				submiting: false,
+
+				positions: [
+					{
+						label: '关闭',
+						value: 0
+					},
+					{
+						label: '开启',
+						value: 1
+					}
+				]
+			},
+			computed: {
+				dialogTitle() {
+					return this.state.id ? '编辑排序' : "新增排序"
+				}
+			},
+			methods: {
+				createState(data) {
+					return {
+						id: data && data.id ? data.id : '',
+						name: data && data.name ? data.name : '',
+						slug: data && data.slug ? data.slug : '',
+						status: data && data.status !== undefined ? Number(data.status) : 1
+					}
+				},
+
+				async fetchList() {
+					this.fetching = true
+					try {
+						const res = await sa.http({
+							url: 'sortfield/list',
+							data: {
+								...this.pagination,
+								...this.params
+							}
+						})
+
+						return res
+					} catch (error) {
+						return Promise.reject(error)
+					} finally {
+						this.fetching = false
+					}
+				},
+				update: function (data) {
+					this.state = this.createState(data)
+					this.dialogVisible = true
+					this.$nextTick(() => this.$refs.form && this.$refs.form.clearValidate())
+				},
+				add() {
+					this.state = this.createState()
+					this.dialogVisible = true
+					this.$nextTick(() => this.$refs.form && this.$refs.form.clearValidate())
+				},
+				async toggleStatus(row) {
+					try {
+						const res = await sa.http({
+							url: 'sortfield/toggleStatus',
+							data: { id: row.id },
+							showSuccess: true
+						})
+						const data = res && res.data ? res.data : {}
+						row.status = Number(data.status)
+						row.status_text = data.status_text || (row.status === 1 ? '开启' : '关闭')
+					} catch (error) {
+					}
+				},
+				handleSelectionChange(val) {
+					this.multipleSelection = val;
+				},
+				onDelete(s) {
+					const res = Array.isArray(s) ? s : [s]
+					this.$confirm(`确定删除排序：${res.map(item => item.name).join(',')}?`, '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(async () => {
+						try {
+							await sa.http({
+								url: 'sortfield/delete',
+								data: {
+									ids: res.map(item => item.id)
+								},
+								showSuccess: true
+							})
+							this.resetTableData()
+						} catch (error) {
+
+						}
+					}).catch(() => {
+						this.$message({
+							type: 'info',
+							message: '已取消删除'
+						});
+					});
+				},
+				resetTableParams() {
+					this.params = {
+						keyword: '',
+						status: ''
+					}
+				},
+				submit() {
+					this.$refs.form.validate(async valid => {
+						if (valid) {
+							this.submiting = true
+							try {
+								await sa.http({
+									url: 'sortfield/save',
+									data: this.state,
+									showSuccess: true
+								})
+								this.dialogVisible = false
+								this.state = this.createState()
+								this.resetTableData()
+							} catch (error) {
+
+							} finally {
+								this.submiting = false
+							}
+						}
+					})
+				}
+			},
+
+		})
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+		.cache-tips {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f5f7fa;
+			border-radius: 4px;
+			border-left: 4px solid #f56c6c;
+		}
+		.cache-tips-title {
+			font-size: 14px;
+			font-weight: bold;
+			color: #303133;
+			margin-bottom: 10px;
+		}
+		.cache-tips-item {
+			font-size: 12px;
+			color: #f56c6c;
+			line-height: 1.8;
+			margin-bottom: 8px;
+		}
+		.cache-tips-item strong {
+			color: #f56c6c;
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table v-loading="fetching" class="data-table" ref="data-table" :data="dataList" size="small">
+				<el-table-column label="缓存名称" prop="title"></el-table-column>
+				<el-table-column label="操作" width="120px" align="center" prop="category_name">
+					<template slot-scope="scope">
+						<el-button type="primary" icon="el-icon-refresh" :loading="scope.row.loading"
+							@click="updateCache(scope.row)">刷新缓存</el-button>
+					</template>
+				</el-table-column>
+
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+
+			<!-- ------------- 使用说明 ------------- -->
+			<div class="cache-tips">
+				<div class="cache-tips-title">使用说明：</div>
+				<div class="cache-tips-item">
+					<strong>数据缓存：</strong>清理文章数据、分页数据、评论数据、导航数据
+				</div>
+				<div class="cache-tips-item">
+					<strong>设置缓存：</strong>页面导航设置，页面头部底部相关设置，页面不经常改动的缓存，网站基本设置，seo设置，中转设置
+				</div>
+				<div class="cache-tips-item">
+					<strong>文件缓存：</strong>此缓存目的是页面静态化提升页面访问响应速度建议不经常清理此缓存
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				params: {
+					title: '',
+					position: '',
+					status: ''
+				},
+				context: '',
+				dataList: [
+					{
+						type: 'data',
+						title: '数据缓存',
+						loading: false
+					},
+					{
+						type: 'yac',
+						title: '设置缓存',
+						loading: false
+					},
+					{
+						type: 'file',
+						title: '文件缓存',
+						loading: false
+					},
+				]
+			},
+			methods: {
+
+				updateCache(data) {
+					const { type } = data
+					this.$confirm(`确定刷新${data.title}`, '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(async () => {
+						this.dataList = this.dataList.map(item => {
+							if (item.type === type) {
+								return {
+									...item,
+									loading: true
+								}
+							}
+							return item
+						})
+						try {
+							await sa.http({
+								url: 'cache/clear',
+								data: {
+									type
+								}
+							})
+
+							this.$message({
+								type: 'success',
+								message: '刷新成功'
+							});
+						} catch (error) {
+
+						} finally {
+							this.dataList = this.dataList.map(item => {
+								return {
+									...item,
+									loading: false
+								}
+							})
+						}
+					}).catch(() => {
+
+					});
+
+				}
+
+			},
+			created() {
+				this.$nextTick(() => {
+					sa.f5TableHeight()
+				})
+			}
+
+		})
+	</script>
+
+</body>
+
+</html>

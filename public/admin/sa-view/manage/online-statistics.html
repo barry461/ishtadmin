@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>在线统计</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+	<style type="text/css">
+		.online-stats-container {
+			background-color: #f5f5f5;
+			padding: 20px;
+		}
+
+		.stats-header {
+			background-color: #fff;
+			padding: 20px;
+			margin-bottom: 20px;
+			border-radius: 4px;
+		}
+
+		.stats-title {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 20px;
+		}
+
+		.stats-controls {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			margin-bottom: 15px;
+		}
+
+		.stats-controls label {
+			font-size: 14px;
+			color: #666;
+		}
+
+		.stats-controls .el-date-editor {
+			width: 200px;
+		}
+
+		.stats-actions {
+			display: flex;
+			gap: 10px;
+			margin-left: auto;
+		}
+
+		.stats-table-wrapper {
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 4px;
+			overflow-x: auto;
+		}
+
+		.stats-table {
+			width: 100%;
+			font-size: 14px;
+		}
+
+		.stats-table .el-table__header th {
+			background-color: #f8f9fa;
+			font-weight: 600;
+			color: #333;
+			text-align: center;
+		}
+
+		.stats-table .el-table__body td {
+			background-color: #fff;
+			text-align: center;
+		}
+
+		.stats-table .date-cell {
+			font-weight: 500;
+			color: #333;
+		}
+
+		.stats-cell-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 50px;
+		}
+
+		.stats-main-value {
+			font-size: 12px;
+			font-weight: 600;
+			margin-bottom: 5px;
+		}
+
+		.stats-main-value.negative {
+			color: #f56c6c;
+		}
+
+		.stats-main-value.positive {
+			color: #333;
+		}
+
+		.stats-secondary-value {
+			font-size: 12px;
+			font-weight: 500;
+		}
+
+		.stats-secondary-value.positive-change {
+			color: #67c23a;
+		}
+
+		.stats-secondary-value.negative-change {
+			color: #f56c6c;
+		}
+
+		.chart-wrapper {
+			background-color: #fff;
+			padding: 20px;
+			margin-bottom: 20px;
+			border-radius: 4px;
+		}
+
+		.chart-title {
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 20px;
+		}
+
+		#onlineChart {
+			width: 100%;
+			height: 400px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'" v-loading="fetching"
+		element-loading-spinner="el-icon-loading">
+		<div class="online-stats-container">
+			<!-- 头部控制区域 -->
+			<div class="stats-header">
+				<div class="stats-title">在线人数统计</div>
+				<div class="stats-controls">
+					<label>开始时间:</label>
+					<el-date-picker v-model="p.startDate" type="date" placeholder="选择开始日期" value-format="yyyy-MM-dd"
+						style="width: 200px;">
+					</el-date-picker>
+					<label style="margin-left: 15px;">结束时间:</label>
+					<el-date-picker v-model="p.endDate" type="date" placeholder="选择结束日期" value-format="yyyy-MM-dd"
+						style="width: 200px;">
+					</el-date-picker>
+					<div class="stats-actions">
+						<el-button type="primary" icon="el-icon-search" @click="search">搜索</el-button>
+						<el-button icon="el-icon-refresh" @click="reset">重置</el-button>
+						<el-button icon="el-icon-data-line" @click="compareLastWeek">上周数据对比</el-button>
+					</div>
+				</div>
+			</div>
+
+			<!-- 折线图区域 -->
+			<div class="chart-wrapper">
+				<div class="chart-title">在线人数趋势图</div>
+				<div style="margin-bottom: 15px;">
+					<el-radio-group v-model="chartType" size="small" @change="updateChart">
+						<el-radio-button label="total">每日总量</el-radio-button>
+						<el-radio-button label="avg">每日平均</el-radio-button>
+						<el-radio-button label="peak">峰值时段</el-radio-button>
+					</el-radio-group>
+				</div>
+				<div id="onlineChart"></div>
+			</div>
+
+			<!-- 表格区域 -->
+			<div class="stats-table-wrapper">
+				<el-table :data="dataList" class="stats-table" border style="width: 100%">
+					<el-table-column prop="date" label="日期" width="60" class-name="date-cell" fixed>
+					</el-table-column>
+					<el-table-column v-for="hour in hours" :key="hour" :label="hour" width="70" class-name="hour-cell">
+						<template slot-scope="scope">
+							<div class="stats-cell-content">
+								<span class="stats-main-value"
+									:class="getValueClass(scope.row.hourlyData && scope.row.hourlyData[hour])">
+									{{ formatValue(scope.row.hourlyData && scope.row.hourlyData[hour]) }}
+								</span>
+								<span v-if="scope.row.hourlyData && scope.row.hourlyData[hour]" class="stats-secondary-value"
+									:class="getChangeClass(scope.row.hourlyData[hour])">
+									{{ formatChange(scope.row.hourlyData[hour]) }}
+								</span>
+							</div>
+						</template>
+					</el-table-column>
+				</el-table>
+			</div>
+		</div>
+	</div>
+	<script>
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				p: {
+					startDate: '',
+					endDate: ''
+				},
+				hours: [],
+				dataList: [],
+				dataCount: 0,
+				fetching: false,
+				chart: null,
+				chartType: 'total' // total: 每日总量, avg: 每日平均, peak: 峰值时段
+			},
+			methods: {
+				// 初始化小时列
+				initHours: function () {
+					var hours = [];
+					for (var i = 0; i < 24; i++) {
+						var hour = (i < 10 ? '0' : '') + i + ':00';
+						hours.push(hour);
+					}
+					this.hours = hours;
+				},
+				// 搜索
+				search: function () {
+					this.f5();
+				},
+				// 重置
+				reset: function () {
+					this.p.startDate = '';
+					this.p.endDate = '';
+					this.f5();
+				},
+				// 上周数据对比（查询上周今天的数据）
+				compareLastWeek: function () {
+					var today = new Date();
+					var lastWeekToday = new Date(today);
+					lastWeekToday.setDate(today.getDate() - 7);
+
+					// 将开始日期和结束日期都设置为上周今天
+					this.p.startDate = this.formatDate(lastWeekToday);
+					this.p.endDate = this.formatDate(lastWeekToday);
+					this.f5();
+				},
+				// 格式化日期
+				formatDate: function (date) {
+					var year = date.getFullYear();
+					var month = (date.getMonth() + 1).toString().padStart(2, '0');
+					var day = date.getDate().toString().padStart(2, '0');
+					return year + '-' + month + '-' + day;
+				},
+				// 格式化值（显示人数）
+				formatValue: function (hourData) {
+					if (!hourData || hourData === null || hourData === undefined) {
+						return '-';
+					}
+					return hourData.number || 0;
+				},
+				// 格式化变化百分比
+				formatChange: function (hourData) {
+					if (!hourData || hourData === null || hourData === undefined) {
+						return '';
+					}
+					var change = hourData.change;
+					if (change === null || change === undefined) {
+						return '';
+					}
+					// 如果是数字，格式化为百分比
+					if (typeof change === 'number') {
+						return change > 0 ? '+' + change.toFixed(2) + '%' : change.toFixed(2) + '%';
+					}
+					// 字符串类型，检查是否已包含%
+					if (typeof change === 'string') {
+						if (change.indexOf('%') === -1) {
+							var numChange = parseFloat(change);
+							if (!isNaN(numChange)) {
+								return numChange > 0 ? '+' + numChange.toFixed(2) + '%' : numChange.toFixed(2) + '%';
+							}
+						}
+						return change;
+					}
+					return '';
+				},
+				// 获取值的样式类
+				getValueClass: function (hourData) {
+					if (!hourData || hourData === null || hourData === undefined) {
+						return 'positive';
+					}
+					return 'positive';
+				},
+				// 获取变化值的样式类
+				getChangeClass: function (hourData) {
+					if (!hourData || hourData === null || hourData === undefined) {
+						return '';
+					}
+					// 根据 type 或 change 的值判断
+					if (hourData.type === 'sub') {
+						return 'negative-change';
+					}
+					// 或者根据 change 的值判断
+					var change = hourData.change;
+					if (typeof change === 'number') {
+						return change < 0 ? 'negative-change' : 'positive-change';
+					}
+					if (typeof change === 'string') {
+						var numChange = parseFloat(change);
+						if (!isNaN(numChange)) {
+							return numChange < 0 ? 'negative-change' : 'positive-change';
+						}
+					}
+					return 'positive-change';
+				},
+				// 获取默认 7 天日期范围（用于未选择日期时）
+				getDefaultDateRange: function() {
+					var today = new Date();
+					var start = new Date(today);
+					start.setDate(today.getDate() - 6);
+					return { from: this.formatDate(start), to: this.formatDate(today) };
+				},
+				// 刷新数据（折线图与数据列表均按当前选择的开始/结束时间请求，默认 7 天）
+				async f5() {
+					this.fetching = true;
+					try {
+						var params = {};
+						if (this.p.startDate) {
+							params.date_from = this.p.startDate;
+						} else {
+							params.date_from = this.getDefaultDateRange().from;
+						}
+						if (this.p.endDate) {
+							params.date_to = this.p.endDate;
+						} else {
+							params.date_to = this.getDefaultDateRange().to;
+						}
+						// 日期参数放在 URL 查询串（POST 也带 query），确保时间搜索、默认 7 天生效
+						var query = '?' + new URLSearchParams(params).toString();
+						const res = await sa.http({
+							url: '/statistics/onlineUsers' + query,
+							data: {}
+						});
+						var rows = Array.isArray(res && res.data) ? res.data : [];
+
+						this.dataList = rows.map(function (item) {
+							var hourlyData = {};
+							if (Array.isArray(item.hourly_data)) {
+								item.hourly_data.forEach(function (hourItem) {
+									if (hourItem && hourItem.hour !== undefined) {
+										var hourKey = (hourItem.hour < 10 ? '0' : '') + hourItem.hour + ':00';
+										var number = hourItem.number !== undefined ? Number(hourItem.number) : Number(hourItem.count || 0);
+										var change = hourItem.change !== undefined ? hourItem.change : 0;
+										hourlyData[hourKey] = {
+											number: isNaN(number) ? 0 : number,
+											change: change,
+											type: hourItem.type || (Number(change) < 0 ? 'sub' : 'add')
+										};
+									}
+								});
+							}
+							return {
+								date: item.date || '',
+								hourlyData: hourlyData,
+								total: Number(item.total || 0)
+							};
+						});
+
+						this.dataCount = this.dataList.length;
+					} catch (error) {
+						console.error('获取数据失败：', error);
+						this.dataList = [];
+						this.dataCount = 0;
+					} finally {
+						this.fetching = false;
+						// 数据加载完成后更新图表
+						this.$nextTick(function() {
+							this.updateChart();
+						}.bind(this));
+					}
+				},
+				// 初始化图表
+				initChart: function() {
+					if (!window.echarts) {
+						console.error('ECharts 未加载');
+						return;
+					}
+					var chartDom = document.getElementById('onlineChart');
+					if (!chartDom) {
+						return;
+					}
+					this.chart = echarts.init(chartDom);
+					this.updateChart();
+				},
+				// 更新图表数据
+				updateChart: function() {
+					if (!this.chart || !this.dataList || this.dataList.length === 0) {
+						return;
+					}
+
+					var dates = [];
+					var seriesData = [];
+					var hours = this.hours;
+
+					if (this.chartType === 'total') {
+						// 每日总量模式：显示每天24小时的总和
+						var totalData = {
+							name: '每日总量',
+							type: 'line',
+							smooth: true,
+							symbol: 'circle',
+							symbolSize: 6,
+							itemStyle: {
+								color: '#409EFF'
+							},
+							areaStyle: {
+								color: {
+									type: 'linear',
+									x: 0,
+									y: 0,
+									x2: 0,
+									y2: 1,
+									colorStops: [{
+										offset: 0, color: 'rgba(64, 158, 255, 0.3)'
+									}, {
+										offset: 1, color: 'rgba(64, 158, 255, 0.1)'
+									}]
+								}
+							},
+							data: []
+						};
+
+						for (var d = 0; d < this.dataList.length; d++) {
+							var dayData = this.dataList[d];
+							dates.push(dayData.date);
+							var total = 0;
+							for (var h = 0; h < hours.length; h++) {
+								var hour = hours[h];
+								if (dayData.hourlyData && dayData.hourlyData[hour]) {
+									total += dayData.hourlyData[hour].number || 0;
+								}
+							}
+							totalData.data.push(total);
+						}
+						seriesData.push(totalData);
+					} else if (this.chartType === 'avg') {
+						// 每日平均模式：显示每天24小时的平均值
+						var avgData = {
+							name: '每日平均',
+							type: 'line',
+							smooth: true,
+							symbol: 'circle',
+							symbolSize: 6,
+							itemStyle: {
+								color: '#67C23A'
+							},
+							areaStyle: {
+								color: {
+									type: 'linear',
+									x: 0,
+									y: 0,
+									x2: 0,
+									y2: 1,
+									colorStops: [{
+										offset: 0, color: 'rgba(103, 194, 58, 0.3)'
+									}, {
+										offset: 1, color: 'rgba(103, 194, 58, 0.1)'
+									}]
+								}
+							},
+							data: []
+						};
+
+						for (var d = 0; d < this.dataList.length; d++) {
+							var dayData = this.dataList[d];
+							dates.push(dayData.date);
+							var sum = 0;
+							var count = 0;
+							for (var h = 0; h < hours.length; h++) {
+								var hour = hours[h];
+								if (dayData.hourlyData && dayData.hourlyData[hour]) {
+									sum += dayData.hourlyData[hour].number || 0;
+									count++;
+								}
+							}
+							avgData.data.push(count > 0 ? Math.round(sum / count) : 0);
+						}
+						seriesData.push(avgData);
+					} else if (this.chartType === 'peak') {
+						// 峰值时段模式：显示每天峰值最高的几个时段（9:00, 12:00, 18:00, 21:00）
+						var peakHours = ['09:00', '12:00', '18:00', '21:00'];
+						for (var ph = 0; ph < peakHours.length; ph++) {
+							var peakHour = peakHours[ph];
+							var peakData = {
+								name: peakHour,
+								type: 'line',
+								smooth: true,
+								symbol: 'circle',
+								symbolSize: 6,
+								data: []
+							};
+							for (var d = 0; d < this.dataList.length; d++) {
+								var dayData = this.dataList[d];
+								if (ph === 0) {
+									dates.push(dayData.date);
+								}
+								var hourValue = 0;
+								if (dayData.hourlyData && dayData.hourlyData[peakHour]) {
+									hourValue = dayData.hourlyData[peakHour].number || 0;
+								}
+								peakData.data.push(hourValue);
+							}
+							seriesData.push(peakData);
+						}
+					}
+
+					// 配置图表选项
+					var option = {
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: {
+								type: 'cross'
+							},
+							formatter: function(params) {
+								var result = params[0].axisValue + '<br/>';
+								params.forEach(function(item) {
+									var value = item.value;
+									if (value >= 10000) {
+										value = (value / 10000).toFixed(2) + '万';
+									}
+									result += item.marker + item.seriesName + ': ' + value + '<br/>';
+								});
+								return result;
+							}
+						},
+						legend: {
+							data: seriesData.map(function(s) { return s.name; }),
+							type: 'scroll',
+							orient: 'horizontal',
+							bottom: 0,
+							textStyle: {
+								fontSize: 12
+							}
+						},
+						grid: {
+							left: '3%',
+							right: '4%',
+							bottom: '15%',
+							top: '10%',
+							containLabel: true
+						},
+						xAxis: {
+							type: 'category',
+							boundaryGap: false,
+							data: dates,
+							axisLabel: {
+								rotate: 45,
+								interval: 0
+							}
+						},
+						yAxis: {
+							type: 'value',
+							name: '在线人数',
+							axisLabel: {
+								formatter: function(value) {
+									if (value >= 10000) {
+										return (value / 10000).toFixed(1) + '万';
+									}
+									return value;
+								}
+							}
+						},
+						dataZoom: [
+							{
+								type: 'inside',
+								start: 0,
+								end: 100
+							},
+							{
+								type: 'slider',
+								start: 0,
+								end: 100,
+								height: 20
+							}
+						],
+						series: seriesData
+					};
+
+					// notMerge: true 使折线图完全刷新，切换「上周数据对比」或日期范围时图表正确更新
+					this.chart.setOption(option, { notMerge: true });
+				},
+			},
+			created: function () {
+				this.initHours();
+				// 默认展示最近 7 天（开始 = 今天-6，结束 = 今天），折线图与数据列表一致
+				var range = this.getDefaultDateRange();
+				this.p.startDate = range.from;
+				this.p.endDate = range.to;
+				this.f5();
+			},
+			mounted: function() {
+				// 等待 DOM 渲染完成后初始化图表
+				this.$nextTick(function() {
+					this.initChart();
+				}.bind(this));
+			},
+			beforeDestroy: function() {
+				// 销毁图表实例
+				if (this.chart) {
+					this.chart.dispose();
+					this.chart = null;
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

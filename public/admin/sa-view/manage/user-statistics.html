@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>作者管理和远程发布端用户管理</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="../../static/kj/upload-util.js"></script>
+	<style type="text/css">
+		.avatar-upload {
+			display: inline-block;
+			vertical-align: top;
+		}
+
+		.avatar-preview {
+			width: 80px;
+			height: 80px;
+			border-radius: 50%;
+			object-fit: cover;
+			cursor: pointer;
+			margin-right: 10px;
+			border: 1px solid #ddd;
+		}
+
+		.avatar-placeholder {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background-color: #f0f0f0;
+			display: inline-block;
+			text-align: center;
+			line-height: 50px;
+			color: #999;
+			font-size: 10px;
+			border: 1px solid #ddd;
+		}
+
+		.data-table .avatar-preview {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			object-fit: cover;
+			cursor: pointer;
+			border: 1px solid #ddd;
+		}
+
+		.page-manage-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.filter-section {
+			display: flex;
+			align-items: center;
+			margin-bottom: 15px;
+			flex-wrap: wrap;
+		}
+
+		.filter-section .search-input {
+			width: 200px;
+		}
+
+		.bulk-actions {
+			margin-bottom: 10px;
+		}
+
+		.data-table {
+			margin-bottom: 20px;
+		}
+
+		.page-box {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 20px;
+		}
+
+		.form-tip {
+			font-size: 12px;
+			color: #909399;
+			line-height: 1.4;
+			margin-top: 4px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'" v-loading="fetching"
+		element-loading-spinner="el-icon-loading">
+		<div class="c-panel">
+			<!-- 标题和新增按钮 -->
+			<div class="page-manage-header">
+				<div class="c-title">作者管理和远程发布端用户管理</div>
+			</div>
+
+			<!-- 筛选和搜索区域 -->
+			<div class="filter-section">
+				<el-input v-model="p.keyword" placeholder="请输入作者姓名" class="search-input" clearable
+					@keyup.enter.native="handleSearch"></el-input>
+			</div>
+
+			<!-- 批量操作 -->
+			<div class="bulk-actions">
+				<el-button type="danger" icon="el-icon-delete" @click="deleteByIds">批量删除</el-button>
+				<el-button type="primary" icon="el-icon-plus" @click="add()">新增</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="handleSearch">查询</el-button>
+			</div>
+
+			<!-- 数据列表 -->
+			<el-table class="data-table" ref="data-table" :data="dataList" size="small"
+				@selection-change="handleSelectionChange">
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="用户ID" prop="uid" width="80px" align="center"></el-table-column>
+				<el-table-column label="作者姓名" prop="name" width="120px" align="center"></el-table-column>
+				<el-table-column label="显示名称" prop="screenName" width="120px" align="center"></el-table-column>
+				<el-table-column label="邮箱" prop="mail" align="center"></el-table-column>
+				<el-table-column label="URL" prop="url" align="center" show-overflow-tooltip>
+					<template slot-scope="s">
+						<span v-if="s.row.url">{{ s.row.url }}</span>
+						<span v-else style="color: #999;">-</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="创建时间" width="160px" align="center">
+					<template slot-scope="s">
+						{{ formatTime(s.row.created) }}
+					</template>
+				</el-table-column>
+				<el-table-column label="最后登录" width="160px" align="center">
+					<template slot-scope="s">
+						<span v-if="s.row.logged && s.row.logged > 0">{{ formatTime(s.row.logged) }}</span>
+						<span v-else style="color: #999;">未登录</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" align="center" fixed="right">
+					<template slot-scope="s">
+						<el-button class="c-btn" type="primary" icon="el-icon-edit" @click="update(s.row)">修改</el-button>
+						<el-button class="c-btn" type="danger" icon="el-icon-delete" @click="del(s.row)">删除</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+
+			<!-- 分页 -->
+			<div class="page-box">
+				<el-pagination background layout="total, prev, pager, next, sizes, jumper" :current-page.sync="p.page"
+					:page-size.sync="p.limit" :total="dataCount" :page-sizes="[10, 20, 30, 40, 50, 100]" @current-change="f5()"
+					@size-change="f5()">
+				</el-pagination>
+			</div>
+		</div>
+
+		<!-- 添加/修改弹窗 -->
+		<el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="600px" @close="resetForm">
+			<el-form v-if="m" :model="m" label-width="120px">
+				<el-form-item label="作者姓名：" required>
+					<el-input v-model="m.name" placeholder="仅支持英文、数字、下划线，3-20位" maxlength="20"
+						@input="onAuthorNameInput"></el-input>
+					<div class="form-tip">不能包含中文，仅支持英文字母、数字、下划线</div>
+				</el-form-item>
+				<el-form-item label="显示名称：" required>
+					<el-input v-model="m.screenName" placeholder="请输入显示名称"></el-input>
+				</el-form-item>
+				<el-form-item :label="currentId > 0 ? '密码（留空不修改）：' : '密码：'" :required="currentId <= 0">
+					<el-input v-model="m.password" type="password" :placeholder="currentId > 0 ? '留空则不修改密码' : '请输入密码'"
+						:show-password="true"></el-input>
+				</el-form-item>
+				<el-form-item label="邮箱：" required>
+					<el-input v-model="m.mail" placeholder="请输入邮箱"></el-input>
+				</el-form-item>
+				<el-form-item label="URL：">
+					<el-input v-model="m.url" placeholder="请输入URL（可选）"></el-input>
+				</el-form-item>
+				<el-form-item label="SEO标题：">
+					<el-input v-model="m.seo_title" placeholder="请输入SEO标题（可选）"></el-input>
+				</el-form-item>
+				<el-form-item label="SEO关键词：">
+					<el-input v-model="m.seo_keywords" placeholder="请输入SEO关键词（可选）"></el-input>
+				</el-form-item>
+				<el-form-item label="SEO描述：">
+					<el-input v-model="m.seo_description" type="textarea" :rows="3" placeholder="请输入SEO描述（可选）"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取消</el-button>
+				<el-button type="primary" :loading="loading" @click="saveData">确定</el-button>
+			</div>
+		</el-dialog>
+	</div>
+	<script>
+		var app = new Vue({
+			components: {
+				"sa-item": httpVueLoader('../../sa-frame/com/sa-item.vue'),
+				"sa-td": httpVueLoader('../../sa-frame/com/sa-td.vue'),
+			},
+			el: '.vue-box',
+			data() {
+				return {
+					sa: sa,
+					selectedRows: [], // 选中的行
+					p: { // 查询参数  
+						keyword: '',		// 作者姓名搜索
+						page: 1,		// 页码
+						limit: 10,		// 每页数量
+					},
+					dataCount: 0,
+					dataList: [], // 数据集合 
+					dialogVisible: false,	// 弹窗显示状态
+					dialogTitle: '创建作者',	// 弹窗标题
+					m: null,	// 表单数据
+					currentId: 0,	// 当前编辑的ID
+					fetching: false,	// 加载状态
+					loading: false,	// 保存加载状态
+				}
+			},
+			methods: {
+				// 格式化时间戳
+				formatTime: function (timestamp) {
+					if (!timestamp || timestamp <= 0) {
+						return '-';
+					}
+					var date = new Date(timestamp * 1000);
+					var year = date.getFullYear();
+					var month = String(date.getMonth() + 1).padStart(2, '0');
+					var day = String(date.getDate()).padStart(2, '0');
+					var hours = String(date.getHours()).padStart(2, '0');
+					var minutes = String(date.getMinutes()).padStart(2, '0');
+					var seconds = String(date.getSeconds()).padStart(2, '0');
+					return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+				},
+				// 搜索时重置页码
+				handleSearch: function () {
+					this.p.page = 1;
+					this.f5();
+				},
+				// 选择变化
+				handleSelectionChange: function (selection) {
+					this.selectedRows = selection;
+				},
+				// 刷新
+				async f5() {
+					this.fetching = true;
+					try {
+						// 构建请求参数
+						var params = {
+							page: Number(this.p.page || 1),
+							limit: Number(this.p.limit || 10)
+						};
+
+						// 添加搜索关键词
+						if (this.p.keyword && this.p.keyword.trim()) {
+							params.keyword = String(this.p.keyword).trim();
+						}
+
+						const res = await sa.http({
+							url: 'users/authors',
+							data: params,
+							showError: false
+						});
+
+						var data = res && res.data ? res.data : {};
+						this.dataList = Array.isArray(data.list) ? data.list : [];
+						this.dataCount = Number(data.total || 0);
+
+						sa.f5TableHeight();		// 刷新表格高度 
+					} catch (error) {
+						console.error('获取数据失败：', error);
+						this.dataList = [];
+						this.dataCount = 0;
+						sa.f5TableHeight();
+						// 显示错误提示
+						try {
+							let errorMsg = '获取数据失败';
+							if (error.message) {
+								// 处理超时错误
+								if (error.message.includes('timeout')) {
+									errorMsg = '请求超时，请检查网络连接或稍后重试';
+								} else if (error.type === 'HTTP_ERROR') {
+									errorMsg = '网络请求失败：' + error.message;
+								} else {
+									errorMsg = '获取数据失败：' + error.message;
+								}
+							} else if (error.msg) {
+								errorMsg = error.msg;
+							}
+							ELEMENT.Message({
+								message: errorMsg,
+								type: 'error',
+								duration: 5000,
+								showClose: true
+							});
+						} catch (e) {
+							console.error('显示错误消息失败：', e);
+						}
+					} finally {
+						this.fetching = false;
+					}
+				},
+				// 创建一个 默认Model 
+				createModel: function () {
+					return {
+						uid: '',			// 用户ID（可选，修改时使用）
+						name: '',			// 作者姓名（必填）
+						screenName: '',		// 显示名称（必填）
+						password: '',		// 密码（必填）
+						mail: '',			// 邮箱（必填）
+						url: '',			// URL（可选）
+						seo_title: '',		// SEO标题（可选）
+						seo_keywords: '',	// SEO关键词（可选）
+						seo_description: '',	// SEO描述（可选）
+					}
+				},
+				// 修改
+				async update(data) {
+					this.currentId = data.uid || data.id;
+					this.dialogTitle = '修改作者';
+
+					// 创建默认模型，然后合并现有数据
+					this.m = this.createModel();
+
+					// 如果列表数据中有这些字段，则使用列表数据
+					if (data.name) this.m.name = data.name;
+					if (data.screenName) this.m.screenName = data.screenName;
+					if (data.mail) this.m.mail = data.mail;
+					if (data.url) this.m.url = data.url;
+					if (data.seo_title) this.m.seo_title = data.seo_title;
+					if (data.seo_keywords) this.m.seo_keywords = data.seo_keywords;
+					if (data.seo_description) this.m.seo_description = data.seo_description;
+
+					// 密码在修改时留空，不预填充
+					this.m.password = '';
+
+					this.dialogVisible = true;
+				},
+				// 新增
+				add: function (data) {
+					this.currentId = 0;
+					this.dialogTitle = '创建作者';
+					this.m = this.createModel();
+					this.dialogVisible = true;
+				},
+				// 作者姓名输入时仅保留英文、数字、下划线，限制 20 位
+				onAuthorNameInput: function () {
+					if (!this.m || this.m.name === undefined) return;
+					var val = String(this.m.name).replace(/[^a-zA-Z0-9_]/g, '');
+					if (val.length > 20) val = val.slice(0, 20);
+					this.m.name = val;
+				},
+				// 保存数据（使用 sa.http 与列表接口一致，保证 token 与响应格式统一）
+				async saveData() {
+					try {
+						sa.checkNull(this.m.name, '请输入作者姓名');
+						var nameRule = /^[a-zA-Z0-9_]{3,20}$/;
+						if (!nameRule.test(this.m.name.trim())) {
+							return sa.msg('作者姓名不能包含中文，仅支持3-20位英文字母、数字或下划线');
+						}
+						sa.checkNull(this.m.screenName, '请输入显示名称');
+						if (this.currentId <= 0) {
+							sa.checkNull(this.m.password, '请输入密码');
+						}
+						sa.checkNull(this.m.mail, '请输入邮箱');
+						var emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+						if (!emailReg.test(this.m.mail)) {
+							return sa.msg('请输入正确的邮箱格式');
+						}
+
+						this.loading = true;
+
+						var data = {
+							name: this.m.name,
+							screenName: this.m.screenName,
+							mail: this.m.mail,
+							url: this.m.url || '',
+							seo_title: this.m.seo_title || '',
+							seo_keywords: this.m.seo_keywords || '',
+							seo_description: this.m.seo_description || ''
+						};
+						if (this.currentId > 0) {
+							data.uid = this.currentId;
+						}
+						if (this.m.password && this.m.password.trim()) {
+							data.password = this.m.password;
+						} else if (this.currentId <= 0) {
+							return sa.msg('请输入密码');
+						}
+
+						const res = await sa.http({
+							url: 'users/saveAuthor',
+							data: data,
+							showError: false
+						});
+
+						sa.ok(res.msg || '保存成功');
+						this.dialogVisible = false;
+						this.f5();
+					} catch (error) {
+						console.error('保存失败：', error);
+						var errorMsg = '保存失败';
+						if (error.response && error.response.data && error.response.data.msg) {
+							errorMsg = error.response.data.msg;
+						} else if (error.message) {
+							errorMsg = error.message;
+						}
+						sa.error(errorMsg);
+					} finally {
+						this.loading = false;
+					}
+				},
+				// 重置表单
+				resetForm: function () {
+					this.m = null;
+					this.currentId = 0;
+				},
+				// 删除
+				async del(data) {
+					var self = this;
+					sa.confirm('是否删除？此操作不可撤销', async function () {
+						try {
+							await sa.http({
+								url: 'users/deleteAuthor',
+								data: { ids: [data.uid || data.id] },
+								showSuccess: true
+							});
+							self.f5();	// 重新查询接口刷新数据
+						} catch (error) {
+							console.error('删除失败：', error);
+						}
+					});
+				},
+				// 批量删除
+				async deleteByIds() {
+					if (this.selectedRows.length === 0) {
+						return sa.msg('请至少选择一条数据');
+					}
+					var ids = this.selectedRows.map(function (row) { return row.uid || row.id; });
+					var self = this;
+					sa.confirm('是否删除选中数据？此操作不可撤销', async function () {
+						try {
+							await sa.http({
+								url: 'users/deleteAuthor',
+								data: { ids: ids },
+								showSuccess: true
+							});
+							self.selectedRows = [];
+							self.f5(); // 重新查询接口刷新数据
+						} catch (error) {
+							console.error('批量删除失败：', error);
+						}
+					});
+				},
+			},
+			created: function () {
+				this.f5();
+				sa.onInputEnter();
+			}
+		})
+	</script>
+</body>
+
+</html>

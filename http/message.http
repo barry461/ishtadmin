@@ -1,0 +1,11 @@
+### 小视频的tab
+POST {{host}}/api/message/getUnreadCount
+Content-Type: application/json
+
+{
+  "env": "prod",
+  "oauth_id": "f8e09b777cf2274e",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>网站中转设置</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+    .c-panel .c-label {
+      width: 10em;
+    }
+
+    .c-panel .el-form .el-input {
+      width: 100%;
+    }
+
+    .file-type {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .area-select {
+      width: 50%;
+    }
+
+    .file-label {
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="vue-box" style="display: none;" :style="'display: block;'">
+    <!-- 参数栏 -->
+    <div class="c-panel">
+      <el-form v-loading="fetching" element-loading-spinner="el-icon-loading" class="sa-container-center"
+        label-position="top">
+
+        <!-- 中转页相关设置 -->
+        <el-form-item label="中转页名称">
+          <el-input class="w-full" v-model="state.zz_title"></el-input>
+          <p class="description">中转页名称.</p>
+        </el-form-item>
+
+        <el-form-item label="中转页展示域名">
+          <el-input class="w-full" type="textarea" :rows="5" v-model="state.zz_siteUrl"></el-input>
+          <p class="description">中转页展示域名.</p>
+        </el-form-item>
+
+        <el-form-item label="中转页描述">
+          <el-input class="w-full" type="textarea" :rows="5" v-model="state.zz_description"></el-input>
+          <p class="description">中转页描述</p>
+        </el-form-item>
+
+        <el-form-item label="中转页关键词">
+          <el-input class="w-full" type="textarea" :rows="5" v-model="state.zz_keywords"></el-input>
+          <p class="description">请以半角逗号 "," 分割多个关键字.</p>
+        </el-form-item>
+
+        <el-form-item label="中转页主线路域名">
+          <el-input class="w-full" v-model="state.zz_line"></el-input>
+          <p class="description">中转页主线路域名.</p>
+        </el-form-item>
+
+        <el-form-item label="中转页备用线路域名">
+          <el-input class="w-full" v-model="state.zz_backup_line"></el-input>
+          <p class="description">中转页备用线路域名.</p>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" :loading="loading" @click="onSubmit">保存设置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '.vue-box',
+      data() {
+        return {
+          // 和后台保持同一份结构，避免覆盖其它字段
+          state: {
+            // 站点设置（本页不展示，但需要带回去）
+            title: '',
+            siteUrl: '',
+            siteDes: '',
+            keywords: '',
+            description: '',
+            // 中转页设置（本页主要编辑这些）
+            zz_title: '',
+            zz_siteUrl: '',
+            zz_line: '',
+            zz_keywords: '',
+            zz_description: '',
+            zz_backup_line: '',
+          },
+          loading: false,
+          fetching: true
+        }
+      },
+      methods: {
+        normalizeState(data) {
+          const merged = {
+            ...this.state,
+            ...(data || {})
+          }
+          return {
+            ...merged,
+            description: merged.description || merged.siteDes || '',
+            siteDes: merged.siteDes || merged.description || ''
+          }
+        },
+        async fetchData() {
+          this.fetching = true
+          try {
+            const res = await sa.http({
+              url: 'setting/get'
+            })
+            this.state = this.normalizeState(res.data)
+          } catch (error) {
+          } finally {
+            this.fetching = false
+          }
+        },
+        async onSubmit() {
+          try {
+            this.loading = true
+            await sa.http({
+              url: 'setting/doSet',
+              data: this.state,
+              showSuccess: true
+            })
+          } catch (error) {
+          } finally {
+            this.loading = false
+          }
+        }
+      },
+      created() {
+        this.fetchData();
+      }
+    })
+  </script>
+
+</body>
+
+</html>

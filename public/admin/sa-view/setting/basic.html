@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>角色列表</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+    .c-panel .c-label {
+      width: 10em;
+    }
+
+    .c-panel .el-form .el-input {
+      width: 100%;
+    }
+
+    .file-type {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .area-select {
+      width: 50%;
+    }
+
+    .file-label {
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="vue-box" style="display: none;" :style="'display: block;'">
+    <!-- 参数栏 -->
+    <div class="c-panel">
+      <el-form v-loading="fetching" element-loading-spinner="el-icon-loading" class="sa-container-center"
+        label-position="top">
+
+        <el-form-item label="站点名称">
+          <el-input class="w-full" v-model="state.title"></el-input>
+          <p class="description">站点的名称将显示在网页的标题处.</p>
+        </el-form-item>
+
+        <el-form-item label="站点品牌">
+          <el-input class="w-full" v-model="state.brand" placeholder="用于 SEO 标题、页脚等展示"></el-input>
+          <p class="description">留空时将使用站点名称作为品牌展示.</p>
+        </el-form-item>
+
+        <el-form-item label="站点地址">
+          <el-input class="w-full" v-model="state.siteUrl"></el-input>
+          <p class="description">站点地址主要用于生成内容的永久链接.</p>
+        </el-form-item>
+
+        <el-form-item label="站点描述">
+          <el-input class="w-full" type="textarea" :rows="5" v-model="state.siteDes"></el-input>
+          <p class="description">站点描述将显示在网页代码的头部.</p>
+        </el-form-item>
+
+        <el-form-item label="站点关键词">
+          <el-input class="w-full" type="textarea" :rows="5" v-model="state.keywords"></el-input>
+          <p class="description">请以半角逗号 "," 分割多个关键字.</p>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" :loading="loading" @click="onSubmit">保存设置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var app = new Vue({
+      el: '.vue-box',
+      data() {
+        return {
+          state: {
+            title: '',
+            brand: '',
+            siteUrl: '',
+            siteDes: '',
+            keywords: '',
+            description: '',
+          },
+          loading: false,
+          fetching: true
+        }
+      },
+      methods: {
+		normalizeState(data) {
+		  const merged = {
+		    ...this.state,
+		    ...(data || {})
+		  }
+		  const siteDescription = merged.siteDes || merged.description || ''
+		  return {
+		    ...merged,
+		    siteDes: siteDescription,
+		    description: merged.description || siteDescription
+		  }
+		},
+        async fetchData() {
+          this.fetching = true
+          try {
+            const res = await sa.http({
+              url: 'setting/get'
+            })
+            this.state = this.normalizeState(res.data)
+          } catch (error) {
+
+          } finally {
+            this.fetching = false
+          }
+        },
+        async onSubmit() {
+          try {
+            this.loading = true
+            await sa.http({
+              url: 'setting/doSet',
+		      data: {
+		        ...this.state,
+		        description: this.state.siteDes,
+		        siteDes: this.state.siteDes
+		      },
+              showSuccess: true
+            })
+          } catch (error) {
+
+          } finally {
+            this.loading = false
+          }
+        }
+
+      },
+      created: function () {
+        this.fetchData();
+      }
+    })
+
+  </script>
+
+</body>
+
+</html>

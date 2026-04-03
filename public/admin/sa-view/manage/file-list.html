@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="/sa-frame/custom/json-view/index.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">名称：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">切片状态：</label>
+					<el-select v-model="params.slice_status" clearable>
+						<el-option label="未切片" :value="0"></el-option>
+						<el-option label="切片中" :value="1"></el-option>
+						<el-option label="成功" :value="2"></el-option>
+					</el-select>
+				</div>
+
+				<div class="c-item">
+					<label class="c-label">上传状态：</label>
+					<el-select v-model="params.upload_status" clearable>
+						<el-option label="未完成" :value="0"></el-option>
+						<el-option label="完成" :value="1"></el-option>
+					</el-select>
+				</div>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+				<el-button type="info" icon="el-icon-refresh" @click="resetTableData">重置</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table v-loading="fetching" class="data-table" ref="data-table" :data="dataList" size="small">
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="文件名" show-overflow-tooltip prop="name"></el-table-column>
+				<el-table-column label="上传者" prop="uploader_name"></el-table-column>
+				<el-table-column label="所属内容" show-overflow-tooltip prop="content_title"></el-table-column>
+				<el-table-column label="切片状态" prop="slice_status_str">
+					<template slot-scope="scope">
+						<el-tag :type="scope.row.slice_status === 2 ? 'success' : scope.row.slice_status === 1 ? 'primary' : 'info'"
+							class="status-tag">
+							{{ scope.row.slice_status_str}}
+						</el-tag>
+					</template>
+
+				</el-table-column>
+				<el-table-column label="上传状态" prop="upload_status_str">
+					<template slot-scope="scope">
+						<el-tag :type="scope.row.upload_status === 1 ? 'success' : 'info'" class="status-tag">
+							{{ scope.row.upload_status_str}}
+						</el-tag>
+					</template>
+				</el-table-column>
+
+				<el-table-column label="发布日期" prop="created_at"></el-table-column>
+
+			</el-table>
+			<!-- ------------- 分页 ------------- -->
+			<div class="page-box">
+				<el-pagination :key="dataCount" background layout="total, prev, pager, next, jumper"
+					:current-page.sync="pagination.page" :page-size.sync="pagination.limit" :total="dataCount"
+					@current-change="fetchTableData" @size-change="fetchTableData">
+				</el-pagination>
+			</div>
+
+		</div>
+
+	</div>
+	<script>
+		Vue.component('json-viewer', window['json-view'].default)
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				params: {
+					keyword: '',
+					upload_status: '',
+					slice_status: ''
+				},
+				context: '',
+			},
+			methods: {
+				resetTableParams() {
+					this.params = {
+						keyword: '',
+						upload_status: '',
+						slice_status: ''
+					}
+				},
+
+				async fetchList() {
+					this.fetching = true
+					try {
+						const res = await sa.http({
+							url: 'attachment/list',
+							data: {
+								...this.pagination,
+								...this.params
+							}
+						})
+
+						return res
+					} catch (error) {
+						return Promise.reject(error)
+					} finally {
+						this.fetching = false
+					}
+				},
+			},
+			created() {
+				sa.onInputEnter();
+			}
+		})
+	</script>
+
+</body>
+
+</html>

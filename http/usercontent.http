@@ -1,0 +1,57 @@
+### 发布用户的内容
+POST {{host}}/api/usercontents/create_update
+Content-Type: application/json
+
+{
+  "title": "这里是标题",
+  "body": "这里是内容",
+  "cover": "aaa",
+  "tags": "[]"
+}
+
+
+### 浏览markdown
+POST {{host}}/api/usercontents/preview
+Content-Type: application/json
+
+{
+  "title": "这里是标题",
+  "body": "*sasa*\n  sadasdas\n[hdasdjnaksdna](https://www.google.com/)\n# ads\n## dasdas\n### dasdas\n#### dadadas\n##### dasdasdas\n###### dasdasdas\n1. sadasda\n1. dsadasdas\n- sadasdasdas\ncode code\n> dasdasdada",
+  "tags": "[]"
+}
+
+
+### 提现规则
+POST {{host}}/api/withdraw/index
+Content-Type: application/json
+
+{
+}
+
+
+### 开始提现
+POST {{host}}/api/withdraw/create_withdraw_log
+Content-Type: application/json
+
+{
+  "amount": "要提现的金额"
+}
+
+
+
+### 提现列表
+POST {{host}}/api/withdraw/list_withdraw
+Content-Type: application/json
+
+{
+  "page": 1
+}
+
+
+### 受益日志
+POST {{host}}/api/user/list_income_log
+Content-Type: application/json
+
+{
+  "page": 1
+}

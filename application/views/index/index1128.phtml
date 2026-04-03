@@ -1,0 +1,257 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/assets-v2/css/style.css?v=5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="og:title" property="og:title" content="">
+    <meta name="og:site_name" property="og:site_name" content="">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="referrer" content="same-origin">
+    <link rel="stylesheet" href="/static/assets-v2/css/swiper-bundle.css">
+    <link rel="stylesheet" href="/static/assets-v2/css/swiper-bundle.min.css">
+    <link rel="Shortcut Icon" href="/favicon.png">
+    <link rel="Bookmark" href="/favicon.png">
+    <script src="/static/assets-v2/js/swiper-bundle.js"> </script>
+    <script src="/static/assets-v2/js/swiper-bundle.min.js"> </script>
+    <script src="/static/assets-v2/js/swiper-bundle.min.js.map"> </script>
+    <script type="text/javascript" src="/static/assets-v2/js/jquery-3.6.4.min.js"></script>
+    <script src="/static/assets-v2/js/jquery.qrcode.js"></script>
+    <script src="/static/assets-v2/js/clipboard.min.js"></script>
+    <script src="/static/zzz.js?v=1"></script>
+    <script>
+        const dataMap = {
+            copyText: "<?php echo $share ?>",
+            businessLink: "<?php echo $tg_sw; ?>",
+            tgLink: "<?php echo $tg_group; ?>",
+            iosLink: "<?php echo $pwa_url2; ?>",
+            androidLink: "<?php echo $android ? $android->apk : '/'; ?>",
+            macLink: "<?php echo $mac_download ? $mac_download->apk : '/'; ?>",
+            webAppLink: "<?php echo $web_app_url; ?>",
+            windowsLink: "<?php echo $windows_download ? $windows_download->apk : '/'; ?>",
+            app_center_url: "<?php echo $app_center_url; ?>",
+            webLink: "<?php echo $web_url; ?>",
+            preventLostLink1: "<?php echo $prevent_lost1_url; ?>",
+            preventLostLink2: "<?php echo $prevent_lost2_url; ?>",
+            androidBkLink: "<?php echo $and_down_bk_url; ?>",
+            iosBkLink: "<?php echo $ios_down_bk_url; ?>",
+            addressURL: "<?php echo $luodiye_guanwang_url; ?>",
+            androidLink64: "<?php echo $android64; ?>",
+        };
+    </script>
+    <script type="text/javascript" src="/static/assets-v2/js/index.js?v=3"></script>
+    <link rel="stylesheet" href="/static/assets-v2/css/layui.css" media="all">
+    <script src="/static/assets-v2/js/layui.js"></script>
+    
+</head>
+
+<body class="body">
+    <div id="loyoutId" class="layout">
+        <!-- 标题logo模块 -->
+        <div class="top">
+            <div class="top-btn">
+                <img src="/static/assets-v2/images/new/logo.png" class="logo-header">
+                <div class="btn-list">
+                    <div class="btnimg" onclick="onClick(0)">
+                        <img class="icon-img" src="/static/assets-v2/images/new/m-1.png">
+                    </div>
+                    <div class="btnimg" onclick="onClick(1)">
+                        <img class="icon-img" src="/static/assets-v2/images/new/m-2.png">
+                    </div>
+                    <div class="btnimg" onclick="onClick(2)">
+                        <img class="icon-img" src="/static/assets-v2/images/new/m-3.png">
+                    </div>
+                </div>
+            </div>
+            <img src="/static/assets-v2/images/new/t-1.png" class="title-img">
+            <!-- 轮播模块 -->
+            <div class="swiper">
+                <div class="swiper-container swiper-initialized swiper-vertical swiper-pointer-events swiper-backface-hidden"
+                    id="swiperId">
+                    <div class="swiper-wrapper" id="swiper-wrapper-1cde5e103f61d531c" aria-live="off"
+                        style="transform: translate3d(0px, -1278px, 0px); transition-duration: 0ms;">
+                        <?php foreach ($rotates as $key => $value) : ?>
+                            <div class="swiper-slide">
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIABAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAICTAEAOw==" class="reload" data-url="<?php echo $value['img_url'] ?>" alt="525X942">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- <div class='swiper-pagination'>
+    </div> -->
+
+        <!-- 底部按钮交互模块 -->
+        <div class="bottom">
+            <!-- 下载 -->
+            <div class="download">
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('android')">
+                    <img src="/static/assets-v2/images/new/app-1.png">
+                </div>
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('ios')">
+                    <img src="/static/assets-v2/images/new/app-2.png">
+                </div>
+            </div>
+            <div class="download">
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('window')">
+                    <img src="/static/assets-v2/images/new/app-3.png">
+                </div>
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('macOS')">
+                    <img src="/static/assets-v2/images/new/app-4.png">
+                </div>
+            </div>
+<!--            <div class="download android_64">-->
+<!--                <div class="downitem" data-clipboard-text="--><?php //echo $share ?><!--" onclick="onDownload('android_64')">-->
+<!--                    <img src="/static/assets-v2/images/new/app-5.png">-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+
+        <!-- 获取地址弹框模块 -->
+        <div id="addressId" class="mask" onclick="onHideAddress()">
+            <div class="address">
+                <div class="addresstitle">
+                    <img src="/static/assets-v2/images/new/title.png" class="">
+                </div>
+                <div class="address-item" onclick="onAddress('address')">
+                    <img src="/static/assets-v2/images/new/i-1.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('group')">
+                    <img src="/static/assets-v2/images/new/i-2.png" class="but-imgg">
+                </div>
+
+
+                <div class="address-item" onclick="onAddress('question')">
+                    <img src="/static/assets-v2/images/new/i-3.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('welfare')">
+                    <img src="/static/assets-v2/images/new/i-4.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('lost1')">
+                    <img src="/static/assets-v2/images/new/i-5.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('lost2')">
+                    <img src="/static/assets-v2/images/new/i-6.png" class="but-imgg">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 安装app解决方案模块 -->
+        <div id="solutionId" class="solution">
+            <div class="top-bg">
+                <div class="backicon">
+                    <img onclick="onBack('solution')" class="back" src="/static/assets-v2/images/new/back.png">
+                </div>
+                <div class="">
+                    <img class="logo" src="/static/assets-v2/images/new/logo.png">
+                </div>
+            </div>
+            <div class="setting-bg">
+                <div class="txt">
+                    <img class="" src="/static/assets-v2/images/new/s-t.png">
+                </div>
+                <div class="set-item" onclick="onSetting('huawei')">
+                    <img class="" src="/static/assets-v2/images/new/k-1.png">
+                </div>
+                <div class="set-item" onclick="onSetting('vivo')">
+                    <img class="" src="/static/assets-v2/images/new/k-2.png">
+                </div>
+                <div class="set-item" onclick="onSetting('meizu')">
+                    <img class="" src="/static/assets-v2/images/new/k-3.png">
+                </div>
+                <div class="set-item" onclick="onSetting('oppo')">
+                    <img class="" src="/static/assets-v2/images/new/k-4.png">
+                </div>
+                <div class="set-item" onclick="onSetting('xiaomi')">
+                    <img class="" src="/static/assets-v2/images/new/k-5.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- 安装教程模块 -->
+        <div id="tutorialId" class="tutorial">
+            <div class="nav">
+                <img src="/static/assets-v2/images/new/bk.png" onclick="onBack('tutorial')">
+                <p id="navId"></p>
+                <p></p>
+            </div>
+            <img id="tutorialImgId" src="/static/assets-v2/images/new/huawei.jpeg">
+        </div>
+
+        <!-- 下载模块 -->
+        <div id="downloadId" class="download-bg" style="display: none;">
+
+            <div class="top-bg">
+                <div class="backicon">
+                    <img onclick="onBack('download')" class="back" src="/static/assets-v2/images/new/back.png">
+                </div>
+                <div class="logo">
+                    <img class="logo-img" src="/static/assets-v2/images/new/l-1.png">
+                </div>
+                <div class="platformname">
+                    <img id="platformname" src="/static/assets-v2/images/new/back.png">
+                </div>
+                <div id="pgxiazai" onclick="pgxiazai()" class="dl">
+                    <img src="/static/assets-v2/images/new/l-3.png">
+                </div>
+            </div>
+            
+            <img id="platformimg" style="position: relative; top: -20px; height: 732px;" src="/static/assets-v2/images/new/back.png"> 
+            <div id="downandriod" class="downandriod" style="display: block;" onclick="toTutorial()"></div>
+            <div class="andxiazai">
+                <div id="andxiazai" onclick="pgxiazai()" class="btn-1">
+                    <img src="/static/assets-v2/images/new/btn.png">
+                </div>
+
+                <div onclick="onAlternateDownload()" class="btn-1">
+                    <img src="/static/assets-v2/images/new/btn-1.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- 常见问题 -->
+        <div id="questionId" class="question">
+            <div class="nav">
+                <img src="/static/assets-v2/images/new/bk.png" onclick="onBack('question')">
+                <p>常见问题</p>
+                <p></p>
+            </div>
+            <div class="question-list">
+                <?php foreach ($user_help as $key => $value) : ?>
+                    <div class="question-list-item">
+                        <div class="question-list-item-title" onclick="onClickQuestion(<?php echo $key + 1 ?>)">
+                            <p><?php echo $value['question'] ?></p>
+                            <img id="arrowId<?php echo $key + 1 ?>" src="/static/assets-v1/arrow.png" />
+                        </div>
+                        <div id="question<?php echo $key + 1 ?>" class="question-list-item-title-content"><pre><?php echo $value['answer'] ?></pre></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div id="modelId" class="model">
+            <p id="tipsId">成功</p>
+        </div>
+    </div>
+
+    <script> new ClipboardJS('.body');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YFMJ6B4NV1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-YFMJ6B4NV1');
+    </script>
+
+</body>
+
+</html>

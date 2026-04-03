@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>网站外观</title>
+	<script src="../../static/common-head.js"></script>
+	<!-- 与其他后台页面保持一致，使用本地 layer.js，避免外链加载失败导致 layer 未定义 --><style>
+		html,
+		body {
+			background: #f5f5f5;
+			color: #333;
+			margin: 0;
+			padding: 0;
+			font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+		}
+
+		.page-wrap {
+			max-width: 1180px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+
+		.page-title {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 20px;
+		}
+
+		.tab-content-box {
+			background: #fff;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			padding: 20px;
+			margin-top: 10px;
+			min-height: 500px;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+		}
+
+		.tab-content-box.has-fixed-btn {
+			padding-bottom: 80px;
+		}
+
+		/* 图1 - 表格布局样式（截图 + 详情） */
+		.theme-table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+
+		.theme-table thead th {
+			text-align: left;
+			padding: 8px 12px;
+			color: #666;
+			font-weight: 500;
+			border-bottom: 1px solid #eee;
+		}
+
+		.theme-table tbody td {
+			vertical-align: top;
+			padding: 16px 12px;
+		}
+
+		.theme-table .shot-cell {
+			width: 380px;
+		}
+
+		.shot-box {
+			width: 330px;
+			height: 215px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			background: #f9f9f9;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #999;
+			font-size: 12px;
+		}
+
+		.detail-cell {
+			background: #fff;
+			border-radius: 4px;
+		}
+
+		.detail-inner {
+			padding: 12px 16px;
+		}
+
+		.detail-title {
+			font-size: 16px;
+			font-weight: 600;
+			margin-bottom: 6px;
+		}
+
+		.detail-meta {
+			font-size: 12px;
+			color: #999;
+			margin-bottom: 8px;
+		}
+
+		.detail-desc {
+			font-size: 13px;
+			color: #666;
+		}
+
+		.detail-actions a {
+			color: #409EFF;
+			margin-right: 12px;
+			cursor: pointer;
+			font-size: 13px;
+		}
+
+		.theme-table tbody tr.selected .detail-cell {
+			background: #fff7e6;
+			border-color: #faecd8;
+		}
+
+		/* 动态表单样式 */
+		.nav-form-list {
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			background: #fff;
+			padding: 12px;
+		}
+
+		.nav-form-item {
+			display: flex;
+			align-items: flex-end;
+			gap: 8px;
+			padding: 10px;
+			margin-bottom: 8px;
+			background: #f9f9f9;
+			border-radius: 4px;
+			border: 1px solid #eee;
+		}
+
+		.nav-form-item:last-child {
+			margin-bottom: 0;
+		}
+
+		.nav-form-item .nav-field {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.nav-form-item .nav-field input,
+		.nav-form-item .nav-field select {
+			width: 100%;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 13px;
+			box-sizing: border-box;
+		}
+
+		.nav-form-item .nav-field-label {
+			font-size: 12px;
+			color: #666;
+			margin-bottom: 4px;
+		}
+
+		.nav-form-item .nav-field-small {
+			width: 120px;
+			flex: 0 0 120px;
+		}
+
+		.nav-form-item .nav-field-medium {
+			width: 180px;
+			flex: 0 0 180px;
+		}
+
+		.nav-form-item .nav-field-large {
+			width: 250px;
+			flex: 0 0 250px;
+		}
+
+		.nav-form-item .nav-btn-remove {
+			padding: 6px 16px;
+			border: 1px solid #f56c6c;
+			background: #fff;
+			color: #f56c6c;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+			flex: 0 0 auto;
+		}
+
+		.nav-form-item .nav-btn-remove:hover {
+			background: #fef0f0;
+		}
+
+		.nav-btn-add {
+			margin-top: 12px;
+			padding: 8px 16px;
+			border: 1px dashed #409EFF;
+			background: #fff;
+			color: #409EFF;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 13px;
+		}
+
+		.nav-btn-add:hover {
+			background: #ecf5ff;
+		}
+
+		/* 图2 - 编辑器+文件列表 */
+		.editor-layout {
+			display: flex;
+			gap: 20px;
+			height: 450px;
+		}
+
+		.editor-side {
+			flex: 1;
+		}
+
+		.file-list-side {
+			width: 250px;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			background: #fafafa;
+		}
+
+		.code-editor {
+			width: 100%;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			font-family: 'Consolas', 'Monaco', monospace;
+			font-size: 13px;
+			line-height: 1.5;
+			padding: 12px;
+			background: #fff;
+			height: 100%;
+			resize: none;
+		}
+
+		.file-list-header {
+			padding: 12px;
+			border-bottom: 1px solid #e5e5e5;
+			font-weight: 600;
+			background: #f5f5f5;
+		}
+
+		.file-item {
+			padding: 8px 12px;
+			border-bottom: 1px solid #eee;
+			cursor: pointer;
+			font-size: 13px;
+		}
+
+		.file-item:hover {
+			background: #e8f4fd;
+		}
+
+		.file-item.active {
+			background: #409EFF;
+			color: #fff;
+		}
+
+		/* 图3 - 设置表单 */
+		.settings-form {
+			max-width: 100%;
+		}
+
+		.setting-row {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			margin-bottom: 12px;
+		}
+
+		.setting-label {
+			width: 140px;
+			color: #666;
+		}
+
+		.setting-help {
+			color: #999;
+			font-size: 12px;
+			margin-top: 6px;
+		}
+
+		.setting-input {
+			flex: 1;
+		}
+
+		.setting-textarea {
+			width: 100%;
+			min-height: 110px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 8px 10px;
+			font-size: 13px;
+		}
+
+		.setting-input input {
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 13px;
+		}
+
+		.setting-input select {
+			width: 160px;
+			padding: 6px 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 13px;
+		}
+
+		.fixed-bottom-btn {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: #fff;
+			border-top: 1px solid #e5e5e5;
+			padding: 16px 0;
+			text-align: center;
+			z-index: 999;
+		}
+
+		.save-btn {
+			background: #9966cc;
+			color: #fff;
+			border: none;
+			padding: 12px 60px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+		}
+
+		.save-btn:hover {
+			background: #8855bb;
+		}
+
+		/* 预览图片样式 */
+		.img-preview {
+			margin-top: 6px;
+			width: 160px;
+			height: auto;
+			border: 1px solid #e5e5e5;
+			border-radius: 4px;
+			background: #fafafa;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="page-wrap">
+		<div class="page-title">网站外观</div>
+
+		<el-tabs v-model="activeTab">
+			<el-tab-pane label="设置外观" name="tab3">
+				<div class="tab-content-box">
+					<el-collapse v-model="activeSetting" accordion>
+
+						<el-collapse-item title="网站主题" name="sec3_5">
+							<div class="settings-form">
+								<div class="setting-row">
+									<div class="setting-label">网站logo：</div>
+									<img v-if="logo_url" :src="logo_url" class="img-preview" alt="网站logo预览"
+										@error="onImageError('logo_url')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.logoUploader.click()">点击上传</button>
+										<input ref="logoUploader" type="file" accept="image/*" style="display:none"
+											@change="handleImageUpload($event, 'logo_url')">
+										<div class="setting-help">上传网站logo图片</div>
+									</div>
+								</div>
+								<div class="setting-row">
+									<div class="setting-label">主站占位图：</div>
+									<img v-if="img_zwimg" :src="img_zwimg" class="img-preview" alt="主站占位图预览"
+										@error="onImageError('img_zwimg')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.imgZwimgUploader.click()">点击上传</button>
+										<input ref="imgZwimgUploader" type="file" accept="image/*" style="display:none"
+											@change="handleImageUpload($event, 'img_zwimg')">
+										<div class="setting-help">上传主站占位图片</div>
+									</div>
+								</div>
+								<div class="setting-row">
+									<div class="setting-label">中转logo：</div>
+									<img v-if="zz_logo" :src="zz_logo" class="img-preview" alt="中转logo预览"
+										@error="onImageError('zz_logo')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.zzLogoUploader.click()">点击上传</button>
+										<input ref="zzLogoUploader" type="file" accept="image/*" style="display:none"
+											@change="handleImageUpload($event, 'zz_logo')">
+										<div class="setting-help">上传中转logo图片</div>
+									</div>
+								</div>
+								<div class="setting-row">
+									<div class="setting-label">中转占位图：</div>
+									<img v-if="zz_zwimg" :src="zz_zwimg" class="img-preview" alt="中转占位图预览"
+										@error="onImageError('zz_zwimg')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.zzZwimgUploader.click()">点击上传</button>
+										<input ref="zzZwimgUploader" type="file" accept="image/*" style="display:none"
+											@change="handleImageUpload($event, 'zz_zwimg')">
+										<div class="setting-help">上传中转占位图片</div>
+									</div>
+								</div>
+								<div class="setting-row">
+									<div class="setting-label">网站图标(ico)：</div>
+									<img v-if="favicon_icon" :src="favicon_icon" class="img-preview" alt="网站图标预览"
+										@error="onImageError('favicon_icon')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.faviconUploader.click()">点击上传</button>
+										<input ref="faviconUploader" type="file" accept="image/*,.ico" style="display:none"
+											@change="handleImageUpload($event, 'favicon_icon')">
+										<div class="setting-help">上传网站favicon图标，建议使用.ico格式</div>
+									</div>
+								</div>
+								<div class="setting-row">
+									<div class="setting-label">网站评论头像：</div>
+									<img v-if="comment_avatar" :src="comment_avatar" class="img-preview" alt="评论头像预览"
+										@error="onImageError('comment_avatar')">
+									<span v-else class="img-placeholder">未上传</span>
+									<div class="setting-input">
+										<button class="save-btn" style="padding: 10px 26px;"
+											@click="$refs.commentAvatarUploader.click()">点击上传</button>
+										<input ref="commentAvatarUploader" type="file" accept="image/*" style="display:none"
+											@change="handleImageUpload($event, 'comment_avatar')">
+										<div class="setting-help">未配置时前台/后台评论显示默认头像；配置后统一显示此头像</div>
+									</div>
+								</div>
+								<div class="setting-row" style="margin-top: 20px; text-align: center;">
+									<button class="save-btn" @click="saveThemeImages">保存主题图片设置</button>
+								</div>
+							</div>
+						</el-collapse-item>
+
+						<!-- 导航设置 -->
+						<el-collapse-item title="导航设置" name="sec3_6">
+							<div class="settings-form">
+								<div class="setting-row">
+									<div class="setting-label">导航限制数量：</div>
+									<div class="setting-input">
+										<input type="text" v-model="max_navbar_menu_num" placeholder="例如：25">
+										<div class="setting-help">此项为头部显示最多的分类导航的最大数量</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">顶部图标导航：</div>
+									<div class="setting-input">
+										<div class="nav-form-list">
+											<div class="nav-form-item" v-for="(item, index) in headNavList" :key="index">
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">键名</div>
+													<input type="text" v-model="item.key" placeholder="例如：telegram">
+												</div>
+												<div class="nav-field">
+													<div class="nav-field-label">值</div>
+													<input type="text" v-model="item.value" placeholder="例如：https://t.me/liaohuwang 或 hide">
+												</div>
+												<button class="nav-btn-remove" @click="removeHeadNavItem(index)">删除</button>
+											</div>
+											<button class="nav-btn-add" @click="addHeadNavItem">+ 添加一项</button>
+										</div>
+										<div class="setting-help">键值对格式，每行一项</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">底部导航图标：</div>
+									<div class="setting-input">
+										<div class="nav-form-list">
+											<div class="nav-form-item" v-for="(item, index) in footMenuList" :key="index"
+												style="flex-wrap: wrap;">
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">名称</div>
+													<input type="text" v-model="item.name" placeholder="例如：吃瓜首页">
+												</div>
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">链接</div>
+													<input type="text" v-model="item.link" placeholder="例如：/">
+												</div>
+												<div class="nav-field nav-field-small">
+													<div class="nav-field-label">target</div>
+													<select v-model="item.target">
+														<option value="_self">_self</option>
+														<option value="_blank">_blank</option>
+													</select>
+												</div>
+												<div class="nav-field nav-field-large">
+													<div class="nav-field-label">图标1</div>
+													<input type="text" v-model="item.icon" placeholder="例如：/upload/xxx.png">
+												</div>
+												<div class="nav-field nav-field-large">
+													<div class="nav-field-label">图标2</div>
+													<input type="text" v-model="item.icon2" placeholder="例如：/upload/xxx.png">
+												</div>
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">class</div>
+													<input type="text" v-model="item.class" placeholder="例如：fa fa-home">
+												</div>
+												<button class="nav-btn-remove" @click="removeFootMenuItem(index)">删除</button>
+											</div>
+											<button class="nav-btn-add" @click="addFootMenuItem">+ 添加一项</button>
+										</div>
+										<div class="setting-help">支持JSON结构，包含name/icon/icon2/link等字段</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">底部导航：</div>
+									<div class="setting-input">
+										<div class="nav-form-list">
+											<div class="nav-form-item" v-for="(item, index) in footLinkList" :key="index">
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">名称</div>
+													<input type="text" v-model="item.name" placeholder="例如：商务合作">
+												</div>
+												<div class="nav-field">
+													<div class="nav-field-label">链接</div>
+													<input type="text" v-model="item.link" placeholder="例如：https://t.me/chigua911VIP">
+												</div>
+												<div class="nav-field nav-field-small">
+													<div class="nav-field-label">target</div>
+													<select v-model="item.target">
+														<option value="_self">_self</option>
+														<option value="_blank">_blank</option>
+													</select>
+												</div>
+												<button class="nav-btn-remove" @click="removeFootLinkItem(index)">删除</button>
+											</div>
+											<button class="nav-btn-add" @click="addFootLinkItem">+ 添加一项</button>
+										</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">底部联系导航：</div>
+									<div class="setting-input">
+										<div class="nav-form-list">
+											<div class="nav-form-item" v-for="(item, index) in contactLinkList" :key="index"
+												style="flex-wrap: wrap;">
+												<div class="nav-field nav-field-medium">
+													<div class="nav-field-label">名称</div>
+													<input type="text" v-model="item.name" placeholder="例如：telegram">
+												</div>
+												<div class="nav-field">
+													<div class="nav-field-label">链接</div>
+													<input type="text" v-model="item.link" placeholder="例如：/telegram.html">
+												</div>
+												<div class="nav-field nav-field-small">
+													<div class="nav-field-label">target</div>
+													<select v-model="item.target">
+														<option value="_self">_self</option>
+														<option value="_blank">_blank</option>
+													</select>
+												</div>
+												<div class="nav-field nav-field-large">
+													<div class="nav-field-label">图标1</div>
+													<input type="text" v-model="item.icon" placeholder="例如：/upload/xxx.png">
+												</div>
+												<div class="nav-field nav-field-large">
+													<div class="nav-field-label">图标2</div>
+													<input type="text" v-model="item.icon2" placeholder="例如：/upload/xxx.png">
+												</div>
+												<button class="nav-btn-remove" @click="removeContactLinkItem(index)">删除</button>
+											</div>
+											<button class="nav-btn-add" @click="addContactLinkItem">+ 添加一项</button>
+										</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">底部描述：</div>
+									<div class="setting-input">
+										<textarea class="setting-textarea" v-model="foot_desc" placeholder="可填写多行文本描述"></textarea>
+									</div>
+								</div>
+
+								<div class="setting-row" style="margin-top: 20px; text-align: center;">
+									<button class="save-btn" @click="saveNavSettings">保存导航设置</button>
+								</div>
+							</div>
+						</el-collapse-item>
+
+						<!-- 公共页面设置 -->
+						<el-collapse-item title="公共页面设置" name="sec3_7">
+							<div class="settings-form">
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">首页底部内容：</div>
+									<div class="setting-input">
+										<textarea class="setting-textarea" v-model="foot_desc" placeholder="支持HTML"></textarea>
+										<div class="setting-help">支持HTML，渲染在首页底部</div>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">分享文案域名：</div>
+									<div class="setting-input">
+										<input type="text" v-model="share_domian" placeholder="例如：https://example.com">
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">文章顶部追加：</div>
+									<div class="setting-input">
+										<textarea class="setting-textarea" v-model="before_append"
+											placeholder="文章详情页顶部追加内容，支持HTML"></textarea>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">文章底部追加：</div>
+									<div class="setting-input">
+										<textarea class="setting-textarea" v-model="article_bottom_content"
+											placeholder="文章详情页底部追加内容，支持HTML"></textarea>
+									</div>
+								</div>
+
+								<div class="setting-row" style="align-items: flex-start;">
+									<div class="setting-label">内容后追加：</div>
+									<div class="setting-input">
+										<textarea class="setting-textarea" v-model="content_after" placeholder="content_after"></textarea>
+									</div>
+								</div>
+
+								<div class="setting-row" style="margin-top: 20px; text-align: center;">
+									<button class="save-btn" @click="savePageSettings">保存公共页面设置</button>
+								</div>
+							</div>
+						</el-collapse-item>
+
+					</el-collapse>
+				</div>
+			</el-tab-pane>
+		</el-tabs>
+	</div>
+
+	<!--	<div class="fixed-bottom-btn">-->
+	<!--		<button class="save-btn">保存设置</button>-->
+	<!--	</div>-->
+
+	<script>
+		new Vue({
+			el: '#app',
+			data() {
+				return {
+					activeTab: 'tab3',
+					activeSetting: 'sec1',
+					logo_url: '',
+					img_zwimg: '',
+					zz_logo: '',
+					zz_zwimg: '',
+					favicon_icon: '',
+					comment_avatar: '',
+					max_navbar_menu_num: '',
+					head_nav: '',
+					foot_menu: '',
+					foot_link: '',
+					contact_link: '',
+					foot_desc: '',
+					share_domian: '',
+					before_append: '',
+					article_bottom_content: '',
+					content_after: '',
+					// 动态表单数据
+					headNavList: [],
+					footMenuList: [],
+					footLinkList: [],
+					contactLinkList: []
+				}
+			},
+			created() {
+				this.loadThemeImages();
+				this.loadNavSettings();
+				this.loadPageSettings();
+			},
+			methods: {
+				// 图片加载失败兜底：清空字段，显示“未上传”
+				onImageError(field) {
+					if (this.hasOwnProperty(field)) {
+						this[field] = '';
+					}
+				},
+				async loadThemeImages() {
+					try {
+						const res = await sa.http({
+							url: '/theme/getImages',
+							method: 'post'
+						});
+						if (res.data) {
+							this.img_zwimg = res.data.img_zwimg.url || res.data.img_zwimg.src
+							this.logo_url = res.data.logo_url.url || res.data.logo_url.src
+							this.zz_logo = res.data.zz_logo.url || res.data.zz_logo.src
+							this.zz_zwimg = res.data.zz_zwimg.url || res.data.zz_zwimg.src
+							this.favicon_icon = res.data.favicon_icon?.url || res.data.favicon_icon?.src || ''
+							this.comment_avatar = res.data.comment_avatar?.url || res.data.comment_avatar?.src || ''
+						}
+					} catch (err) {
+						console.error('theme/getImages error:', err);
+					}
+				},
+
+				formatImg(url) {
+					if (!url) return '';
+					// 前缀处理：如果不是以http开头，则加上站点前缀
+					return /^https?:\/\//i.test(url) ? url : ('https://pic.rdiejt.cn/' + url.replace(/^\/+/, ''));
+				},
+
+				async handleImageUpload(event, imageType) {
+					const file = event && event.target && event.target.files ? event.target.files[0] : null;
+					if (!file) return;
+
+					const formData = new FormData();
+					formData.append('file', file);
+					formData.append('debug', 'fasdf4ed@1`!');
+
+					try {
+						const res = await sa.http({
+							url: '/upload/uploadLocal',
+							method: 'post',
+							data: formData
+						});
+
+						const responseData = res.data || res;
+
+						if (responseData) {
+							const uploadedUrl = responseData.src || '';
+
+							if (uploadedUrl) {
+								this[imageType] = uploadedUrl;
+								sa.ok(`上传成功！URL: ${uploadedUrl}`);
+							} else {
+								sa.ok((responseData.msg || '上传成功') + ' - ' + imageType);
+							}
+						} else {
+							const errorMsg = (responseData && responseData.msg) || '上传失败';
+							sa.error(errorMsg + ' - ' + imageType);
+						}
+					} catch (err) {
+						console.error('uploadLocal error for', imageType, ':', err);
+						sa.error('上传失败，请稍后再试 - ' + imageType);
+					} finally {
+						if (event && event.target) {
+							event.target.value = '';
+						}
+					}
+				},
+
+				async saveThemeImages() {
+					try {
+						const payload = {
+							logo_url: this.logo_url,
+							img_zwimg: this.img_zwimg,
+							zz_logo: this.zz_logo,
+							zz_zwimg: this.zz_zwimg,
+							favicon_icon: this.favicon_icon,
+							comment_avatar: this.comment_avatar
+						};
+
+						const res = await sa.http({
+							url: '/theme/saveImages',
+							method: 'post',
+							data: payload
+						});
+						const data = res && res.data ? res.data : res;
+						sa.ok(data && data.msg ? data.msg : '保存成功');
+					} catch (err) {
+						console.error('saveThemeImages error:', err && err.response ? err.response : err);
+						try {
+							const msg = err && err.response && err.response.data && err.response.data.msg
+								? err.response.data.msg
+								: '保存失败，请稍后再试';
+							sa.error(msg);
+						} catch (e) {
+							alert('保存失败，请稍后再试');
+						}
+					}
+				},
+
+				// 导航查询
+				async loadNavSettings() {
+					try {
+						const res = await sa.http({
+							url: '/pageset/getNav',
+							method: 'post'
+						});
+						const data = res && res.data ? res.data : res;
+						this.max_navbar_menu_num = (data && data.max_navbar_menu_num) || this.max_navbar_menu_num || '';
+						this.head_nav = (data && data.head_nav) || this.head_nav || '';
+						this.foot_menu = (data && data.foot_menu) || this.foot_menu || '';
+						this.foot_link = (data && data.foot_link) || this.foot_link || '';
+						this.contact_link = (data && data.contact_link) || this.contact_link || '';
+						this.foot_desc = (data && data.foot_desc) || this.foot_desc || '';
+
+						// 解析数据到动态表单
+						this.parseHeadNav();
+						this.parseFootMenu();
+						this.parseFootLink();
+						this.parseContactLink();
+					} catch (err) {
+						console.error('loadNavSettings error:', err);
+					}
+				},
+
+				// 解析顶部图标导航（键值对格式）
+				parseHeadNav() {
+					if (!this.head_nav || !this.head_nav.trim()) {
+						this.headNavList = [];
+						return;
+					}
+					const lines = this.head_nav.split('\n').filter(line => line.trim());
+					this.headNavList = lines.map(line => {
+						const parts = line.split(':').map(s => s.trim());
+						return {
+							key: parts[0] || '',
+							value: parts.slice(1).join(':') || ''
+						};
+					});
+					if (this.headNavList.length === 0) {
+						this.headNavList = [{ key: '', value: '' }];
+					}
+				},
+
+				// 解析底部导航图标（JSON数组）
+				parseFootMenu() {
+					if (!this.foot_menu || !this.foot_menu.trim()) {
+						this.footMenuList = [{ name: '', link: '', target: '_self', icon: '', icon2: '', class: '' }];
+						return;
+					}
+					try {
+						// 清理可能的格式问题
+						let cleaned = this.foot_menu.trim();
+						// 如果字符串以 ] 开头或结尾，可能是格式问题，尝试修复
+						if (cleaned.startsWith(']') || cleaned.endsWith(']')) {
+							cleaned = cleaned.replace(/^[\s\]]+/, '').replace(/[\s\]]+$/, '');
+							if (!cleaned.startsWith('[')) {
+								cleaned = '[' + cleaned;
+							}
+							if (!cleaned.endsWith(']')) {
+								cleaned = cleaned + ']';
+							}
+						}
+						// 如果看起来像数组但格式不对，尝试修复
+						if (!cleaned.startsWith('[')) {
+							cleaned = '[' + cleaned;
+						}
+						if (!cleaned.endsWith(']')) {
+							cleaned = cleaned + ']';
+						}
+
+						const parsed = JSON.parse(cleaned);
+						if (Array.isArray(parsed)) {
+							this.footMenuList = parsed.map(item => ({
+								name: item.name || '',
+								link: item.link || '',
+								target: item.target || '_self',
+								icon: item.icon || '',
+								icon2: item.icon2 || '',
+								class: item.class || ''
+							}));
+						} else {
+							this.footMenuList = [{ name: '', link: '', target: '_self', icon: '', icon2: '', class: '' }];
+						}
+					} catch (e) {
+						console.warn('parseFootMenu error:', e, '原始数据:', this.foot_menu);
+						this.footMenuList = [{ name: '', link: '', target: '_self', icon: '', icon2: '', class: '' }];
+					}
+					if (this.footMenuList.length === 0) {
+						this.footMenuList = [{ name: '', link: '', target: '_self', icon: '', icon2: '', class: '' }];
+					}
+				},
+
+				// 解析底部导航（JSON数组）
+				parseFootLink() {
+					if (!this.foot_link || !this.foot_link.trim()) {
+						this.footLinkList = [{ name: '', link: '', target: '_self' }];
+						return;
+					}
+					try {
+						// 清理可能的格式问题
+						let cleaned = this.foot_link.trim();
+						if (cleaned.startsWith(']') || cleaned.endsWith(']')) {
+							cleaned = cleaned.replace(/^[\s\]]+/, '').replace(/[\s\]]+$/, '');
+							if (!cleaned.startsWith('[')) {
+								cleaned = '[' + cleaned;
+							}
+							if (!cleaned.endsWith(']')) {
+								cleaned = cleaned + ']';
+							}
+						}
+						if (!cleaned.startsWith('[')) {
+							cleaned = '[' + cleaned;
+						}
+						if (!cleaned.endsWith(']')) {
+							cleaned = cleaned + ']';
+						}
+
+						const parsed = JSON.parse(cleaned);
+						if (Array.isArray(parsed)) {
+							this.footLinkList = parsed.map(item => ({
+								name: item.name || '',
+								link: item.link || '',
+								target: item.target || '_self'
+							}));
+						} else {
+							this.footLinkList = [{ name: '', link: '', target: '_self' }];
+						}
+					} catch (e) {
+						console.warn('parseFootLink error:', e, '原始数据:', this.foot_link);
+						this.footLinkList = [{ name: '', link: '', target: '_self' }];
+					}
+					if (this.footLinkList.length === 0) {
+						this.footLinkList = [{ name: '', link: '', target: '_self' }];
+					}
+				},
+
+				// 解析底部联系导航（JSON数组）
+				parseContactLink() {
+					if (!this.contact_link || !this.contact_link.trim()) {
+						this.contactLinkList = [{ name: '', link: '', target: '_blank', icon: '', icon2: '' }];
+						return;
+					}
+					try {
+						// 清理可能的格式问题
+						let cleaned = this.contact_link.trim();
+						if (cleaned.startsWith(']') || cleaned.endsWith(']')) {
+							cleaned = cleaned.replace(/^[\s\]]+/, '').replace(/[\s\]]+$/, '');
+							if (!cleaned.startsWith('[')) {
+								cleaned = '[' + cleaned;
+							}
+							if (!cleaned.endsWith(']')) {
+								cleaned = cleaned + ']';
+							}
+						}
+						if (!cleaned.startsWith('[')) {
+							cleaned = '[' + cleaned;
+						}
+						if (!cleaned.endsWith(']')) {
+							cleaned = cleaned + ']';
+						}
+
+						const parsed = JSON.parse(cleaned);
+						if (Array.isArray(parsed)) {
+							this.contactLinkList = parsed.map(item => ({
+								name: item.name || '',
+								link: item.link || '',
+								target: item.target || '_blank',
+								icon: item.icon || '',
+								icon2: item.icon2 || ''
+							}));
+						} else {
+							this.contactLinkList = [{ name: '', link: '', target: '_blank', icon: '', icon2: '' }];
+						}
+					} catch (e) {
+						console.warn('parseContactLink error:', e, '原始数据:', this.contact_link);
+						this.contactLinkList = [{ name: '', link: '', target: '_blank', icon: '', icon2: '' }];
+					}
+					if (this.contactLinkList.length === 0) {
+						this.contactLinkList = [{ name: '', link: '', target: '_blank', icon: '', icon2: '' }];
+					}
+				},
+
+				// 序列化顶部图标导航
+				serializeHeadNav() {
+					const validItems = this.headNavList.filter(item => item.key && item.key.trim());
+					if (validItems.length === 0) {
+						return '';
+					}
+					return validItems.map(item => `${item.key}:${item.value}`).join('\n');
+				},
+
+				// 序列化底部导航图标
+				serializeFootMenu() {
+					const validItems = this.footMenuList.filter(item => item.name && item.name.trim());
+					if (validItems.length === 0) {
+						return '';
+					}
+					return JSON.stringify(validItems.map(item => {
+						const obj = {};
+						if (item.name) obj.name = item.name;
+						if (item.link) obj.link = item.link;
+						if (item.target) obj.target = item.target;
+						if (item.icon) obj.icon = item.icon;
+						if (item.icon2) obj.icon2 = item.icon2;
+						if (item.class) obj.class = item.class;
+						return obj;
+					}));
+				},
+
+				// 序列化底部导航
+				serializeFootLink() {
+					const validItems = this.footLinkList.filter(item => item.name && item.name.trim());
+					if (validItems.length === 0) {
+						return '';
+					}
+					return JSON.stringify(validItems.map(item => {
+						const obj = {};
+						if (item.name) obj.name = item.name;
+						if (item.link) obj.link = item.link;
+						if (item.target) obj.target = item.target;
+						return obj;
+					}));
+				},
+
+				// 序列化底部联系导航
+				serializeContactLink() {
+					const validItems = this.contactLinkList.filter(item => item.name && item.name.trim());
+					if (validItems.length === 0) {
+						return '';
+					}
+					return JSON.stringify(validItems.map(item => {
+						const obj = {};
+						if (item.name) obj.name = item.name;
+						if (item.link) obj.link = item.link;
+						if (item.target) obj.target = item.target;
+						if (item.icon) obj.icon = item.icon;
+						if (item.icon2) obj.icon2 = item.icon2;
+						return obj;
+					}));
+				},
+
+				// 添加项的方法
+				addHeadNavItem() {
+					this.headNavList.push({ key: '', value: '' });
+				},
+				addFootMenuItem() {
+					this.footMenuList.push({ name: '', link: '', target: '_self', icon: '', icon2: '', class: '' });
+				},
+				addFootLinkItem() {
+					this.footLinkList.push({ name: '', link: '', target: '_self' });
+				},
+				addContactLinkItem() {
+					this.contactLinkList.push({ name: '', link: '', target: '_blank', icon: '', icon2: '' });
+				},
+				// 删除项的方法
+				removeHeadNavItem(index) {
+					if (this.headNavList.length > 1) {
+						this.headNavList.splice(index, 1);
+					} else {
+						sa.msg('至少保留一项');
+					}
+				},
+				removeFootMenuItem(index) {
+					if (this.footMenuList.length > 1) {
+						this.footMenuList.splice(index, 1);
+					} else {
+						sa.msg('至少保留一项');
+					}
+				},
+				removeFootLinkItem(index) {
+					if (this.footLinkList.length > 1) {
+						this.footLinkList.splice(index, 1);
+					} else {
+						sa.msg('至少保留一项');
+					}
+				},
+				removeContactLinkItem(index) {
+					if (this.contactLinkList.length > 1) {
+						this.contactLinkList.splice(index, 1);
+					} else {
+						sa.msg('至少保留一项');
+					}
+				},
+
+				// 导航保存
+				async saveNavSettings() {
+					try {
+						// 序列化动态表单数据
+						this.head_nav = this.serializeHeadNav();
+						this.foot_menu = this.serializeFootMenu();
+						this.foot_link = this.serializeFootLink();
+						this.contact_link = this.serializeContactLink();
+
+						const res = await sa.http({
+							url: '/pageset/saveNav',
+							method: 'post',
+							data: {
+								max_navbar_menu_num: this.max_navbar_menu_num,
+								head_nav: this.head_nav,
+								foot_menu: this.foot_menu,
+								foot_link: this.foot_link,
+								contact_link: this.contact_link,
+								foot_desc: this.foot_desc
+							}
+						});
+						const data = res && res.data ? res.data : res;
+						sa.ok(data && data.msg ? data.msg : '保存成功');
+					} catch (err) {
+						console.error('saveNavSettings error:', err);
+						sa.error('保存失败，请稍后再试');
+					}
+				},
+
+				async loadPageSettings() {
+					try {
+						const res = await sa.http({
+							url: '/pageset/getPage',
+							method: 'post'
+						});
+						const data = res && res.data ? res.data : res;
+						this.foot_desc = (data && data.foot_desc) || this.foot_desc || '';
+						this.share_domian = (data && data.share_domian) || this.share_domian || '';
+						this.before_append = (data && data.before_append) || this.before_append || '';
+						this.article_bottom_content = (data && data.article_bottom_content) || this.article_bottom_content || '';
+						this.content_after = (data && data.content_after) || this.content_after || '';
+					} catch (err) {
+						console.error('loadPageSettings error:', err);
+					}
+				},
+
+				async savePageSettings() {
+					try {
+						const res = await sa.http({
+							url: '/pageset/savePage',
+							method: 'post',
+							data: {
+								foot_desc: this.foot_desc,
+								share_domian: this.share_domian,
+								before_append: this.before_append,
+								article_bottom_content: this.article_bottom_content,
+								content_after: this.content_after
+							}
+						});
+						const data = res && res.data ? res.data : res;
+						sa.ok(data && data.msg ? data.msg : '保存成功');
+					} catch (err) {
+						console.error('savePageSettings error:', err);
+						sa.error('保存失败，请稍后再试');
+					}
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

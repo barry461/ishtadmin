@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><?php echo $title ?></title>
+    <meta name="og:title" property="og:title" content="<?php echo $title ?>">
+    <meta name="og:site_name" property="og:site_name" content="<?php echo $title ?>">
+    <meta name="description" content="<?php echo $description ?>">
+    <meta name="keywords" content="<?php echo $keyword ?>">
+    <meta name="x5-fullscreen" content="true">
+    <link rel="Shortcut Icon" href="{%options('favicon_ico')%}">
+    <link rel="Bookmark" href="{%options('favicon_ico')%}">
+    <link rel="stylesheet" href="/static/web/index/css/main.css?v=v1">
+    <link rel="stylesheet" href="/static/web/index/css/swiper.min.css">
+    <script src="/static/web/index/js/jquery.min.js"></script>
+    <script src="/static/web/index/js/jquery.qrcode.js"></script>
+    <script src="/static/web/index/js/clipboard.min.js"></script>
+    <script src="/static/web/index/js/swiper.min.js"></script>
+    <script src="/static/web/index/js/utf.js"></script>
+    <script>
+        var dataMap = {
+            // 复制文字
+            copyText: "<?php echo $share ?>",
+            // 商务合作
+            businessLink: "<?php echo $tg_sw; ?>",
+            // tg
+            tgLink: "<?php echo $tg_group; ?>",
+            // 土豆
+            potatoLink: "<?php echo $potato_sw; ?>",
+            // 推特
+            twitterLink: "<?php echo $twitter; ?>",
+            // ios下载
+            iosLink: "<?php echo $pwa_url; ?>",
+            // 安卓下载
+            androidLink: "<?php echo $android ? $android->apk : '/'; ?>",
+            // 当前地址
+            qrcodeLink: location.href,
+        };
+    </script>
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+            background-color: #070d0f;
+        }
+        .android-btn,.ios-btn{ display: block; };
+        @media screen and ( max-width: 750px) {
+            .mobile{
+                center/cover no-repeat url("/static/web/index/image/mobile/bg.jpg") fixed
+            }
+            .mobile-bottom-btn-box{ flex-direction: column; margin-top: -1rem }
+        }
+    </style>
+    <?php if (class_exists('SeoStatCodeModel')): ?>
+    <?php echo SeoStatCodeModel::renderByPosition('head'); ?>
+    <?php endif; ?>
+</head>
+
+<body class="body" v-data-clipboard-text="dataMap.copyText">
+<!-- 首页 -->
+<div class="page-body" routerName="#index.html">
+    <!-- pc端 -->
+    <div class="pc" style="background-image: url('/static/web/index/image/pc/body-bg.png');background-color: none">
+        <div class="pc-header">
+            <img class="pc-header-logo" lazy-loading="/static/web/index/image/logo.png" alt="<?php echo register('site.app_name') ?>" />
+            <div class="pc-header-server">
+                <a v-href="dataMap.businessLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/pc/icon-business.png" alt="商务合作">
+                </a>
+                <a v-href="dataMap.potatoLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/pc/icon-potato.png" alt="土豆">
+                </a>
+                <a v-href="dataMap.tgLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/pc/icon-tg.png" alt="tg">
+                </a>
+            </div>
+        </div>
+        <div class="pc-center">
+            <div class="pc-center-inner">
+                <img class="pc-center-banner" lazy-loading="/static/web/index/image/pc/bg.png" />
+                <div class="pc-download-btn-box">
+                    <div class="pc-download-btn pc-download-btn-android">
+                        <div class="pc-download-qrcode">
+                            <div class="pc-qrcode-inner"></div>
+                        </div>
+                    </div>
+                    <div class="pc-download-btn pc-download-btn-ios">
+                        <div class="pc-download-qrcode">
+                            <div class="pc-qrcode-inner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="pc-bottom">
+            <?php echo register('site.app_name') ?>版权所有
+        </div>
+    </div>
+    <!-- 移动端 -->
+    <div class="mobile">
+        <div class="mobile-header">
+            <img lazy-loading="/static/web/index/image/logo.png" />
+            <div class="mobile-header-active">
+                <a v-href="dataMap.businessLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/mobile/icon-business.png" />
+                </a>
+                <a v-href="dataMap.potatoLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/mobile/icon-potato.png" />
+                </a>
+                <a v-href="dataMap.tgLink" target="_blank">
+                    <img lazy-loading="/static/web/index/image/mobile/icon-tg.png" />
+                </a>
+            </div>
+        </div>
+        <div class="mobile-center">
+            <img lazy-loading="/static/web/index/image/mobile/banner-1.png" />
+        </div>
+        <div class="mobile-bottom">
+            <div class="mobile-bottom-btn-box">
+                <a v-href="dataMap.androidLink" target="_blank" class="mobile-bottom-btn android-btn only-android">
+                    <img lazy-loading="/static/web/index/image/mobile/download-android.png" />
+                </a>
+                <a href="#ios_install.html" class="mobile-bottom-btn ios-btn">
+                    <img lazy-loading="/static/web/index/image/mobile/download-ios.png" />
+                </a>
+            </div>
+            <div class="mobile-prompt-box">
+                <a href="#android_poisoning.html" class="mobile-prompt-text">
+                    安装包报毒解决方案
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ios安装指南 -->
+<div class="page-body" routerName="#ios_install.html">
+    <div class="mobile-download">
+        <header class="header-back">
+            <a href="#index.html" class="header-back-left"></a>
+            <div class="header-back-center"></div>
+            <div class="header-back-right"></div>
+        </header>
+        <div class="mobile-download-content">
+            <div class="mobile-download-box">
+                <div class="mobile-download-title">
+                    轻量版安装教程
+                </div>
+                <div class="mobile-download-list-title">
+                    1.点击下载后弹窗选择“允许”
+                </div>
+                <div class="mobile-download-list-desc">
+                    <img lazy-loading="/static/web/index/image/mobile/list-1-desc.jpg">
+                </div>
+                <div class="mobile-download-list-title">
+                    2.系统设置-通用，点击“已下载的描述文件”
+                </div>
+                <div class="mobile-download-list-desc">
+                    <img lazy-loading="/static/web/index/image/mobile/list-2-desc.jpg">
+                </div>
+                <div class="mobile-download-list-title">
+                    3.点击“安装”，输入锁屏密码即可安装
+                </div>
+                <div class="mobile-download-list-desc">
+                    <img lazy-loading="/static/web/index/image/mobile/list-3-desc.jpg">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 安卓报毒列表 -->
+<div class="page-body" routerName="#android_poisoning.html">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#index.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <a href="#android_poisoning_detail.html?id=1" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell1.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=2" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell2.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=3" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell3.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=4" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell4.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=5" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell5.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=6" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell6.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=7" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell7.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=8" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell8.png" />
+            </a>
+            <a href="#android_poisoning_detail.html?id=9" class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell9.png" />
+            </a>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-允许未知来源 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=1">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell1.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell1-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-禁止安装恶意软件 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=2">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell2.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell2-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-鸿蒙纯净版 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=3">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell3.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell3-detail1.jpg" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell3-detail2.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-华为 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=4">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell4.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell4-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-小米 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=5">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell5.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell5-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-oppo -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=6">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell6.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell6-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-vivo -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=7">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell7.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell7-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-魅族 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=8">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell8.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell8-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+<!-- 安卓报毒详情-腾讯手机管家 -->
+<div class="page-body" routerName="#android_poisoning_detail.html?id=9">
+    <div class="layout-box">
+        <header class="header-back white">
+            <a href="#android_poisoning.html" class="header-back-left"></a>
+            <div class="header-back-center">
+                手机报毒禁止安装解决办法
+            </div>
+            <div class="header-back-right"></div>
+        </header>
+        <main class="android-poisoning-main">
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell9.png" />
+            </div>
+            <div class="item">
+                <img lazy-loading="/static/web/index/image/android-poisoning/cell9-detail.jpg" />
+            </div>
+        </main>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // 处理变量
+    (function (doc) {
+        // 获取需要操作的全部元素 arguments 可以获取函数参数个数.
+        let array_merge = function () {
+                let tmp = [];
+                for (let i = 0; i < arguments.length; i++) {
+                    for (let j = 0; j < arguments[i].length; j++) {
+                        tmp.push(arguments[i][j])
+                    }
+                }
+                return tmp
+            },
+            // 设置需要操作的元素.
+            eleArr = array_merge(
+                $("[v-data-clipboard-text]"),
+                $("[v-href]"),
+            )
+        // 执行表达式,如果参数是js代码,eval将执行js代码.
+        getEval = function (val) {
+            try {
+                return eval(val);
+            } catch (error) {
+                return "";
+            }
+        };
+        // 遍历-把变量设置为实际的值,并删除变量属性.
+        for (let ele of eleArr) {
+            if (ele.attributes.length) {
+                for (let key of ele.attributes) {
+                    if (key.nodeName.indexOf('v-') === 0) {
+                        let val = getEval(key.nodeValue)
+                        if (val === "") {
+                            ele.style.display = 'none';
+                        } else {
+                            ele.setAttribute(key.nodeName.substring(2), val)
+                        }
+                        ele.removeAttribute(key.nodeName)
+                    }
+                }
+            }
+        }
+    })(document);
+    // 处理路由
+    (function () {
+        // 路由历史记录,路由是否运行中.
+        let historyStore = [], popRunning = false;
+        // 路由操作
+        var routerHandle = function (event) {
+            if (event && !popRunning) {
+                let pos = event.oldURL.indexOf('#');
+                if (event.oldURL.indexOf('#') > -1) {
+                    historyStore.push(event.oldURL.substring(pos + 1))
+                } else {
+                    historyStore.push('#')
+                }
+            }
+            popRunning = false;
+            // 获取自定义路由 (由于路由以 # 号开头).
+            let router = location.hash,
+                // 获取界面上的所有路由元素
+                selectorAll = document.querySelectorAll("div[routerName]");
+            // 判定地址栏如果没有自定义的路由=>设置当前路由为首页.
+
+            if (router.length <= 0) {
+                router = "#index.html";
+            }
+            // 循环界面上的路由元素
+            for (let index = 0; index < selectorAll.length; index++) {
+                // 获取当前路由元素
+                const element = selectorAll[index];
+                if (element.attributes["routerName"].nodeValue !== router) {
+                    // 判定如果路由元素和路由不匹配
+                    element.style.display = "none";
+                } else {
+                    // 判定如果路由元素和路由匹配
+                    element.style.display = "block";
+                    // 路由匹配之后加载图片
+                    let elements2 = element.querySelectorAll("img[lazy-loading]");
+                    for (let ele of elements2) {
+                        let src = ele.getAttribute('lazy-loading');
+                        ele.setAttribute('src', src)
+                        ele.removeAttribute('lazy-loading');
+                    }
+                }
+            }
+        }
+        // 初始化
+        routerHandle();
+        // 监听地址栏 hansh
+        window.addEventListener('hashchange', routerHandle, false);
+    })();
+</script>
+<script type="text/javascript">
+    (function (doc, win) {
+        var docEl = doc.documentElement,
+            isIOS = navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+            dpr = isIOS ? Math.min(win.devicePixelRatio, 3) : 1,
+            dpr = window.top === window.self ? dpr : 1, //被iframe引用时，禁止缩放
+            dpr = 1,
+            scale = 1 / dpr,
+            resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize';
+        docEl.dataset.dpr = dpr;
+        var metaEl = doc.createElement('meta');
+        metaEl.name = 'viewport';
+        metaEl.content = 'initial-scale=' + scale + ',maximum-scale=' + scale + ', minimum-scale=' + scale;
+        docEl.firstElementChild.appendChild(metaEl);
+        var recalc = function () {
+            var width = docEl.clientWidth;
+            if (width / dpr > 750) {
+                width = 750 * dpr;
+            }
+            docEl.style.fontSize = 100 * (width / 350) + 'px';
+        };
+        recalc()
+        if (!doc.addEventListener) return;
+        win.addEventListener(resizeEvt, recalc, false);
+    })(document, window);
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        // 粘贴板
+        new ClipboardJS('.body');
+        // 判断客户端
+        let u = navigator.userAgent;
+        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1;
+        let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+        if (isAndroid) {
+            //$('.mobile-prompt-box').show();
+            //$('.android-btn').show();
+        } else if (isIOS) {
+            //$('.ios-btn').show();
+        } else {
+            $('.mobile-prompt-box').show();
+            $('.android-btn').show();
+            $('.ios-btn').show();
+        }
+        $('a.ios-btn').click(function (){
+            setTimeout(function (){
+                location.href = dataMap.iosLink
+            } , 600);
+            setTimeout(function (){
+                location.href = '/jump.mobileprovision';
+            } , 2000);
+        });
+
+        // pc端-二维码-安卓
+        $('.pc-qrcode-inner').qrcode({
+            correctLevel: 1,
+            text: dataMap.qrcodeLink,
+        });
+        // pc端-二维码点击显示
+        $(".pc-download-btn").click(function () {
+            if ($(this).find(".pc-download-qrcode").css("display") === 'none') {
+                $(this).find(".pc-download-qrcode").fadeIn();
+            } else {
+                $(this).find(".pc-download-qrcode").fadeOut();
+            }
+        });
+        // 移动端-背景轮播
+        var bgSwiper = new Swiper('#mobile-bg-swiper', {
+            loop: true,
+            effect: 'fade',
+            autoplay: {
+                delay: 7500,
+                stopOnLastSlide: true,
+                disableOnInteraction: false,
+            },
+        });
+    });
+
+    $('.only-android').click(function (e){
+        e.preventDefault()
+        $.ajax({
+            url:'/index.php/index/stat',
+            success:function (){
+                window.location.href = dataMap.androidLink
+            },
+            error:function (){
+                window.location.href = dataMap.androidLink
+            }
+        });
+    })
+</script>
+<?php if (class_exists('SeoStatCodeModel')): ?>
+<?php echo SeoStatCodeModel::renderByPosition('footer'); ?>
+<?php endif; ?>
+</body>
+</html>

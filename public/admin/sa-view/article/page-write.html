@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title id="pageTitle">创建新页面</title>
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<script src="../../sa-frame/custom/sa-editor/index.js?v=5.0"></script><style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        }
+
+        .write-container {
+            display: flex;
+            height: 100vh;
+            width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        /* 左侧主编辑区 */
+        .main-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .editor-header h1 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .title-input {
+            margin-bottom: 15px;
+        }
+
+        .title-input input {
+            width: 100%;
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            font-size: 16px;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .title-input input:focus {
+            outline: none;
+            border-color: #409EFF;
+            box-shadow: 0 0 5px rgba(64, 158, 255, 0.2);
+        }
+
+        .url-display {
+            font-size: 12px;
+            color: #999;
+            word-break: break-all;
+        }
+
+        /* 富文本编辑器区 */
+        .editor-content {
+            flex: 1;
+            padding: 0 20px 20px;
+        }
+
+        .editor-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #editor {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow-y: auto;
+        }
+
+        .w-e-text-container {
+            background: #fff !important;
+        }
+
+        /* 右侧设置面板 */
+        .sidebar-panel {
+            width: 280px;
+            background: #fff;
+            border-left: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        .panel-section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .panel-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .panel-tab.active {
+            background: #409EFF;
+            color: #fff;
+            border-color: #409EFF;
+        }
+
+        .panel-item {
+            margin-bottom: 15px;
+        }
+
+        .panel-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        /* 高级选项样式 */
+        .advanced-toggle-btn {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: #f7f7f7;
+            border-radius: 4px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 12px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .advanced-toggle-btn:hover {
+            background: #f0f7ff;
+            border-color: #409EFF;
+        }
+
+        .advanced-panel {
+            margin-top: 12px;
+        }
+
+        .advanced-checks label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .advanced-checks input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+        }
+
+        .advanced-textarea {
+            width: 100%;
+            min-height: 90px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            box-sizing: border-box;
+            font-size: 12px;
+            color: #333;
+            resize: vertical;
+        }
+
+        .advanced-hint {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .panel-item input,
+        .panel-item select,
+        .panel-item textarea {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .panel-item textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .panel-item input:focus,
+        .panel-item select:focus,
+        .panel-item textarea:focus {
+            outline: none;
+            border-color: #409EFF;
+            box-shadow: 0 0 3px rgba(64, 158, 255, 0.2);
+        }
+
+        .category-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .category-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 12px;
+        }
+
+        .category-checkbox input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .category-checkbox label {
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .tag-input {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .tag-input input {
+            flex: 1;
+        }
+
+        .tag-input button {
+            padding: 6px 12px;
+            background: #409EFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .tag-input button:hover {
+            background: #66B1FF;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            padding: 4px 8px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tag .close {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* 底部按钮 */
+        .editor-footer {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+            background: #fff;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .editor-footer button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .editor-footer .draft-btn {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .editor-footer .draft-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .editor-footer .publish-btn {
+            background: #409EFF;
+            color: #fff;
+        }
+
+        .editor-footer .publish-btn:hover {
+            background: #66B1FF;
+        }
+
+        .editor-footer .pending-btn {
+            background: #E6A23C;
+            color: #fff;
+        }
+
+        .editor-footer .pending-btn:hover {
+            background: #EEBE77;
+        }
+
+        /* 自定义字段模块样式 */
+        .custom-fields-section {
+            background: #fff;
+            border-top: 1px solid #ddd;
+            margin: 0 20px;
+        }
+
+        .custom-fields-header {
+            padding: 15px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #f0f0f0;
+            user-select: none;
+        }
+
+        .custom-fields-header:hover {
+            background: #f9f9f9;
+        }
+
+        .custom-fields-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .toggle-icon {
+            font-size: 12px;
+            color: #666;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .custom-fields-content {
+            padding: 20px 0;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+
+            to {
+                opacity: 1;
+                max-height: 800px;
+            }
+        }
+
+        .custom-fields-desc {
+            padding: 12px;
+            background: #f8f9fa;
+            border-left: 4px solid #409EFF;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .preset-fields-list {
+            margin-bottom: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fafafa;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+        }
+
+        .field-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 8px;
+        }
+
+        .field-label {
+            min-width: 120px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            padding-top: 8px;
+            flex-shrink: 0;
+        }
+
+        .field-control {
+            flex: 1;
+        }
+
+        .field-textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .field-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .field-desc {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.4;
+            margin-top: 0;
+        }
+
+        .field-desc a {
+            color: #409EFF;
+            text-decoration: none;
+        }
+
+        .field-tips {
+            background: #f0f9ff;
+            border: 1px solid #bae7ff;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 20px 0;
+        }
+
+        .field-tips p {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .field-params {
+            font-family: Monaco, Consolas, 'Courier New', monospace;
+            background: #fff;
+            padding: 8px;
+            border-radius: 3px;
+            border: 1px solid #d9d9d9;
+            font-size: 12px !important;
+            color: #666 !important;
+            word-break: break-all;
+        }
+
+        .field-usage-tip {
+            background: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 20px 0;
+        }
+
+        .field-usage-tip p {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .field-usage-tip p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 已添加的额外字段样式 */
+        .extra-fields-list {
+            margin: 20px 0;
+        }
+
+        .extra-field-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #fafafa;
+            border: 1px solid #e6e6e6;
+            border-radius: 4px;
+        }
+
+        .field-name-input {
+            width: 150px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .field-type-select {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            background: #fff;
+            flex-shrink: 0;
+        }
+
+        .field-value-textarea {
+            flex: 1;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+            min-height: 36px;
+        }
+
+        .delete-field-btn {
+            padding: 6px 12px;
+            background: #ff4d4f;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+            height: 36px;
+        }
+
+        .delete-field-btn:hover {
+            background: #ff7875;
+        }
+
+        .add-field-section {
+            margin: 20px 0;
+        }
+
+        .add-field-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .add-field-desc {
+            flex: 1;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .add-field-btn {
+            padding: 8px 16px;
+            background: #52c41a;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .add-field-btn:hover {
+            background: #73d13d;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .form-row label {
+            min-width: 80px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .form-row input,
+        .form-row select {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .confirm-btn {
+            padding: 8px 16px;
+            background: #409EFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .confirm-btn:hover {
+            background: #66B1FF;
+        }
+
+        .cancel-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .cancel-btn:hover {
+            background: #e6e6e6;
+        }
+
+        /* 附件上传区域 */
+        .attachment-upload {
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-upload:hover {
+            border-color: #409EFF;
+            background: #f0f7ff;
+        }
+
+        .attachment-upload.dragover {
+            border-color: #409EFF;
+            background: #e6f2ff;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        .upload-text .link {
+            color: #409EFF;
+            text-decoration: none;
+        }
+
+        .upload-text .link:hover {
+            text-decoration: underline;
+        }
+
+        /* 附件列表 */
+        .attachment-list {
+            margin-top: 15px;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            background: #fff;
+        }
+
+        .attachment-item:hover {
+            background: #f9f9f9;
+        }
+
+        .attachment-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .attachment-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #666;
+        }
+
+        .attachment-name {
+            font-size: 13px;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-size {
+            font-size: 12px;
+            color: #999;
+            margin-left: 10px;
+        }
+
+        .attachment-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .attachment-actions .el-button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .tt-editor-content {
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .editor-content {
+            position: sticky;
+            top: 0;
+            z-index: 9;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="write-container">
+
+        <!-- 左侧主编辑区 -->
+        <div class="main-editor">
+            <div class="editor-header">
+                <h1>{{ isEditMode ? '编辑页面' : '创建新页面' }}</h1>
+                <div class="title-input">
+                    <input v-model="article.title" type="text" placeholder="标题" @input="updateSlug" />
+                </div>
+                <div class="url-display">
+                    xlcg.dyclub.co/archives/{{ article.id || '{cid}' }}/
+                </div>
+            </div>
+
+            <div class="editor-content">
+                <div class="editor-wrapper">
+                    <sa-editor v-model="editorContent" ref="editor"></sa-editor>
+                </div>
+            </div>
+
+            <!-- 自定义字段模块 -->
+            <div class="custom-fields-section">
+                <div class="custom-fields-header" @click="toggleCustomFields">
+                    <span class="custom-fields-title">自定义字段</span>
+                    <i class="toggle-icon" :class="{'expanded': showCustomFields}">▼</i>
+                </div>
+                <div class="custom-fields-content" v-show="showCustomFields">
+                    <div class="custom-fields-desc">
+                        自定义字段可以扩展你的模板功能，使用方法参见
+                        <a href="https://docs.typecho.org/help/custom-fields" target="_blank"
+                            style="color: #409EFF;">帮助文档</a>
+                    </div>
+
+                    <!-- 预设字段列表 -->
+                    <div class="preset-fields-list">
+                        <!-- 文章主图（banner） -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">文章主图</label>
+                                <div class="field-control">
+                                    <textarea v-model="customFieldsData.articleImages"
+                                        placeholder="输入图片URL，如有多个则一行一个，随机选择展示。" rows="3" class="field-textarea">
+									</textarea>
+                                    <div style="margin-top: 8px; display: flex; align-items: center; gap: 10px;">
+                                        <button type="button" class="add-field-btn" style="padding: 6px 10px;"
+                                            @click="$refs.articleBannerUploader.click()">上传主图</button>
+                                        <input ref="articleBannerUploader" type="file" accept="image/*"
+                                            style="display:none" @change="handleArticleBannerUpload($event)">
+                                        <el-progress type="circle" v-if="uploading"
+                                            :percentage="percentage"></el-progress>
+                                        <img v-if="articleBannerPreview" :src="articleBannerPreview" alt="主图预览"
+                                            style="height: 46px; border-radius: 4px; border: 1px solid #eee;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="field-desc">
+                                输入图片URL，如有多个则一行一个，随机选择展示。
+                                <a href="#" style="color: #409EFF;">挑选</a>
+                            </div>
+                        </div>
+
+                        <!-- 内容语言 contentLang -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">内容语言（contentLang）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.contentLang" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field-desc">控制内容语言相关功能（contentLang）。</div>
+                        </div>
+
+                        <!-- 禁止显示主图 disableBanner -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">禁止显示主图（disableBanner）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.disableBanner" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field-desc">1 表示禁止显示主图，0 表示正常显示。</div>
+                        </div>
+
+                        <!-- 隐藏标题 headTitle -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">隐藏标题（headTitle）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.headTitle" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field-desc">1 表示隐藏标题，0 表示正常显示。</div>
+                        </div>
+
+                        <!-- 热搜标记 hotSearch -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">热搜标记（hotSearch）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.hotSearch" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="field-desc">用于标记此文章是否参与热搜。</div>
+                        </div>
+
+                        <!-- 跳转地址 redirect -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">跳转地址（redirect）</label>
+                                <div class="field-control">
+                                    <textarea v-model="customFieldsData.redirect" placeholder="输入跳转的 URL" rows="2"
+                                        class="field-textarea">
+									</textarea>
+                                    <!--									<div class="field-desc">-->
+                                    <!--										<span>可选：</span>-->
+                                    <!--										<button type="button" class="add-field-btn" style="padding:4px 8px;margin-top:6px;" @click="quickSetRedirect('none')">无跳转</button>-->
+                                    <!--										<button type="button" class="add-field-btn" style="padding:4px 8px;margin-top:6px;margin-left:6px;" @click="quickSetRedirect('example')">示例链接</button>-->
+                                    <!--									</div>-->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 是否广告 ads_field -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">是否广告（ads_field）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.ads_field" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 标题隐藏 hide_list_title -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">标题隐藏（hide_list_title）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.hide_list_title" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 作者分类隐藏 hide_list_author_cate -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">作者分类隐藏（hide_list_author_cate）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.hide_list_author_cate" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 是否外跳 outjump -->
+                        <div class="field-group">
+                            <div class="field-row">
+                                <label class="field-label">是否外跳（outjump）</label>
+                                <div class="field-control">
+                                    <select v-model="customFieldsData.outjump" class="field-select">
+                                        <option value="0">关闭（0）</option>
+                                        <option value="1">开启（1）</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field-tips">
+                        <p>其他自定义字段使用提示（区分大小写）：</p>
+                        <p class="field-params">contentLang, disableBanner, headTitle, hotSearch, redirect, ads_field,
+                            hide_list_title, hide_list_author_cate, outjump 等。</p>
+                    </div>
+
+                    <div class="field-usage-tip">
+                        <p>相关用法请查看主题自定义字段使用帮助</p>
+                        <p>使用时请点击下方的「添加字段」，然后在字段名称栏处键入上述可选值，类型为字符，在字段值栏输入期望要素输入相应的值即可。</p>
+                    </div>
+
+                    <!-- 已添加的自定义字段列表 -->
+                    <div class="extra-fields-list">
+                        <div v-for="(field, index) in extraCustomFields" :key="index" class="extra-field-row">
+                            <input v-model="field.name" type="text" placeholder="字段名称" class="field-name-input"
+                                @input="validateFieldName($event, index)" />
+                            <select v-model="field.type" class="field-type-select">
+                                <option value="text">字符</option>
+                            </select>
+                            <textarea v-model="field.value" placeholder="字段值" class="field-value-textarea"
+                                rows="2"></textarea>
+                            <button @click="removeExtraField(index)" class="delete-field-btn">删除</button>
+                        </div>
+                    </div>
+
+                    <!-- 添加字段按钮和说明 -->
+                    <div class="add-field-section">
+                        <div class="add-field-row">
+                            <button @click="addNewField" class="add-field-btn">+ 添加字段</button>
+                            <div class="add-field-desc">
+                                自定义字段可以扩展你的模板功能，使用方法参见
+                                <a href="https://docs.typecho.org/help/custom-fields" target="_blank"
+                                    style="color: #409EFF;">帮助文档</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-footer">
+                <button class="draft-btn" @click="saveDraft">保存草稿</button>
+                <button class="publish-btn" @click="publishArticle">发布页面</button>
+            </div>
+        </div>
+
+        <!-- 右侧设置面板 -->
+        <div class="sidebar-panel">
+            <!-- 发布日期 -->
+            <div class="panel-section">
+                <div class="panel-section-title">发布日期</div>
+                <div class="panel-item">
+                    <input v-model="article.publish_date" type="datetime-local" />
+                </div>
+            </div>
+
+            <!-- 页面顺序 -->
+            <div class="panel-section">
+                <div class="panel-item">
+                    <label>页面顺序</label>
+                    <input v-model="article.home_top" type="number" placeholder="数字越大越靠前" />
+                </div>
+            </div>
+
+            <!-- 选项/附件标签 -->
+            <div class="panel-section">
+                <div class="panel-tabs">
+                    <!--					<div class="panel-tab" :class="{ active: activeTab === 'options' }" @click="activeTab = 'options'">-->
+                    <!--						选项-->
+                    <!--					</div>-->
+                    <!-- <div class="panel-tab" :class="{ active: activeTab === 'attachments' }" @click="activeTab = 'attachments'">
+        附件
+      </div> -->
+                </div>
+
+                <!-- 选项标签页 -->
+                <div v-show="activeTab === 'options'">
+                    <!-- 作者选择 -->
+                    <div class="panel-item">
+                        <label>作者</label>
+                        <el-select v-model="article.author_id" placeholder="选择作者" filterable clearable
+                            style="width: 100%; margin-top: 8px;">
+                            <el-option v-for="author in authors" :key="author.id" :label="author.name"
+                                :value="author.id"></el-option>
+                        </el-select>
+                    </div>
+
+                    <!-- 高级选项 -->
+                    <div class="panel-item">
+                        <button class="advanced-toggle-btn" @click="showAdvancedOptions = !showAdvancedOptions">
+                            <span>高级选项</span>
+                            <span>{{ showAdvancedOptions ? '▲' : '▼' }}</span>
+                        </button>
+                        <!-- 公开度 -->
+                        <div class="panel-item" style="margin: 10px 0 0 0;" v-show="showAdvancedOptions">
+                            <label>公开度</label>
+                            <select v-model="article.visibility" style="margin-top: 6px;">
+                                <option value="publish">公开</option>
+                                <option value="hidden">隐藏</option>
+                            </select>
+                        </div>
+                        <div class="advanced-panel" v-show="showAdvancedOptions">
+                            <label>权限控制</label>
+                            <div class="advanced-checks">
+                                <label><input type="checkbox" v-model="advancedOptions.allowComment"> 允许评论</label>
+                                <label><input type="checkbox" v-model="advancedOptions.allowQuote"> 允许被引用</label>
+                                <label><input type="checkbox" v-model="advancedOptions.allowAggregate"> 允许在聚合中出现</label>
+                            </div>
+                            <!--							<div class="panel-item" style="margin-bottom: 12px;">-->
+                            <!--								<label>引用通告</label>-->
+                            <!--								<textarea class="advanced-textarea" v-model="advancedOptions.quoteNotice" placeholder="每一行一个引用地址，用回车隔开"></textarea>-->
+                            <!--								<div class="advanced-hint">每一行一个引用地址，用回车隔开</div>-->
+                            <!--							</div>-->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 附件标签页 -->
+                <div v-show="activeTab === 'attachments'">
+                    <!-- 文件上传区域 -->
+                    <div class="attachment-upload" @click="triggerFileInput" @dragover.prevent="handleDragOver"
+                        @dragleave.prevent="handleDragLeave" @drop.prevent="handleFileDrop"
+                        :class="{dragover: isDragging}">
+                        <div class="upload-icon">📎</div>
+                        <div class="upload-text">
+                            拖放文件到这里<br>
+                            或者 <a href="javascript:;" class="link" @click.stop="triggerFileInput">选择文件上传</a>
+                        </div>
+                        <input ref="fileInput" type="file" multiple style="display: none;" @change="handleFileSelect">
+                    </div>
+
+                    <!-- 附件列表 -->
+                    <div class="attachment-list" v-if="attachments.length > 0">
+                        <div class="attachment-item" v-for="(file, index) in attachments" :key="index">
+                            <div class="attachment-info">
+                                <span class="attachment-icon">📄</span>
+                                <span class="attachment-name" :title="file.name">{{ file.name }}</span>
+                                <span class="attachment-size">{{ formatFileSize(file.size) }}</span>
+                            </div>
+                            <div class="attachment-actions">
+                                <el-button size="mini" type="danger" icon="el-icon-delete"
+                                    @click="removeAttachment(index)"></el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 后台的富文本内容提交时需要转md，进行中
+        Vue.component('sa-editor', window['sa-editor'].default)
+
+        // 等待sa对象准备好再初始化Vue
+        function initVueApp() {
+            if (typeof sa === 'undefined' || !sa.p) {
+                setTimeout(initVueApp, 100); // 等待100ms后重试
+                return;
+            }
+
+            const app = new Vue({
+                el: '#app',
+                data: {
+                    activeTab: 'options',
+                    showAdvancedOptions: false,
+                    showCustomFields: false, // 控制自定义字段展开/折叠
+                    articleId: sa.p('id', 0), // 从URL获取文章ID，0=新增，非0=编辑
+                    articleCid: sa.p('cid', 0), // 从URL hash中获取cid参数（在created中初始化）
+                    article: {
+                        id: '',
+                        title: '',
+                        text: '',
+                        publish_date: new Date().toISOString().slice(0, 16),
+                        home_top: '',
+                        visibility: 'publish',
+                        author_id: ''
+                    },
+                    advancedOptions: {
+                        allowComment: true,
+                        allowQuote: true,
+                        allowAggregate: true,
+                        quoteNotice: ''
+                    },
+                    editorContent: '',
+                    attachments: [],
+                    isDragging: false,
+                    authors: [],
+                    articleBannerPreview: '', // 文章主图预览
+                    // 预设自定义字段数据
+                    customFieldsData: {
+                        articleImages: '',              // banner
+                        contentLang: '0',              // 内容语言 0/1
+                        disableBanner: '0',            // 禁止显示主图 0/1
+                        headTitle: '0',                // 隐藏标题 0/1
+                        hotSearch: '0',                // 热搜标记 0/1
+                        redirect: '',                  // 跳转地址
+                        ads_field: '0',                // 是否广告 0/1
+                        hide_list_title: '0',         // 标题隐藏 0/1
+                        hide_list_author_cate: '0',   // 作者分类隐藏 0/1
+                        outjump: '0'                  // 是否外跳 0/1
+                    },
+                    // 额外添加的自定义字段
+                    extraCustomFields: [],
+                    // 当前加载的cid，用于防止重复加载
+                    currentLoadedCid: null,
+                    // URL监听定时器
+                    urlCheckTimer: null,
+                    uploading: false,
+                    percentage: 0,
+                    isEditMode: false
+                },
+                computed: {
+                    // 页面标题
+                    pageTitle() {
+                        var title = this.isEditMode ? '编辑页面' : '创建新页面';
+                        return title;
+                    }
+                },
+                methods: {
+                    // 更新页面标题
+                    updatePageTitle: function () {
+                        console.log('🔄 updatePageTitle 被调用');
+                        console.log('  article.id:', this.article.id);
+                        console.log('  currentLoadedCid:', this.currentLoadedCid);
+                        console.log('  isEditMode:', this.isEditMode);
+
+                        try {
+                            var title = this.isEditMode ? '编辑页面' : '创建新页面';
+                            console.log('  计算出的标题:', title);
+
+                            document.title = title;
+                            var titleEl = document.getElementById('pageTitle');
+                            if (titleEl) {
+                                titleEl.textContent = title;
+                            }
+
+                            console.log('✅ 页面标题已更新为:', title);
+                        } catch (e) {
+                            console.error('❌ 更新页面标题失败:', e);
+                        }
+                    },
+                    // 获取作者列表
+                    async fetchAuthors() {
+                        try {
+                            const res = await sa.http({
+                                url: '/contents/authors',
+                                method: 'post',
+                                data: {}
+                            });
+                            this.authors = Array.isArray(res && res.data) ? res.data : [];
+                        } catch (error) {
+                            console.error('获取作者列表失败:', error);
+                            this.authors = [];
+                        }
+                    },
+                    // 检查并根据cid加载数据
+                    checkAndLoadDataByCid: function () {
+                        var urlCid = this.getHashParam('cid', 0);
+                        console.log('🔍 checkAndLoadDataByCid: 检查cid =', urlCid);
+
+                        if (urlCid && urlCid > 0) {
+                            // 如果已经加载过这个cid，不重复加载
+                            if (this.currentLoadedCid === urlCid) {
+                                console.log('✅ 此cid已加载，跳过');
+                                return;
+                            }
+
+                            console.log('✅ 检测到编辑模式，cid:', urlCid);
+                            console.log('从sessionStorage读取数据...');
+
+                            // 从sessionStorage读取数据
+                            var editData = sessionStorage.getItem('editPageData');
+                            if (editData) {
+                                try {
+                                    var data = JSON.parse(editData);
+                                    console.log('📦 从sessionStorage获取到数据:', data);
+
+                                    // 验证数据的cid是否匹配
+                                    var dataCid = data.cid || data.id;
+                                    if (String(dataCid) === String(urlCid)) {
+                                        console.log('✅ cid匹配，开始填充数据');
+                                        this.currentLoadedCid = urlCid;
+                                        this.fillArticleData(data);
+                                    } else {
+                                        console.warn('⚠️ cid不匹配，URL中的cid:', urlCid, '数据中的cid:', dataCid);
+                                    }
+                                } catch (e) {
+                                    console.error('❌ 解析sessionStorage数据失败:', e);
+                                }
+                            } else {
+                                console.warn('⚠️ sessionStorage中没有editPageData');
+                            }
+                        } else {
+                            console.log('⚠️ 未检测到cid，这是新建模式');
+                            // 如果没有 cid，检查是否有草稿缓存
+                            if (this.currentLoadedCid === null) { // 只在第一次检查时恢复草稿
+                                const draftData = sessionStorage.getItem('editPageData');
+                                if (draftData) {
+                                    console.log('检测到草稿缓存，尝试恢复...');
+                                    try {
+                                        const parsedData = JSON.parse(draftData);
+                                        this.fillArticleData(parsedData);
+                                        this.currentLoadedCid = 0; // 标记已处理
+                                    } catch (e) {
+                                        console.error('草稿恢复失败:', e);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    // 开始URL监听
+                    startUrlMonitoring: function () {
+                        var self = this;
+                        var lastHash = '';
+
+                        // 获取当前hash
+                        function getCurrentHash() {
+                            try {
+                                if (window.parent && window.parent.location) {
+                                    return window.parent.location.hash || '';
+                                }
+                            } catch (e) {
+                                // 跨域错误，忽略
+                            }
+                            return window.location.hash || '';
+                        }
+
+                        lastHash = getCurrentHash();
+                        console.log('📡 开始URL监听，初始hash:', lastHash);
+
+                        // 每500ms检查一次
+                        this.urlCheckTimer = setInterval(function () {
+                            var currentHash = getCurrentHash();
+                            if (currentHash !== lastHash) {
+                                console.log('🔔 检测到URL变化!');
+                                console.log('  旧hash:', lastHash);
+                                console.log('  新hash:', currentHash);
+                                lastHash = currentHash;
+
+                                // URL变化后，重新检查cid
+                                self.checkAndLoadDataByCid();
+                                // 更新标题
+                                self.updatePageTitle();
+                            }
+                        }, 500);
+                    },
+
+                    // 检查并加载数据的方法（用于tab切换时调用）
+                    checkAndLoadData: function () {
+                        // 如果数据已加载且没有新的编辑数据，跳过检查（避免误触发）
+                        if (this.dataLoaded &&
+                            !sessionStorage.getItem('editPageData') &&
+                            !sessionStorage.getItem('needLoadEditData') &&
+                            !sessionStorage.getItem('isNewArticle')) {
+                            console.log('checkAndLoadData: 数据已加载且无新数据，跳过检查');
+                            return;
+                        }
+
+                        // 延迟一下，确保数据已经存储到sessionStorage
+                        var self = this;
+                        setTimeout(function () {
+                            // 首先检查是否是新增模式（优先级最高）
+                            var isNewArticle = sessionStorage.getItem('isNewArticle');
+                            if (isNewArticle === 'true') {
+
+                                self.dataLoaded = false;
+                                return;
+                            }
+
+                            // 重新获取URL参数
+                            self.articleId = sa.p('id', 0);
+                            // 检查是否有编辑数据需要加载
+                            var editData = sessionStorage.getItem('editPageData');
+                            var needLoad = sessionStorage.getItem('needLoadEditData');
+
+                            if (editData || needLoad === 'true') {
+                                // 强制重新加载数据
+                                self.dataLoaded = false; // 标记需要重新加载
+                                self.loadEditArticleData();
+                            } else {
+                                // 如果没有新数据，且数据已加载，直接返回（避免误触发）
+                                if (self.dataLoaded) {
+                                    return;
+                                }
+                                // 如果没有新数据，但当前也没有数据，可能是新增模式
+                                if (!self.article.id && !self.article.title && !self.article.text) {
+                                    // 当前是空白表单，不需要加载
+                                    return;
+                                }
+                                // 只有在数据未加载时才调用 loadEditArticleData
+                                if (!self.dataLoaded) {
+                                    self.loadEditArticleData();
+                                }
+                            }
+                        }, 150);
+                    },
+                    // 切换自定义字段展开/折叠
+                    toggleCustomFields() {
+                        this.showCustomFields = !this.showCustomFields;
+                    },
+                    // 验证字段名称不能包含中文，并检查 key 值是否重复
+                    validateFieldName(event, index) {
+                        const value = event.target.value;
+                        const trimmedValue = value.trim();
+
+                        // 检测是否包含中文字符
+                        if (/[\u4e00-\u9fa5]/.test(value)) {
+                            // 移除中文字符
+                            this.extraCustomFields[index].name = value.replace(/[\u4e00-\u9fa5]/g, '');
+                            try {
+                                parent.sa.msg('字段名称不能包含中文字符');
+                            } catch (e) {
+                                alert('字段名称不能包含中文字符');
+                            }
+                            return;
+                        }
+
+                        // 如果字段名为空，不检查重复
+                        if (!trimmedValue) {
+                            return;
+                        }
+
+                        // 预设字段的 key 列表（这些是系统预设的字段，不能重复）
+                        const presetFieldKeys = [
+                            'banner',
+                            'contentLang',
+                            'disableBanner',
+                            'headTitle',
+                            'hotSearch',
+                            'redirect',
+                            'ads_field',
+                            'hide_list_title',
+                            'hide_list_author_cate',
+                            'outjump',
+                        ];
+
+                        // 检查是否与预设字段重复
+                        if (presetFieldKeys.includes(trimmedValue)) {
+                            try {
+                                parent.sa.msg('字段名称 "' + trimmedValue + '" 是系统预设字段，不能使用');
+                            } catch (e) {
+                                alert('字段名称 "' + trimmedValue + '" 是系统预设字段，不能使用');
+                            }
+                            // 清空字段名
+                            this.extraCustomFields[index].name = '';
+                            return;
+                        }
+
+                        // 检查是否与其他额外字段的 key 重复
+                        for (let i = 0; i < this.extraCustomFields.length; i++) {
+                            if (i !== index && this.extraCustomFields[i].name &&
+                                this.extraCustomFields[i].name.trim() === trimmedValue) {
+                                try {
+                                    parent.sa.msg('字段名称 "' + trimmedValue + '" 已存在，不能重复');
+                                } catch (e) {
+                                    alert('字段名称 "' + trimmedValue + '" 已存在，不能重复');
+                                }
+                                // 清空当前字段名
+                                this.extraCustomFields[index].name = '';
+                                return;
+                            }
+                        }
+                    },
+                    // 添加新的空白字段
+                    addNewField() {
+                        this.extraCustomFields.push({
+                            name: '',
+                            type: 'text',
+                            value: ''
+                        });
+                    },
+                    // 删除额外自定义字段
+                    removeExtraField(index) {
+                        this.extraCustomFields.splice(index, 1);
+                        try {
+                            parent.sa.msg('字段已删除');
+                        } catch (e) {
+                        }
+                    },
+                    // 处理文章主图上传
+                    async handleArticleBannerUpload(event) {
+                        const file = event && event.target && event.target.files ? event.target.files[0] : null;
+                        if (!file) return;
+                        this.percentage = 0
+                        this.uploading = true
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('debug', 'fasdf4ed@1`!');
+
+                        try {
+                            const res = await sa.http({
+                                url: '/upload/uploadLocal',
+                                method: 'post',
+                                data: formData,
+                                onUploadProgress: progressEvent => {
+                                    this.percentage = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
+                                }
+                            });
+
+                            const uploadedUrl = res && res.data && res.data.url ? res.data.url : '';
+
+                            if (uploadedUrl) {
+                                // 写入自定义字段的文章主图（支持多行，这里直接覆盖为单个 URL）
+                                this.customFieldsData.articleImages = uploadedUrl;
+                                // 预览图
+                                this.articleBannerPreview = uploadedUrl;
+                                try {
+                                    sa.ok(`上传成功！URL: ${uploadedUrl}`);
+                                } catch (e) {
+                                    alert(`上传成功！URL: ${uploadedUrl}`);
+                                }
+                            } else {
+                                try {
+                                    sa.ok((res && res.data && res.data.msg ? res.data.msg : '上传成功') + ' - banner');
+                                } catch (e) {
+                                    alert((res && res.data && res.data.msg ? res.data.msg : '上传成功') + ' - banner');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('uploadLocal error for banner:', err);
+                            try {
+                                sa.error('上传失败：' + (err.message || '未知错误'));
+                            } catch (e) {
+                                alert('上传失败：' + (err.message || '未知错误'));
+                            }
+                        } finally {
+                            this.uploading = false
+                        }
+                    },
+                    // 触发文件选择
+                    triggerFileInput: function () {
+                        this.$refs.fileInput.click();
+                    },
+                    // 处理文件选择
+                    handleFileSelect: function (e) {
+                        var files = e.target.files;
+                        this.addFiles(files);
+                        e.target.value = '';
+                    },
+                    // 处理拖拽悬停
+                    handleDragOver: function (e) {
+                        this.isDragging = true;
+                    },
+                    // 处理拖拽离开
+                    handleDragLeave: function (e) {
+                        this.isDragging = false;
+                    },
+                    // 处理文件拖放
+                    handleFileDrop: function (e) {
+                        this.isDragging = false;
+                        var files = e.dataTransfer.files;
+                        this.addFiles(files);
+                    },
+                    // 添加文件到附件列表
+                    addFiles: function (files) {
+                        for (var i = 0; i < files.length; i++) {
+                            this.attachments.push(files[i]);
+                        }
+                    },
+                    // 移除附件
+                    removeAttachment: function (index) {
+                        this.attachments.splice(index, 1);
+                    },
+                    // 格式化文件大小
+                    formatFileSize: function (bytes) {
+                        if (bytes === 0) return '0 B';
+                        var k = 1024;
+                        var sizes = ['B', 'KB', 'MB', 'GB'];
+                        var i = Math.floor(Math.log(bytes) / Math.log(k));
+                        return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+                    },
+                    updateSlug() {
+                        // 根据标题生成slug
+                    },
+                    // 统一的保存文章方法
+                    async saveArticle(status, messages) {
+                        if (!this.article.title.trim()) {
+                            try {
+                                parent.sa.msg('请输入标题');
+                            } catch (e) {
+                                alert('请输入标题');
+                            }
+                            return;
+                        }
+
+                        try {
+                            // 获取markdown内容
+                            const md = await this.$refs.editor.getMarkDown();
+
+                            // 构建保存数据
+                            const rawData = this.buildSaveData(md, status);
+
+                            // 格式化数据为对象，清理空值和确保类型正确
+                            const saveData = this.formatSaveData(rawData);
+                            console.log(saveData, "saveData");
+
+                            // 如果有附件，使用带附件的上传方式
+                            if (this.attachments.length > 0) {
+                                this.uploadArticleWithAttachments('/independent/save', saveData, status, messages);
+                                return;
+                            }
+
+                            // 调用保存接口
+                            const res = await sa.http({
+                                url: '/independent/save',
+                                data: saveData
+                            });
+
+                            const isNew = !this.article.id;
+                            if (isNew && res.data && res.data.cid) {
+								this.article.id = res.data.cid;
+                            }
+
+                            const successMsg = typeof messages.success === 'function'
+                                ? messages.success(isNew)
+                                : (messages.success || '操作成功');
+                            try {
+                                if (status === 'publish' || status === 'waiting') {
+                                    sessionStorage.removeItem('editPageData');
+                                    sessionStorage.removeItem('needLoadEditData');
+                                    this.clearUrlCid();
+                                    this.resetForm();
+                                }
+                                parent.sa.msg(successMsg);
+                                if (status === 'publish' || status === 'waiting') {
+                                    setTimeout(() => {
+                                        if (window.parent && window.parent.sa_admin) {
+                                            window.parent.sa_admin.showMenu
+                                            window.parent.sa_admin.showMenuById('3-5');
+                                        } else if (window.parent && window.parent.location) {
+                                            window.parent.location.reload();
+                                        }
+                                    }, 500);
+                                }
+                            } catch (e) {
+                                alert(successMsg);
+                            }
+                        } catch (e) {
+                            console.error(messages.error || '操作失败:', e);
+                            try {
+                                parent.sa.error(messages.error || '操作失败');
+                            } catch (err) {
+                                alert(messages.error || '操作失败');
+                            }
+                        }
+                    },
+                    // 带附件上传文章
+                    uploadArticleWithAttachments: function (url, saveData, status, messages) {
+                        var formData = new FormData();
+                        formData.append('data', JSON.stringify(saveData));
+                        for (var i = 0; i < this.attachments.length; i++) {
+                            formData.append('attachments', this.attachments[i]);
+                        }
+                        var self = this;
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                const isNew = !self.article.id;
+								if (isNew && res.data && res.data.cid) {
+                                    self.article.id = res.data.cid;
+                                }
+
+                                const successMsg = typeof messages.success === 'function'
+                                    ? messages.success(isNew)
+                                    : (messages.success || '操作成功');
+                                const finalMsg = successMsg + '（含附件）';
+                                try {
+                                    if (status === 'publish' || status === 'waiting') {
+                                        sessionStorage.removeItem('editPageData');
+                                        sessionStorage.removeItem('needLoadEditData');
+                                        self.clearUrlCid();
+                                        self.resetForm();
+                                    }
+                                    parent.sa.msg(finalMsg);
+                                    if (status === 'publish' || status === 'waiting') {
+                                        setTimeout(() => {
+                                            if (window.parent && window.parent.sa_admin) {
+                                                window.parent.sa_admin.showMenuById('3-5');
+                                            } else if (window.parent && window.parent.location) {
+                                                window.parent.location.reload();
+                                            }
+                                        }, 500);
+                                    }
+                                } catch (e) {
+                                    alert(finalMsg);
+                                }
+                            },
+                            error: function () {
+                                try {
+                                    parent.sa.error('网络错误，上传失败');
+                                } catch (e) {
+                                    alert('网络错误，上传失败');
+                                }
+                            }
+                        });
+                    },
+                    // 保存草稿
+                    async saveDraft() {
+                        // 先缓存到本地
+                        this.cacheCurrentForm();
+                        try {
+                            await this.saveArticle('draft', {
+                                success: '草稿已保存',
+                                error: '保存草稿失败'
+                            });
+                            parent.sa.msg('草稿已保存成功！');
+                        } catch (error) {
+                            parent.sa.msg('草稿已缓存到本地，刷新页面后内容依然保留');
+                        }
+                    },
+                    // 缓存当前表单数据
+                    cacheCurrentForm() {
+                        // 构建自定义字段对象
+                        const customFields = {};
+
+                        // 跳转地址
+                        if (this.customFieldsData.redirect && this.customFieldsData.redirect.trim()) {
+                            customFields.redirect = this.customFieldsData.redirect.trim();
+                        }
+
+                        // 内容语言 / 禁主图 / 隐藏标题 / 热搜等预设字段
+                        customFields.contentLang = Number(this.customFieldsData.contentLang || 0);
+                        customFields.disableBanner = Number(this.customFieldsData.disableBanner || 0);
+                        customFields.headTitle = Number(this.customFieldsData.headTitle || 0);
+                        customFields.hotSearch = Number(this.customFieldsData.hotSearch || 0);
+                        customFields.ads_field = Number(this.customFieldsData.ads_field || 0);
+                        customFields.hide_list_title = Number(this.customFieldsData.hide_list_title || 0);
+                        customFields.hide_list_author_cate = Number(this.customFieldsData.hide_list_author_cate || 0);
+                        customFields.outjump = Number(this.customFieldsData.outjump || 0);
+
+                        // 文章主图
+                        if (this.customFieldsData.articleImages && this.customFieldsData.articleImages.trim()) {
+                            customFields.banner = this.customFieldsData.articleImages.trim();
+                        }
+
+                        // 处理额外添加的自定义字段
+                        if (this.extraCustomFields && this.extraCustomFields.length > 0) {
+                            this.extraCustomFields.forEach(function (field) {
+                                if (field.name && field.value !== undefined && field.value !== null && field.value !== '') {
+                                    var fieldName = field.name.trim();
+                                    if (fieldName) {
+                                        customFields[fieldName] = field.value;
+                                    }
+                                }
+                            });
+                        }
+
+                        const cacheData = {
+                            ...this.article,
+                            text: this.editorContent,
+                            allowComment: this.advancedOptions.allowComment ? 1 : 0,
+                            allowFeed: this.advancedOptions.allowAggregate ? 1 : 0,
+                            allowPing: this.advancedOptions.allowQuote ? 1 : 0,
+                            ping_urls: this.advancedOptions.quoteNotice || '',
+                            custom_fields: customFields
+                        };
+                        sessionStorage.setItem('editPageData', JSON.stringify(cacheData));
+                    },
+                    async initEditorContent() {
+                        // 请求数据后，把后台返回的markdown格式化成html
+                        this.editorContent = await this.$refs.editor.markdownToHtml('3333')
+                    },
+                    // 构建保存数据的辅助方法
+                    buildSaveData(markdownContent, status) {
+                        // 构建数据对象
+                        const data = {};
+
+                        // 如果是编辑模式，传入cid
+                        // 优先从URL hash参数获取cid，其次使用 article.id，最后尝试从 sessionStorage 中获取
+                        var cid = sa.p('cid')
+                        if (!cid || cid === 0) {
+                            cid = this.article.id;
+                        }
+                        if (!cid) {
+                            try {
+                                var storedData = sessionStorage.getItem('editPageData');
+                                if (storedData) {
+                                    var articleData = JSON.parse(storedData);
+                                    cid = articleData.cid || articleData.id;
+                                }
+                            } catch (e) {
+                                console.warn('从sessionStorage获取cid失败:', e);
+                            }
+                        }
+                        if (cid && cid !== 0) {
+                            data.cid = cid;
+                        }
+
+                        // 左侧字段：标题和内容
+                        data.title = this.article.title || '';
+                        data.text = markdownContent || '';
+
+                        // 右侧字段
+                        data.publish_date = this.article.publish_date;
+
+                        // 页面顺序
+                        if (this.article.home_top !== undefined && this.article.home_top !== null && this.article.home_top !== '') {
+                            data.home_top = Number(this.article.home_top);
+                        }
+
+                        // 公开度status：保存草稿时必须以传入的 draft 为准
+                        data.status = (status === 'draft') ? 'draft' : (this.article.visibility || status || 'publish');
+
+                        // 作者ID
+                        if (this.article.author_id) {
+                            data.author_id = this.article.author_id;
+                        }
+
+                        // 高级选项
+                        data.allowComment = this.advancedOptions.allowComment ? 1 : 0;
+                        data.allowFeed = this.advancedOptions.allowAggregate ? 1 : 0;
+                        data.allowPing = this.advancedOptions.allowQuote ? 1 : 0;
+
+                        // 自定义字段 - 统一放到 custom_fields 对象里面
+                        const customFields = {};
+
+                        // 跳转地址 - redirect
+                        if (this.customFieldsData.redirect && this.customFieldsData.redirect.trim()) {
+                            customFields.redirect = this.customFieldsData.redirect.trim();
+                        }
+
+                        customFields.contentLang = Number(this.customFieldsData.contentLang || 0);
+                        customFields.disableBanner = Number(this.customFieldsData.disableBanner || 0);
+                        customFields.headTitle = Number(this.customFieldsData.headTitle || 0);
+                        customFields.hotSearch = Number(this.customFieldsData.hotSearch || 0);
+                        customFields.ads_field = Number(this.customFieldsData.ads_field || 0);
+                        customFields.hide_list_title = Number(this.customFieldsData.hide_list_title || 0);
+                        customFields.hide_list_author_cate = Number(this.customFieldsData.hide_list_author_cate || 0);
+                        customFields.outjump = Number(this.customFieldsData.outjump || 0);
+
+                        // 文章主图 - banner
+                        if (this.customFieldsData.articleImages && this.customFieldsData.articleImages.trim()) {
+                            customFields.banner = this.customFieldsData.articleImages.trim();
+                        }
+
+                        // 处理额外添加的自定义字段
+                        if (this.extraCustomFields && this.extraCustomFields.length > 0) {
+                            this.extraCustomFields.forEach(function (field) {
+                                if (field.name && field.value !== undefined && field.value !== null && field.value !== '') {
+                                    var fieldName = field.name.trim();
+                                    if (fieldName) {
+                                        customFields[fieldName] = field.value;
+                                    }
+                                }
+                            });
+                        }
+
+                        // 将 custom_fields 对象添加到 data 中
+                        data.custom_fields = customFields;
+
+                        return data;
+                    },
+                    // 格式化保存数据，确保所有字段格式正确
+                    formatSaveData(data) {
+                        const formatted = {};
+
+                        // 遍历所有字段，清理和格式化
+                        for (const key in data) {
+                            if (data.hasOwnProperty(key)) {
+                                const value = data[key];
+
+                                // 跳过 null 和 undefined
+                                if (value === null || value === undefined) {
+                                    continue;
+                                }
+
+                                // 特殊处理 custom_fields
+                                if (key === 'custom_fields') {
+                                    const formattedCustomFields = this.formatCustomFields(value);
+                                    // 如果格式化后为 null，跳过该字段
+                                    if (formattedCustomFields !== null) {
+                                        formatted[key] = formattedCustomFields;
+                                    }
+                                    continue;
+                                }
+
+                                // 处理不同类型的值
+                                if (Array.isArray(value)) {
+                                    // 数组：过滤空值，保留非空数组
+                                    const filtered = value.filter(item => item !== null && item !== undefined && item !== '');
+                                    if (filtered.length > 0) {
+                                        formatted[key] = filtered;
+                                    }
+                                } else if (value instanceof Date) {
+                                    // Date 对象：转为 ISO 字符串
+                                    formatted[key] = value.toISOString();
+                                } else if (typeof value === 'object') {
+                                    // 普通对象：转为 JSON 字符串
+                                    formatted[key] = JSON.stringify(value);
+                                } else if (typeof value === 'string') {
+                                    // 字符串：去除首尾空格，空字符串跳过
+                                    const trimmed = value.trim();
+                                    if (trimmed !== '') {
+                                        formatted[key] = trimmed;
+                                    }
+                                } else {
+                                    // 其他类型（数字、布尔值等）：直接保留
+                                    formatted[key] = value;
+                                }
+                            }
+                        }
+
+                        return formatted;
+                    },
+                    // 格式化 custom_fields，清理空值并返回对象
+                    formatCustomFields(value) {
+                        try {
+                            let customFieldsObj;
+
+                            // 如果已经是字符串，尝试解析为对象
+                            if (typeof value === 'string') {
+                                const trimmed = value.trim();
+                                if (trimmed === '') {
+                                    return null; // 返回 null 表示空对象，formatSaveData 会跳过
+                                }
+                                try {
+                                    customFieldsObj = JSON.parse(trimmed);
+                                } catch (e) {
+                                    // 如果解析失败，返回 null
+                                    console.warn('custom_fields JSON 解析失败:', e);
+                                    return null;
+                                }
+                            } else if (typeof value === 'object' && value !== null) {
+                                // 如果已经是对象，直接使用
+                                customFieldsObj = value;
+                            } else {
+                                // 其他类型，返回 null
+                                return null;
+                            }
+
+                            // 清理空值：移除 null、undefined、空字符串的字段
+                            const cleaned = {};
+                            for (const key in customFieldsObj) {
+                                if (customFieldsObj.hasOwnProperty(key)) {
+                                    const val = customFieldsObj[key];
+                                    // 保留非空值（null、undefined、空字符串都跳过）
+                                    if (val !== null && val !== undefined && val !== '') {
+                                        // 如果是字符串，去除首尾空格
+                                        if (typeof val === 'string') {
+                                            const trimmed = val.trim();
+                                            if (trimmed !== '') {
+                                                cleaned[key] = trimmed;
+                                            }
+                                        } else {
+                                            cleaned[key] = val;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 如果清理后没有字段，返回 null
+                            if (Object.keys(cleaned).length === 0) {
+                                return null;
+                            }
+
+                            // 返回清理后的对象
+                            return cleaned;
+                        } catch (e) {
+                            console.error('格式化 custom_fields 失败:', e);
+                            return null;
+                        }
+                    },
+                    // 发布页面
+                    async publishArticle() {
+                        await this.saveArticle('publish', {
+                            success: (isNew) => isNew ? '页面发布成功' : '页面更新成功',
+                            error: '页面失败'
+                        });
+                    },
+                    // 重置表单数据
+                    resetForm() {
+                        // 先清空编辑器内容
+                        this.editorContent = '';
+                        this.article.text = '';
+
+                        // 重置文章基本信息
+                        this.article = {
+                            id: '',
+                            title: '',
+                            text: '',
+                            publish_date: new Date().toISOString().slice(0, 16),
+                            home_top: '',
+                            visibility: 'publish',
+                            author_id: ''
+                        };
+
+                        // 清空附件
+                        this.attachments = [];
+                        this.isDragging = false;
+
+                        this.customFieldsData = {
+                            articleImages: '',
+                            contentLang: '0',
+                            disableBanner: '0',
+                            headTitle: '0',
+                            hotSearch: '0',
+                            redirect: '',
+                            ads_field: '0',
+                            hide_list_title: '0',
+                            hide_list_author_cate: '0',
+                            outjump: '0'
+                        };
+                        this.advancedOptions = {
+                            allowComment: true,
+                            allowQuote: true,
+                            allowAggregate: true,
+                            quoteNotice: ''
+                        };
+                        this.showAdvancedOptions = false;
+                        this.extraCustomFields = [];
+
+                        // 强制更新视图
+                        this.$nextTick(() => {
+                            // 确保编辑器内容被清空
+                            if (this.$refs.editor) {
+                                try {
+                                    // 如果编辑器有清空方法，调用它
+                                    if (this.$refs.editor.setContent) {
+                                        this.$refs.editor.setContent('');
+                                    } else if (this.$refs.editor.editor && this.$refs.editor.editor.commands) {
+                                        this.$refs.editor.editor.commands.setContent('');
+                                    }
+                                } catch (e) {
+                                }
+                            }
+                        });
+
+                        console.log('表单已重置');
+                    },
+                    // 清除URL中的cid参数
+                    clearUrlCid() {
+                        try {
+                            if (window.parent && window.parent.location) {
+                                var hash = window.parent.location.hash;
+                                if (hash) {
+                                    // 移除cid参数
+                                    var hashParts = hash.split('?');
+                                    var baseHash = hashParts[0];
+                                    if (hashParts.length > 1) {
+                                        var params = new URLSearchParams(hashParts[1]);
+                                        params.delete('cid');
+                                        var newParams = params.toString();
+                                        var newHash = newParams ? baseHash + '?' + newParams : baseHash;
+                                        window.parent.location.hash = newHash;
+                                    } else {
+                                        window.parent.location.hash = baseHash;
+                                    }
+                                }
+                            } else if (window.location) {
+                                var hash = window.location.hash;
+                                if (hash) {
+                                    var hashParts = hash.split('?');
+                                    var baseHash = hashParts[0];
+                                    if (hashParts.length > 1) {
+                                        var params = new URLSearchParams(hashParts[1]);
+                                        params.delete('cid');
+                                        var newParams = params.toString();
+                                        var newHash = newParams ? baseHash + '?' + newParams : baseHash;
+                                        window.location.hash = newHash;
+                                    } else {
+                                        window.location.hash = baseHash;
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('清除URL中的cid参数失败:', e);
+                        }
+                    },
+                    // 从 sessionStorage 加载编辑的文章数据
+                    loadEditArticleData() {
+                        // 优先检查URL hash中的cid参数
+                        var urlCid = sa.p('cid');
+                        if (urlCid && urlCid > 0) {
+                            this.loadArticleById(urlCid);
+                        }
+                    },
+                    // 根据ID从API加载文章数据（后备方案，优先使用sessionStorage）
+                    async loadArticleById(id) {
+
+                        try {
+
+                            // 先设置文章ID，确保保存时能传递cid
+                            this.article.id = id;
+
+                            console.log('正在调用API: /independent/detail');
+                            const res = await sa.http({
+                                url: '/independent/detail',
+                                data: { cid: id }
+                            });
+
+                            console.log('API响应:', res);
+
+                            if (res && res.data) {
+                                console.log('API返回的数据:', res.data);
+                                console.log('开始填充数据...');
+                                this.fillArticleData(res.data);
+
+                                // 确保ID被设置（fillArticleData可能会覆盖）
+                                if (!this.article.id) {
+                                    this.article.id = id;
+                                }
+
+                                console.log('数据填充完成，当前article:', {
+                                    id: this.article.id,
+                                    title: this.article.title,
+                                    text: this.article.text ? this.article.text.substring(0, 50) + '...' : '',
+                                    editorContent: this.editorContent ? this.editorContent.substring(0, 50) + '...' : ''
+                                });
+
+                                // 数据加载完成后，立即标记为已加载
+                                this.dataLoaded = true;
+                                console.log('========== loadArticleById 完成 ==========');
+                            } else {
+                                console.error('API返回数据格式错误:', res);
+                            }
+                        } catch (error) {
+                            console.error('❌ 从API加载文章数据失败:', error);
+                            console.log('💡 建议：确保从列表页点击编辑按钮进入，数据会通过sessionStorage传递');
+                            this.dataLoaded = false;
+                        }
+                    },
+                    // 填充文章数据到表单
+                    fillArticleData(articleData) {
+                        console.log('========== fillArticleData 开始 ==========');
+                        console.log('接收到的数据:', articleData);
+                        console.log('数据详情:', {
+                            hasData: !!articleData,
+                            articleId: articleData.cid || articleData.id,
+                            title: articleData.title,
+                            hasText: !!articleData.text,
+                            textLength: articleData.text ? articleData.text.length : 0,
+                            status: articleData.status,
+                            created: articleData.created
+                        });
+
+                        // 填充文章基本信息
+                        var articleId = articleData.cid || articleData.id;
+                        if (articleId) {
+                            this.article.id = articleId;
+                            console.log('✅ 设置 article.id =', articleId);
+
+                            // 立即触发响应式更新
+                            this.$forceUpdate();
+
+                            // 立即检查isEditMode状态
+                            console.log('📌 检查isEditMode:', this.isEditMode);
+                            console.log('📌 当前article.id:', this.article.id);
+                            console.log('📌 当前currentLoadedCid:', this.currentLoadedCid);
+                        }
+
+                        if (articleData.title) {
+                            this.article.title = articleData.title;
+                            console.log('✅ 设置 article.title =', articleData.title);
+                        }
+
+                        // 公开度 / 状态
+                        if (articleData.status) {
+                            this.article.visibility = articleData.status;
+                            console.log('设置 article.visibility =', articleData.status);
+                        }
+
+                        // 处理文章内容 - 使用 text 字段（markdown格式）
+                        var articleContent = null;
+                        if (articleData.text !== undefined && articleData.text !== null) {
+                            articleContent = String(articleData.text);
+                            // 保存原始 markdown 内容
+                            this.article.text = articleContent;
+                            console.log('设置 article.text, 长度:', articleContent.length);
+                        }
+
+                        if (articleContent !== null && articleContent !== undefined && articleContent.trim()) {
+                            console.log('开始处理文章内容，长度:', articleContent.length);
+                            var self = this;
+                            // 使用 $nextTick 确保编辑器已初始化后再转换和设置内容
+                            this.$nextTick(async () => {
+                                try {
+                                    console.log('$nextTick: 开始设置编辑器内容');
+                                    console.log('编辑器引用存在?', !!self.$refs.editor);
+                                    console.log('编辑器有markdownToHtml?', self.$refs.editor && !!self.$refs.editor.markdownToHtml);
+
+                                    // 如果编辑器已初始化，将 markdown 转换为 HTML
+                                    if (self.$refs.editor && self.$refs.editor.markdownToHtml) {
+                                        console.log('开始转换markdown到HTML...');
+                                        var htmlContent = await self.$refs.editor.markdownToHtml(articleContent);
+                                        // 设置编辑器内容（HTML格式）
+                                        self.editorContent = htmlContent;
+                                        console.log('✅ 成功将markdown转换为HTML并设置到编辑器');
+                                        console.log('HTML长度:', htmlContent.length);
+                                    } else {
+                                        console.log('编辑器还未初始化，先设置markdown内容');
+                                        // 如果编辑器还未初始化，先设置 markdown，等待编辑器初始化后再转换
+                                        self.editorContent = articleContent;
+                                        // 延迟一下再尝试转换
+                                        setTimeout(async () => {
+                                            console.log('延迟转换：检查编辑器...');
+                                            if (self.$refs.editor && self.$refs.editor.markdownToHtml) {
+                                                console.log('延迟转换：开始转换...');
+                                                var htmlContent = await self.$refs.editor.markdownToHtml(articleContent);
+                                                self.editorContent = htmlContent;
+                                                console.log('✅ 延迟转换成功');
+                                            } else {
+                                                console.log('⚠️ 延迟后编辑器仍未初始化，直接使用markdown');
+                                            }
+                                        }, 500);
+                                    }
+                                } catch (e) {
+                                    console.error('❌ 转换markdown到HTML失败:', e);
+                                    // 降级方案：直接设置 markdown（编辑器可能会自动处理）
+                                    self.editorContent = articleContent;
+                                }
+                            });
+                        } else {
+                            console.log('文章内容为空');
+                            this.article.text = '';
+                            this.editorContent = '';
+                        }
+
+                        if (articleData.created) {
+                            // 处理日期格式
+                            var date = new Date(articleData.created);
+                            if (!isNaN(date.getTime())) {
+                                this.article.publish_date = date.toISOString().slice(0, 16);
+                            }
+                        }
+
+                        // 页面顺序
+                        if (articleData.home_top !== undefined && articleData.home_top !== null) {
+                            this.article.home_top = String(articleData.home_top);
+                        }
+
+                        // 处理作者ID
+                        if (articleData.author_id !== undefined) {
+                            this.article.author_id = articleData.author_id;
+                            console.log('✅ 设置 author_id =', articleData.author_id);
+                        }
+
+                        // 填充自定义字段数据
+                        // 优先使用 custom_fields（下划线命名，与缓存保存的格式一致）
+                        var customFields = articleData.custom_fields || articleData.customFields;
+
+                        if (customFields && typeof customFields === 'object' && !Array.isArray(customFields)) {
+                            // 跳转地址 - redirect
+                            if (customFields.redirect !== undefined && customFields.redirect !== null && customFields.redirect !== '') {
+                                this.customFieldsData.redirect = String(customFields.redirect);
+                            }
+
+                            if (customFields.contentLang !== undefined) {
+                                this.customFieldsData.contentLang = String(customFields.contentLang);
+                            }
+                            if (customFields.disableBanner !== undefined) {
+                                this.customFieldsData.disableBanner = String(customFields.disableBanner);
+                            }
+                            if (customFields.headTitle !== undefined) {
+                                this.customFieldsData.headTitle = String(customFields.headTitle);
+                            }
+                            if (customFields.hotSearch !== undefined) {
+                                this.customFieldsData.hotSearch = String(customFields.hotSearch);
+                            }
+
+                            // 文章主图 - banner -> articleImages
+                            if (customFields.banner !== undefined && customFields.banner !== null && customFields.banner !== '') {
+                                this.customFieldsData.articleImages = String(customFields.banner);
+                            }
+
+                            if (customFields.ads_field !== undefined) {
+                                this.customFieldsData.ads_field = String(customFields.ads_field);
+                            }
+                            if (customFields.hide_list_title !== undefined) {
+                                this.customFieldsData.hide_list_title = String(customFields.hide_list_title);
+                            }
+                            if (customFields.hide_list_author_cate !== undefined) {
+                                this.customFieldsData.hide_list_author_cate = String(customFields.hide_list_author_cate);
+                            }
+                            if (customFields.outjump !== undefined) {
+                                this.customFieldsData.outjump = String(customFields.outjump);
+                            }
+
+                            // 处理额外添加的自定义字段（从 custom_fields 中恢复）
+                            // 预设字段的 key 列表
+                            const presetFieldKeys = [
+                                'redirect', 'contentLang', 'disableBanner', 'headTitle', 'hotSearch',
+                                'banner', 'ads_field', 'hide_list_title', 'hide_list_author_cate', 'outjump'
+                            ];
+
+                            // 清空现有的额外字段
+                            this.extraCustomFields = [];
+
+                            // 遍历 custom_fields，找出非预设字段，恢复为额外字段
+                            for (const key in customFields) {
+                                if (customFields.hasOwnProperty(key)) {
+                                    // 如果不是预设字段，则添加到额外字段列表
+                                    if (!presetFieldKeys.includes(key)) {
+                                        const value = customFields[key];
+                                        // 只有当值不为空时才添加
+                                        if (value !== undefined && value !== null && value !== '') {
+                                            this.extraCustomFields.push({
+                                                name: key,
+                                                type: 'text',
+                                                value: String(value)
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // 处理其他可能的字段映射（兼容旧格式）
+                        if (articleData.redirect) this.customFieldsData.redirect = articleData.redirect;
+                        if (articleData.articleImages) this.customFieldsData.articleImages = articleData.articleImages;
+                        if (articleData.hotSearch !== undefined) {
+                            this.customFieldsData.hotSearch = articleData.hotSearch ? '1' : '0';
+                        }
+
+                        console.log('========== fillArticleData 完成 ==========');
+                        console.log('当前表单状态:', {
+                            'article.id': this.article.id,
+                            'article.title': this.article.title,
+                            'article.text': this.article.text ? this.article.text.substring(0, 100) + '...' : '空',
+                            'editorContent': this.editorContent ? this.editorContent.substring(0, 100) + '...' : '空',
+                            'isEditMode': this.isEditMode
+                        });
+
+                        // 立即更新页面标题（同步）
+                        this.updatePageTitle();
+
+                        // 数据填充完成后，再次更新页面标题（异步）
+                        this.$nextTick(() => {
+                            console.log('📌 $nextTick: 再次更新标题');
+                            this.updatePageTitle();
+                        });
+                    }
+                },
+                created: function () {
+                    this.isEditMode = !!sa.p('cid')
+
+                    // 获取作者列表
+                    this.fetchAuthors();
+
+                    this.loadEditArticleData()
+
+                    // 初始化 articleCid（从hash中获取）
+                },
+
+                // 监听路由变化（如果使用路由）
+                watch: {
+                    // 监听编辑模式变化，自动更新标题
+                    isEditMode: function (newVal, oldVal) {
+                        if (newVal !== oldVal) {
+                            this.updatePageTitle();
+                        }
+                    },
+                    // 监听 articleId 变化
+                    articleId: function (newVal, oldVal) {
+                        this.loadEditArticleData();
+                    },
+                    // 监听article.id变化，更新标题
+                    'article.id': function (newVal, oldVal) {
+                        if (newVal !== oldVal) {
+                            this.updatePageTitle();
+                        }
+                    },
+                    // 监听 URL hash 中的 cid 参数变化（通过定时检查）
+                    '$route': function () {
+                        // 如果使用路由，可以在这里监听
+                    }
+                },
+
+            });
+        }
+
+        // 开始初始化
+        initVueApp();
+    </script>
+</body>
+
+</html>

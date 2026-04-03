@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>网站概要</title>
+	<script src="../../static/common-head.js"></script>
+	<style>
+		html,
+		body {
+			background-color: #F6F6F3;
+			color: #333;
+		}
+
+		.overview-container {
+			width: 1200px;
+			margin: 0 auto;
+			padding: 20px 0;
+		}
+
+		.overview-title {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 30px;
+			color: #333;
+		}
+
+		/* 统计卡片区 */
+		.stats-grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			gap: 20px;
+			margin-bottom: 40px;
+		}
+
+		.stat-card {
+			background: #fff;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 20px;
+			text-align: center;
+			transition: all 0.3s;
+		}
+
+		.stat-card:hover {
+			border-color: #409EFF;
+			background: #fafafa;
+		}
+
+		.stat-card .stat-value {
+			font-size: 32px;
+			font-weight: bold;
+			color: #409EFF;
+			margin-bottom: 10px;
+		}
+
+		.stat-card .stat-label {
+			font-size: 14px;
+			color: #666;
+		}
+
+		/* 操作按钮区 */
+		.actions-bar {
+			display: flex;
+			gap: 15px;
+			margin-bottom: 40px;
+			padding-bottom: 20px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.actions-bar a {
+			display: inline-block;
+			padding: 8px 16px;
+			background: #409EFF;
+			color: #fff;
+			text-decoration: none;
+			border-radius: 4px;
+			transition: all 0.3s;
+			font-size: 14px;
+		}
+
+		.actions-bar a:hover {
+			background: #66B1FF;
+		}
+
+		/* 四栏布局 */
+		.content-grid {
+			display: flex;
+			gap: 20px;
+		}
+
+		.content-box {
+			width: 25%;
+			background: #fff;
+			border-radius: 4px;
+			padding: 20px;
+		}
+
+		.content-box .box-title {
+			font-size: 16px;
+			font-weight: bold;
+			margin-bottom: 15px;
+			color: #333;
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 10px;
+		}
+
+		.content-box .box-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.content-box .box-list li {
+			padding: 8px 0;
+			border-bottom: 1px solid #eee;
+			font-size: 13px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			color: #333;
+		}
+
+		.rank-badge {
+			display: inline-block;
+			width: 24px;
+			height: 24px;
+			line-height: 24px;
+			text-align: center;
+			background: #409EFF;
+			color: #fff;
+			border-radius: 50%;
+			font-size: 12px;
+			font-weight: bold;
+			margin-right: 10px;
+			flex-shrink: 0;
+		}
+
+		.rank-badge.rank-top {
+			background: #F56C6C;
+		}
+
+		.author-name {
+			flex: 1;
+			margin-right: 10px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.post-count {
+			color: #409EFF;
+			font-weight: 500;
+			flex-shrink: 0;
+		}
+
+		.content-box .box-list li:last-child {
+			border-bottom: none;
+		}
+
+		.content-box .box-list a {
+			color: #409EFF;
+			text-decoration: none;
+			transition: all 0.3s;
+			display: inline-block;
+			max-width: 400px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			vertical-align: middle;
+		}
+
+		.content-box .box-list a:hover {
+			color: #66B1FF;
+			text-decoration: underline;
+		}
+
+		.date-badge {
+			color: #999;
+			font-size: 12px;
+		}
+
+		.desc-text {
+			color: #000;
+			font-size: 12px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			margin-left: 0;
+			display: inline-block;
+			vertical-align: middle;
+			flex: 1;
+		}
+
+		/* 底部脚注 */
+		.footer-info {
+			text-align: center;
+			margin-top: 40px;
+			padding-top: 20px;
+			border-top: 1px solid #ddd;
+			color: #999;
+			font-size: 12px;
+		}
+
+		.footer-info a {
+			color: #409EFF;
+			text-decoration: none;
+			margin: 0 10px;
+		}
+
+		@media (max-width: 1200px) {
+			.overview-container {
+				width: 100%;
+				padding: 20px;
+			}
+
+			.stats-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			@media (max-width: 800px) {
+				.stats-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			.content-grid {
+				flex-direction: column;
+			}
+
+			.content-box {
+				width: 100% !important;
+				margin-bottom: 20px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="overview-container">
+		<div class="overview-title">网站概要</div>
+
+		<!-- 统计信息 -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-value">{{ stats.articleCount }}</div>
+				<div class="stat-label">篇文章</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value">{{ stats.commentCount }}</div>
+				<div class="stat-label">评论</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value">{{ stats.categoryCount }}</div>
+				<div class="stat-label">分类中</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-value">{{ stats.onlineCount }}</div>
+				<div class="stat-label">当前在线</div>
+			</div>
+		</div>
+
+		<!-- 操作按钮 -->
+		<div class="actions-bar">
+			<a href="javascript:void(0)" @click="handleAction('write-new')">撰写新文章</a>
+			<a href="javascript:void(0)" @click="handleAction('1-4')">更换外观</a>
+			<a href="javascript:void(0)" @click="handleAction('1-3')" style="display:none;">插件管理</a>
+			<a href="javascript:void(0)" @click="handleAction('4-1')">系统设置</a>
+		</div>
+
+		<!-- 内容区域 - 四列 -->
+		<div class="content-grid">
+			<!-- 今日发布文章作者排名 -->
+			<div class="content-box" style="width: 25%;">
+				<div class="box-title">今日发布文章作者排名</div>
+				<ul class="box-list">
+					<li v-for="item in todayAuthorRanking" :key="item.uid">
+						<span class="rank-badge" :class="{'rank-top': item.rank === 1}">{{ item.rank }}</span>
+						<span class="author-name">{{ item.screenName || item.name || '未知' }}</span>
+						<span class="post-count">{{ item.post_count }} 篇</span>
+					</li>
+					<li v-if="todayAuthorRanking.length === 0" style="text-align: center; color: #999;">
+						暂无数据
+					</li>
+				</ul>
+			</div>
+
+			<!-- 本月发布文章作者排名 -->
+			<div class="content-box" style="width: 25%;">
+				<div class="box-title">本月发布文章作者排名</div>
+				<ul class="box-list">
+					<li v-for="item in monthAuthorRanking" :key="item.uid">
+						<span class="rank-badge" :class="{'rank-top': item.rank === 1}">{{ item.rank }}</span>
+						<span class="author-name">{{ item.screenName || item.name || '未知' }}</span>
+						<span class="post-count">{{ item.post_count }} 篇</span>
+					</li>
+					<li v-if="monthAuthorRanking.length === 0" style="text-align: center; color: #999;">
+						暂无数据
+					</li>
+				</ul>
+			</div>
+
+			<!-- 最近发布的文章 -->
+			<div class="content-box" style="width: 25%;">
+				<div class="box-title">最近发布的文章</div>
+				<ul class="box-list">
+					<li v-for="item in recentArticles" :key="item.id">
+						<a :href="item.url" target="_blank">{{ item.title }}</a>
+						<span class="date-badge">{{ item.date }}</span>
+					</li>
+				</ul>
+			</div>
+
+			<!-- 最近得到的回复 -->
+			<div class="content-box" style="width: 25%;">
+				<div class="box-title">最近得到的回复</div>
+				<ul class="box-list">
+					<li v-for="item in recentComments" :key="item.id">
+						<a :href="item.url" target="_blank">{{ item.author }}：</a>
+						<span class="desc-text">{{ item.content }}</span>
+						<span class="date-badge">{{ item.date }}</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+	</div>
+
+	<script>
+		new Vue({
+			el: '#app',
+			data() {
+				return {
+					stats: {
+						articleCount: 0,
+						commentCount: 0,
+						categoryCount: 0,
+						onlineCount: 0
+					},
+					recentArticles: [],
+					recentComments: [],
+					todayAuthorRanking: [],
+					monthAuthorRanking: []
+				}
+			},
+			created() {
+				this.loadSiteOverview();
+				this.loadRecentArticles();
+				this.loadRecentComments();
+				this.loadTodayAuthorRanking();
+				this.loadMonthAuthorRanking();
+			},
+			methods: {
+				// 获取网站概要统计
+				async loadSiteOverview() {
+					try {
+						const res = await sa.http({
+							url: '/statistics/siteOverview',
+							method: 'post'
+						});
+
+						if (res && res.data) {
+							this.stats = {
+								articleCount: res.data.published_contents || 0,
+								commentCount: res.data.total_comments || 0,
+								categoryCount: res.data.total_categories || 0,
+								onlineCount: res.data.current_online || 0
+							};
+						}
+					} catch (error) {
+						console.error('获取网站概要失败:', error);
+					}
+				},
+
+				// 获取最近发布文章
+				async loadRecentArticles() {
+					try {
+						const res = await sa.http({
+							url: '/contents/recent',
+							method: 'post'
+						});
+
+						const list = Array.isArray(res && res.data) ? res.data : [];
+						this.recentArticles = list;
+					} catch (error) {
+						console.error('获取最近文章失败:', error);
+					}
+				},
+
+				// 获取最近评论
+				async loadRecentComments() {
+					try {
+						const res = await sa.http({
+							url: '/comments/recent',
+							method: 'post'
+						});
+
+						const list = Array.isArray(res && res.data) ? res.data : [];
+						this.recentComments = list;
+					} catch (error) {
+						console.error('获取最近评论失败:', error);
+					}
+				},
+
+				// 获取今日发布文章作者排名
+				async loadTodayAuthorRanking() {
+					try {
+						const res = await sa.http({
+							url: '/statistics/todayAuthorRanking',
+							method: 'post',
+							data: {
+								limit: 10
+							}
+						});
+
+						const list = res.data && Array.isArray(res.data) ? res.data : [];
+						this.todayAuthorRanking = list;
+					} catch (error) {
+						console.error('获取今日作者排名失败:', error);
+						this.todayAuthorRanking = [];
+					}
+				},
+
+				// 获取本月发布文章作者排名
+				async loadMonthAuthorRanking() {
+					try {
+						const res = await sa.http({
+							url: '/statistics/monthAuthorRanking',
+							method: 'post',
+							data: {
+								limit: 10
+							}
+						});
+
+						const list = res.data && Array.isArray(res.data) ? res.data : [];
+						this.monthAuthorRanking = list;
+					} catch (error) {
+						console.error('获取本月作者排名失败:', error);
+						this.monthAuthorRanking = [];
+					}
+				},
+
+				// 处理操作按钮点击
+				handleAction(tabId) {
+					try {
+						if (parent && parent.sa_admin) {
+							if (tabId === 'write-new') {
+								parent.sa_admin.showTab({
+									id: 'write-new-' + Date.now(),
+									name: '撰写新文章',
+									url: 'sa-view/article/article-write.html'
+								});
+							} else {
+								parent.sa_admin.showMenuById(tabId);
+							}
+						} else {
+							console.error('未找到parent.sa_admin对象');
+						}
+					} catch (e) {
+						console.error('调用出错:', e);
+					}
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

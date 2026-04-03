@@ -1,0 +1,99 @@
+
+CREATE TABLE `typecho_favorite` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `info_id` int(11) DEFAULT NULL,
+  `uid` int(11) DEFAULT NULL,
+  `created_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `info_id` (`info_id`,`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=107046 DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `typecho_user_buy` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `info_id` int(11) DEFAULT NULL COMMENT '资源id',
+  `uid` int(11) DEFAULT NULL COMMENT '用户id',
+  `status` int(11) DEFAULT NULL COMMENT '状态',
+  `created_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `info_id` (`info_id`,`uid`)
+) ENGINE=InnoDB AUTO_INCREMENT=277 DEFAULT CHARSET=utf8;
+
+CREATE TABLE `typecho_appointment` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `aff` int(11) DEFAULT NULL,
+  `info_id` int(11) DEFAULT NULL,
+  `status` int(11) DEFAULT NULL,
+  `freeze_money` int(11) DEFAULT NULL COMMENT '冻结元宝',
+  `coupon_id` int(11) DEFAULT NULL,
+  `type` int(11) NOT NULL DEFAULT '1',
+  `city_code` int(11) DEFAULT NULL,
+  `admin_name` char(30) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
+  `created_at` int(11) DEFAULT NULL,
+  `updated_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `typecho_vip_favorite` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `info_id` int(11) DEFAULT NULL,
+  `aff` int(11) DEFAULT NULL,
+  `created_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`aff`,`info_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33059 DEFAULT CHARSET=utf8;
+
+ALTER TABLE `typecho_info_vip`
+ADD COLUMN `category`  enum('loufeng','waiwei','baoyang') NOT NULL DEFAULT 'baoyang' COMMENT 'baoyang包养,waiwei外围,loufeng楼凤' AFTER `top`;
+
+ALTER TABLE `typecho_info_vip`
+ADD COLUMN `price_op`  int NOT NULL DEFAULT 1 COMMENT '1小圈2中圈3大圈' AFTER `category`;
+
+ALTER TABLE `typecho_info_vip`
+ADD COLUMN `wechat`  varchar(255) NOT NULL DEFAULT '' AFTER `price_op`,
+ADD COLUMN `qq`  varchar(255) NOT NULL DEFAULT '' AFTER `wechat`;
+ALTER TABLE `typecho_info_vip`  ADD COLUMN `fee_ct`  int(11) NOT NULL DEFAULT 0 COMMENT '次数' AFTER `qq`;
+
+CREATE TABLE `typecho_girl_chat_comment` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `aff` int(11) DEFAULT NULL,
+  `girl_chat_id` int(11) DEFAULT NULL,
+  `face` tinyint(4) DEFAULT NULL,
+  `service` tinyint(4) DEFAULT NULL,
+  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `status` int(11) DEFAULT '0' COMMENT '0:init, 1: pass, 1:fail review',
+  `reject_reason` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `aff` (`aff`,`girl_chat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `typecho_girl_chat_complaint` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `aff` int(11) DEFAULT NULL,
+  `girl_chat_order_id` int(11) DEFAULT NULL,
+  `girl_chat_id` int(11) DEFAULT NULL,
+  `types` varchar(50) DEFAULT NULL,
+  `content` varchar(500) DEFAULT NULL,
+  `reason` varchar(500) DEFAULT NULL,
+  `img` text,
+  `status` tinyint(4) DEFAULT NULL,
+  `ip_str` varchar(45) DEFAULT NULL,
+  `city_name` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `aff` (`aff`),
+  KEY `girl_chat_id` (`girl_chat_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+[{"name":"包养","value":"baoyang"},
+{"name":"楼风","value":"lougeng"},
+{"name":"waiwei","value":"waiwei"}]

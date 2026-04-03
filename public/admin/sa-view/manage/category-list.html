@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>帖子列表</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		/* .data-table .el-table__body-wrapper{min-height: 0px; max-height: 0px;}
+			.data-table .el-table__body-wrapper{transition: all 0.3s;} */
+		.data-table {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">标题：</label>
+					<el-input v-model="params.keyword" clearable></el-input>
+				</div>
+
+			</el-form>
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="danger" :disabled="!multipleSelection.length" icon="el-icon-delete"
+					@click="onDelete(multipleSelection)">批量删除</el-button>
+				<el-button type="primary" icon="el-icon-plus" @click="add">新增</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="fetchTableData">查询</el-button>
+				<el-button type="warning" icon="el-icon-download" @click="sa.exportExcel()">导出</el-button>
+			</div>
+			<!-- ------------- 数据列表 ------------- -->
+			<el-table @selection-change="handleSelectionChange" v-loading="fetching" class="data-table" ref="data-table"
+				:data="treeDataList" size="small" row-key="id" :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+				default-expand-all>
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="名称" prop="name"></el-table-column>
+				<el-table-column label="缩略名" prop="slug"></el-table-column>
+				<el-table-column label="SEO标题" prop="seo_title"></el-table-column>
+				<el-table-column label="SEO关键词" prop="seo_keywords"></el-table-column>
+				<el-table-column label="SEO描述" prop="seo_description"></el-table-column>
+				<el-table-column label="排序" prop="sort_order"></el-table-column>
+				<el-table-column prop="address" align="center" label="操作" width="260px">
+					<template slot-scope="s">
+						<el-button class="c-btn" type="success" icon="el-icon-plus" @click="addChild(s.row)">子分类</el-button>
+						<el-button class="c-btn" type="primary" icon="el-icon-edit" @click="update(s.row)">编辑</el-button>
+						<el-button class="c-btn" type="danger" @click="onDelete(s.row)" icon="el-icon-delete">删除</el-button>
+					</template>
+				</el-table-column>
+
+			</el-table>
+		</div>
+		<el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="600px">
+
+			<el-form ref="form" :model="state" :rules="rules" label-width="100px">
+				<el-form-item label="分类ID" v-if="state.id">
+					<el-input class="w-full" v-model="state.id" disabled></el-input>
+				</el-form-item>
+				<el-form-item label="分类名称" prop="name">
+					<el-input class="w-full" v-model="state.name" placeholder="请输入分类名称" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="分类别名" prop="slug">
+					<el-input class="w-full" v-model="state.slug" placeholder="请输入分类别名（用于URL）" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="分类描述" prop="description">
+					<el-input type="textarea" :rows="3" class="w-full" v-model="state.description" placeholder="请输入分类描述"
+						clearable></el-input>
+				</el-form-item>
+				<el-form-item label="父级分类" prop="parent_id">
+					<el-cascader v-model="state.parentPath" :options="parentCascaderOptions"
+						:props="{ checkStrictly: true, value: 'id', label: 'name', children: 'children', emitPath: false }"
+						placeholder="请选择父级分类（可选）" clearable style="width: 100%;" @change="onParentChange">
+					</el-cascader>
+				</el-form-item>
+				<el-row :gutter="20">
+					<el-col :span="12">
+						<el-form-item label="排序值" prop="sort_order">
+							<el-input-number v-model="state.sort_order" :min="0" :max="9999" style="width: 100%;"></el-input-number>
+						</el-form-item>
+					</el-col>
+					<el-col :span="12">
+						<el-form-item label="排序列" prop="sort_column">
+							<el-select v-model="state.sort_column">
+								<el-option v-for="item in sortFields" :key="item.slug" :label="item.name"
+									:value="item.slug"></el-option>
+							</el-select>
+						</el-form-item>
+					</el-col>
+				</el-row>
+				<el-divider content-position="left">SEO设置</el-divider>
+				<el-form-item label="SEO标题" prop="seo_title">
+					<el-input class="w-full" v-model="state.seo_title" placeholder="请输入SEO标题" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="SEO关键词" prop="seo_keywords">
+					<el-input class="w-full" v-model="state.seo_keywords" placeholder="请输入SEO关键词，多个用逗号分隔" clearable></el-input>
+				</el-form-item>
+				<el-form-item label="SEO描述" prop="seo_description">
+					<el-input type="textarea" :rows="3" class="w-full" v-model="state.seo_description" placeholder="请输入SEO描述"
+						clearable></el-input>
+				</el-form-item>
+			</el-form>
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="dialogVisible = false">取 消</el-button>
+				<el-button type="primary" :loading="submiting" @click="submit">确 定</el-button>
+			</span>
+		</el-dialog>
+
+	</div>
+	<script>
+
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				dialogVisible: false,
+				state: {
+					id: '',
+					name: '',
+					slug: '',
+					description: '',
+					parent_id: '',
+					parentPath: null, // 用于级联选择器
+					sort_order: 0,
+					sort_column: '',
+					seo_title: '',
+					seo_keywords: '',
+					seo_description: ''
+				},
+				rules: {
+					name: [
+						{ required: true, message: '请输入分类名称', trigger: 'blur' },
+					],
+					slug: [
+						{ required: true, message: '请输入分类别名', trigger: 'blur' },
+					],
+				},
+				multipleSelection: [],
+				categoryList: [], // 用于父级分类选择
+				submiting: false,
+				params: {
+					keyword: ''
+				},
+				sortFields: []
+			},
+			computed: {
+				dialogTitle() {
+					if (this.state.id) {
+						return '编辑分类'
+					}
+					if (this.state.parent_id) {
+						const parent = this.categoryList.find(item => item.id === this.state.parent_id)
+						return parent ? `新增子分类 - 父级：${parent.name}` : '新增子分类'
+					}
+					return '新增分类'
+				},
+				// 将扁平数据转换为树形结构（支持无限级）
+				treeDataList() {
+					return this.buildTree(this.dataList || [], 0)
+				},
+				// 父级分类级联选择器选项（排除当前编辑的分类及其子分类）
+				parentCascaderOptions() {
+					const list = this.categoryList || []
+					// 获取当前编辑分类的所有子分类ID（防止选择自己或子分类作为父级）
+					const disabledIds = this.state.id ? this.getAllChildIds(list, this.state.id) : []
+					disabledIds.push(this.state.id)
+					// 过滤掉禁用的分类
+					const filteredList = list.filter(item => !disabledIds.includes(item.id))
+					return this.buildTree(filteredList, 0)
+				}
+			},
+			methods: {
+				async fetchTableData() {
+					this.fetching = true
+					try {
+						const res = await sa.http({
+							url: 'category/list',
+							data: {
+								limit: 1000,
+								page: 1,
+								...this.params
+							}
+						})
+						const pageData = res && res.data ? res.data : {}
+						const list = Array.isArray(pageData.list) ? pageData.list : []
+						this.dataList = list
+						this.categoryList = list
+						this.dataCount = Number(pageData.total || list.length || 0)
+						this.$nextTick(() => {
+							sa.f5TableHeight()
+						})
+					} catch (error) {
+						console.error('加载分类列表失败:', error)
+						this.dataList = []
+						this.categoryList = []
+						this.dataCount = 0
+					} finally {
+						this.fetching = false
+					}
+				},
+				// 将扁平数据构建为树形结构
+				buildTree(list, parentId) {
+					const children = list.filter(item => {
+						const pid = Number(item.parent_id || 0)
+						return pid === Number(parentId)
+					})
+					return children.map(item => {
+						const subChildren = this.buildTree(list, item.id)
+						return subChildren.length > 0 ? { ...item, children: subChildren } : { ...item }
+					})
+				},
+				// 获取指定分类的所有子分类ID（递归）
+				getAllChildIds(list, parentId) {
+					const ids = []
+					const currentId = Number(parentId)
+					const children = list.filter(item => Number(item.parent_id || 0) === currentId)
+					children.forEach(child => {
+						ids.push(Number(child.id))
+						ids.push(...this.getAllChildIds(list, child.id))
+					})
+					return ids
+				},
+				// 父级分类选择变化
+				onParentChange(value) {
+					this.state.parent_id = value || 0
+				},
+				// 初始化表单状态
+				initState(data = {}) {
+					const parentId = Number(data.parent_id || 0)
+					this.state = {
+						id: data.id || '',
+						name: data.name || '',
+						slug: data.slug || '',
+						description: data.description || '',
+						parent_id: parentId,
+						parentPath: parentId || null,
+						sort_order: data.sort_order || 0,
+						sort_column: data.sort_column || '',
+						seo_title: data.seo_title || '',
+						seo_keywords: data.seo_keywords || '',
+						seo_description: data.seo_description || ''
+					}
+				},
+				// 打开弹窗
+				openDialog(data, clearValidate = true) {
+					this.initState(data)
+					this.dialogVisible = true
+					if (clearValidate) {
+						this.$nextTick(() => this.$refs.form?.clearValidate())
+					}
+				},
+				update(data) {
+					this.openDialog(data, false)
+				},
+				add() {
+					this.openDialog()
+				},
+				addChild(parentRow) {
+					this.openDialog({ parent_id: parentRow.id })
+				},
+				handleSelectionChange(val) {
+					this.multipleSelection = val;
+				},
+				onDelete(s) {
+					const res = Array.isArray(s) ? s : [s]
+					this.$confirm(`确定删除分类：${res.map(item => item.name).join(',')}?`, '提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(async () => {
+						try {
+							await sa.http({
+								url: 'category/delete',
+								data: {
+									ids: res.map(item => item.id)
+								},
+								showSuccess: true
+							})
+							this.resetTableData()
+						} catch (error) {
+
+						}
+					}).catch(() => {
+
+					});
+				},
+				submit() {
+					this.$refs.form.validate(async valid => {
+						if (valid) {
+							this.submiting = true
+							try {
+								const submitData = {
+									name: this.state.name,
+									slug: this.state.slug,
+									description: this.state.description,
+									parent_id: this.state.parent_id || 0,
+									sort_order: this.state.sort_order || 0,
+									sort_column: this.state.sort_column,
+									seo_title: this.state.seo_title,
+									seo_keywords: this.state.seo_keywords,
+									seo_description: this.state.seo_description
+								}
+								// 更新时添加ID
+								if (this.state.id) {
+									submitData.id = this.state.id
+								}
+								await sa.http({
+									url: 'category/save',
+									data: submitData,
+									showSuccess: true
+								})
+								this.dialogVisible = false
+								this.resetTableData()
+							} catch (error) {
+								console.error('提交失败:', error)
+							} finally {
+								this.submiting = false
+							}
+						}
+					})
+				},
+				async getSortFields() {
+					try {
+						const res = await sa.http({
+							url: 'contents/sortFields'
+						})
+						this.sortFields = res.data
+					} catch (error) {
+
+					}
+				}
+			},
+
+			created() {
+				this.getSortFields()
+			}
+
+		})
+	</script>
+
+</body>
+
+</html>

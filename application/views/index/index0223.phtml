@@ -1,0 +1,269 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/assets-v3/css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="referrer" content="same-origin">
+    <!-- <title>91吃瓜</title> -->
+    <meta name="og:title" property="og:title" content="">
+    <meta name="og:site_name" property="og:site_name" content="">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link rel="Shortcut Icon" href="/favicon.png">
+    <link rel="Bookmark" href="/favicon.png">
+    <link rel="stylesheet" href="/static/assets-v3/css/swiper-bundle.css">
+    <link rel="stylesheet" href="/static/assets-v3/css/swiper-bundle.min.css">
+    <script src="/static/assets-v3/js/swiper-bundle.js?v=1"> </script>
+    <script src="/static/assets-v3/js/swiper-bundle.min.js?v=1"> </script>
+<!--    <script src="/static/assets-v3/js/swiper-bundle.min.js.map"> </script>-->
+    <script type="text/javascript" src="/static/assets-v3/js/jquery-3.6.4.min.js"></script>
+    <script src="/static/assets-v3/js/jquery.qrcode.js"></script>
+    <script src="/static/assets-v3/js/clipboard.min.js"></script>
+    <script src="/static/zzz.js"></script>
+    <script>
+        const dataMap = {
+            copyText: "<?php echo $share ?>", // 邀请码
+            businessLink: "<?php echo $tg_sw; ?>", // 商务合作
+            tgLink: "<?php echo $tg_group; ?>", // tg群
+            iosLink: "<?php echo $pwa_url2; ?>", // ios 下载
+            androidLink: "<?php echo $android ? $android->apk : '/'; ?>", // android下载
+            macLink: "<?php echo $mac_download ? $mac_download->apk : '/'; ?>", // mac版本下载
+            webAppLink: "<?php echo $web_app_url; ?>", // web link 版本下载
+            windowsLink: "<?php echo $windows_download ? $windows_download->apk : '/'; ?>", // window版本下载
+            app_center_url: "<?php echo $app_center_url; ?>", // 福利应用
+            webLink: "<?php echo $web_url; ?>", // 浏览网页版
+            preventLostLink1: "<?php echo $prevent_lost1_url; ?>", // 防失联一
+            preventLostLink2: "<?php echo $prevent_lost2_url; ?>",// 防失联二
+            androidBkLink: "<?php echo $and_down_bk_url; ?>", // android 备用下载
+            iosBkLink: "<?php echo $ios_down_bk_url; ?>",// ios 备用下载
+            addressURL: "<?php echo $luodiye_guanwang_url; ?>", // 官网地址
+            // addressWebsite1: "https://www.google.com/1", // 红领巾App 最新地址
+            // addressWebsite2: "https://www.google.com/2", // 红领巾网页版最新地址
+            // addressWebsite3: "https://www.google.com/3", // 红领巾网页版永久网址（用VPN）
+            // addressWebsite4: "https://www.google.com/4", // 加入扣扣粉丝群
+            // addressWebsite5: "https://www.google.com/5", // 红领巾电报聊天群（需VPN）
+            // adresssTG: "https://t.me/https_51cg_fun/", // 需要关闭TG账号的敏感内容过滤,详细步骤查看:
+            // adresssTG1: "https://t.me/limingK0229", // 投稿请电报联系(用VPN):
+            // adresssTG2: "https://www.google.com/6", // 红领巾电报聊天群
+            // adresssTG3: "https://www.google.com/7", // TG 频道/群组成人内容无法看
+            // adresssGithub: "https://www.google.com/8", // 永久获取最新网址
+        };
+    </script>
+    <script type="text/javascript" src="/static/assets-v3/js/index.js?v=35"></script>
+    <link rel="stylesheet" href="/static/assets-v3/css/layui.css" media="all">
+    <script src="/static/assets-v3/js/layui.js"></script>
+    
+</head>
+
+<body class="body">
+    <div id="loyoutId" class="layout">
+        <!-- 标题logo模块 -->
+        <div class="top">
+            <div class="top-btn">
+                <img src="/static/assets-v3/images/new/logo.png?v=1" class="logo-header">
+                <div class="btn-list">
+                    <div class="btnimg" onclick="onClick(0)">
+                        <img class="icon-img" src="/static/assets-v3/images/new/m-1.png">
+                    </div>
+                    <div class="btnimg" onclick="onClick(1)">
+                        <img class="icon-img" src="/static/assets-v3/images/new/m-2.png">
+                    </div>
+                    <div class="btnimg" onclick="onClick(2)">
+                        <img class="icon-img" src="/static/assets-v3/images/new/m-3.png">
+                    </div>
+                </div>
+            </div>
+            <img src="/static/assets-v3/images/new/t-1.png" class="title-img">
+            <!-- 轮播模块 -->
+            <div class="swiper">
+                <div class="swiper-container swiper-initialized swiper-vertical swiper-pointer-events swiper-backface-hidden"
+                    id="swiperId">
+                    <div class="swiper-wrapper" id="swiper-wrapper-1cde5e103f61d531c" aria-live="off"
+                        style="transform: translate3d(0px, -1278px, 0px); transition-duration: 0ms;">
+                        <?php foreach ($rotates as $key => $value) : ?>
+                            <div class="swiper-slide">
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIABAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAICTAEAOw==" class="reload" data-url="<?php echo $value['img_url'] ?>" alt="525X942">
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- <div class='swiper-pagination'>
+    </div> -->
+
+        <!-- 底部按钮交互模块 -->
+        <div class="bottom" id="bottom">
+            <!-- 下载 -->
+            <div class="download">
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('android')">
+                    <img src="/static/assets-v2/images/new/app-1.png">
+                </div>
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('ios')">
+                    <img src="/static/assets-v2/images/new/app-2.png">
+                </div>
+            </div>
+            <div class="download">
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('window')">
+                    <img src="/static/assets-v2/images/new/app-3.png">
+                </div>
+                <div class="downitem" data-clipboard-text="<?php echo $share ?>" onclick="onDownload('macOS')">
+                    <img src="/static/assets-v2/images/new/app-4.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- 获取地址弹框模块 -->
+        <div id="addressId" class="mask" onclick="onHideAddress()">
+            <div class="address">
+                <div class="addresstitle">
+                    <img src="/static/assets-v3/images/new/title.png" class="">
+                </div>
+                <div class="address-item" onclick="onAddress('address')">
+                    <img src="/static/assets-v3/images/new/i-1.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('group')">
+                    <img src="/static/assets-v3/images/new/i-2.png" class="but-imgg">
+                </div>
+
+
+                <div class="address-item" onclick="onAddress('question')">
+                    <img src="/static/assets-v3/images/new/i-3.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('welfare')">
+                    <img src="/static/assets-v3/images/new/i-4.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('lost1')">
+                    <img src="/static/assets-v3/images/new/i-5.png" class="but-imgg">
+                </div>
+
+                <div class="address-item" onclick="onAddress('lost2')">
+                    <img src="/static/assets-v3/images/new/i-6.png" class="but-imgg">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 安装app解决方案模块 -->
+        <div id="solutionId" class="solution">
+            <div class="top-bg">
+                <div class="backicon">
+                    <img onclick="onBack('solution')" class="back" src="/static/assets-v3/images/new/back.png">
+                </div>
+                <div class="">
+                    <img class="logo" src="/static/assets-v3/images/new/logo.png">
+                </div>
+            </div>
+            <div class="setting-bg">
+                <div class="txt">
+                    <img class="" src="/static/assets-v3/images/new/s-t.png">
+                </div>
+                <div class="set-item" onclick="onSetting('huawei')">
+                    <img class="" src="/static/assets-v3/images/new/k-1.png">
+                </div>
+                <div class="set-item" onclick="onSetting('vivo')">
+                    <img class="" src="/static/assets-v3/images/new/k-2.png">
+                </div>
+                <div class="set-item" onclick="onSetting('meizu')">
+                    <img class="" src="/static/assets-v3/images/new/k-3.png">
+                </div>
+                <div class="set-item" onclick="onSetting('oppo')">
+                    <img class="" src="/static/assets-v3/images/new/k-4.png">
+                </div>
+                <div class="set-item" onclick="onSetting('xiaomi')">
+                    <img class="" src="/static/assets-v3/images/new/k-5.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- 安装教程模块 -->
+        <div id="tutorialId" class="tutorial">
+            <div class="nav">
+                <img src="/static/assets-v3/images/new/bk.png" onclick="onBack('tutorial')">
+                <p id="navId"></p>
+                <p></p>
+            </div>
+            <img id="tutorialImgId" src="/static/assets-v3/images/new/huawei.jpeg">
+        </div>
+
+        <!-- 下载模块 -->
+        <div id="downloadId" class="download-bg" style="display: none;">
+
+            <div class="top-bg">
+                <div class="backicon">
+                    <img onclick="onBack('download')" class="back" src="/static/assets-v3/images/new/back.png">
+                </div>
+                <div class="logo">
+                    <img class="logo-img" src="/static/assets-v3/images/new/l-1.png?v=1">
+                </div>
+                <div class="platformname">
+                    <img id="platformname" src="/static/assets-v3/images/new/back.png">
+                </div>
+                <div id="pgxiazai" onclick="pgxiazai()" class="dl">
+                    <img src="/static/assets-v3/images/new/l-3.png">
+                </div>
+            </div>
+            
+            <img id="platformimg" style="position: relative; top: -20px; height: 732px;" src="/static/assets-v3/images/new/back.png">
+            <div style="display: none">
+                <img src="/static/assets-v3/images/new/l-2.png?v=5">
+                <img src="/static/assets-v3/images/new/b1.png?v=5">
+                <img src="/static/assets-v3/images/new/l-4.png?v=5">
+                <img src="/static/assets-v3/images/new/b12.png?v=10">
+                <img src="/static/assets-v3/images/new/bg1.png">
+            </div>
+            <div id="downandriod" class="downandriod" style="display: block;" onclick="toTutorial()"></div>
+            <div class="andxiazai">
+                <div id="andxiazai" onclick="pgxiazai()" class="btn-1">
+                    <img src="/static/assets-v3/images/new/btn.png">
+                </div>
+
+                <div onclick="onAlternateDownload()" class="btn-1">
+                    <img src="/static/assets-v3/images/new/btn-1.png">
+                </div>
+            </div>
+        </div>
+
+        <!-- 常见问题 -->
+        <div id="questionId" class="question">
+            <div class="nav">
+                <img src="/static/assets-v3/images/new/bk.png" onclick="onBack('question')">
+                <p>常见问题</p>
+                <p></p>
+            </div>
+            <div class="question-list">
+                <?php foreach ($user_help as $key => $value) : ?>
+                    <div class="question-list-item">
+                        <div class="question-list-item-title" onclick="onClickQuestion(<?php echo $key + 1 ?>)">
+                            <p><?php echo $value['question'] ?></p>
+                            <img id="arrowId<?php echo $key + 1 ?>" src="/static/assets-v1/arrow.png" />
+                        </div>
+                        <div id="question<?php echo $key + 1 ?>" class="question-list-item-title-content"><pre><?php echo $value['answer'] ?></pre></div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div id="modelId" class="model">
+            <p id="tipsId">成功</p>
+        </div>
+    </div>
+
+    <script> new ClipboardJS('.body');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YFMJ6B4NV1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-YFMJ6B4NV1');
+    </script>
+
+</body>
+
+</html>

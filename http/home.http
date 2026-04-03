@@ -1,0 +1,78 @@
+### 全局配置接口
+POST {{host}}/api/home/config
+Content-Type: application/json
+
+{
+  "oauth_id": "e3f5536a141811db40efd6400f1d0a4e",
+  "oauth_type": "android",
+  "version": "1.0.1"
+}
+
+
+### 域名检查上报
+POST {{host}}/api/home/domainCheckReport
+Content-Type: application/json
+
+{
+  "list": []
+}
+
+### 官方联系方式/home/getContactList
+POST {{host}}/api/home/getContactList
+Content-Type: application/json
+
+{
+
+}
+
+### 检查线路/home/checkLine
+POST {{host}}/api/home/checkLine
+Content-Type: application/json
+
+{
+
+}
+
+### 获取setting
+POST {{host}}/api/home/getSetting
+Content-Type: application/json
+
+{
+  "name": "age_filter_2"
+}
+
+### 应用中心
+POST {{host}}/api/home/appCenter
+Content-Type: application/json
+
+{
+}
+
+### 兑换码,当天有效
+POST {{host}}/api/home/exchange
+Content-Type: application/json
+
+{
+  "cdk": "111"
+}
+
+### 导航
+POST {{host}}/api/home/nav
+Content-Type: application/json
+
+{
+}
+
+### 热搜索词
+POST {{host}}/api/home/getSearchWord
+Content-Type: application/json
+
+{
+}
+
+### 获取更新数量
+POST {{host}}/api/home/getUpdateNum
+Content-Type: application/json
+
+{
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<link rel="shortcut icon" type="image/x-icon" href="sa-frame/admin-logo.png" class="admin-icon">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.15.14/lib/theme-chalk/index.min.css">
+	<link rel="stylesheet" href="sa-frame/index/index.css">
+	<link rel="stylesheet" href="sa-frame/index/theme.css">
+	<link rel="stylesheet" href="static/sa.css">
+</head>
+
+<body>
+	<!-- App -->
+	<div class="app" style="display: none;" :style="'display: block;'" :class="[(isOpen ? '' : 'app-fold')]">
+		<!-- 顶部 -->
+		<div class="nav-top">
+			<!-- logo和菜单 -->
+			<div class="nav-top-left">
+				<div class="nav-top-logo">
+					<nav-logo></nav-logo>
+				</div>
+				<div class="nav-top-menu">
+					<nav-menu-bar ref="nav-menu-bar"></nav-menu-bar>
+				</div>
+			</div>
+			<!-- 工具栏 -->
+			<div class="nav-top-right">
+				<nav-tool-bar ref="nav-tool-bar"></nav-tool-bar>
+			</div>
+		</div>
+		<!-- 底部内容区 -->
+		<div class="nav-content">
+			<!-- Tab栏 -->
+			<div class="nav-content-tabs">
+				<nav-tab-bar ref="nav-tab-bar"></nav-tab-bar>
+			</div>
+			<!-- 视图容器 -->
+			<div class="nav-content-view">
+				<nav-view-vessel></nav-view-vessel>
+			</div>
+		</div>
+		<!-- 右键菜单 -->
+		<com-right-menu ref="com-right-menu"></com-right-menu>
+		<!-- 双击添加新tab -->
+		<com-add-tab ref="com-add-tab"></com-add-tab>
+	</div>
+
+	<!-- js依赖库 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+	<script type="text/javascript">Vue.config.productionTip = false;</script>
+	<script src="/static/js/httpVueLoader.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.13.0/index.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="/static/js/layer.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.24.3/vuedraggable.umd.js"></script>
+	<!-- <script src="https://www.itxst.com/package/sortable/sortable.min.js"></script> -->
+	<!-- <script src="https://www.itxst.com/package/vuedraggable/vuedraggable.umd.min.js"></script> -->
+
+	<!-- js本地库 -->
+	<script src="sa-frame/index/admin-util.js?v=2026012302"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js?v=2026012302"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js?v=2026012302"></script>
+	<script src="static/sa.js?v=2026030602"></script>
+	<script src="sa-frame/index/index.js?v=2026012302"></script>
+	<script src="sa-frame/menu-list.js?v=2026012302"></script>
+	<script src="sa-frame/sa-code.js?v=2026012302"></script>
+
+</body>
+
+</html>

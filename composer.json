@@ -1,0 +1,46 @@
+{
+    "name": "lanyan/public-framework",
+    "version": "1.0.0",
+    "description": "lanyan Framework",
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">= 7.1.3",
+        "illuminate/database": "^8.29.0",
+        "doctrine/dbal": "^2.9",
+        "smarty/smarty": "^3.1",
+        "illuminate/events": "^8.29.0",
+        "symfony/var-dumper": "^5.2",
+        "guzzlehttp/guzzle": "7.3.0",
+        "phpoffice/phpspreadsheet": "^1.20",
+        "ext-curl": "*",
+        "tb-old/library": "~2",
+        "ext-fileinfo": "*",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "ext-openssl": "*",
+        "elasticsearch/elasticsearch": "^7.17",
+        "overtrue/pinyin": "^4.0",
+        "ext-bcmath": "*",
+        "lustre/php-dfa-sensitive": "^1.4",
+        "jenssegers/blade": "^1.4",
+        "ext-mbstring": "*"
+    },
+    "autoload": {
+    },
+    "repositories": {
+        "tb-old/library": {
+            "type": "vcs",
+            "url": "git@172.105.200.120:microservices/composer/old_config.git"
+        }
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "@php -r \"file_exists('storage/logs') || copy('conf/database.ini.example', 'conf/database.ini');\"",
+            "@php -r \"file_exists('storage/logs') || copy('script/api.php', 'public/api.php');\"",
+            "@php -r \"file_exists('storage/logs') || copy('script/d.php', 'public/d.php');\"",
+            "@php -r \"file_exists('storage/logs') || copy('script/index.php', 'public/index.php');\"",
+            "@php -r \"file_exists('storage/logs') || mkdir('storage/logs',0755, true);\""
+        ]
+    }
+}

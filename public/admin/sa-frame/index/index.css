@@ -1,0 +1,169 @@
+*{margin: 0; padding: 0; }
+html,body{height: 100%; background-color: #000;} 
+body{height: 100vh;background-color: #000;background-image: url(admin-loading.gif); background-repeat: no-repeat;background-position: 50% 50%; color: #f5f5f5;}
+.app{height: 100%; font-size: 16px; font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;}
+.app{background-color: #000; color: #f5f5f5;}
+
+/* 变量 */
+body{
+	--nav-top-height: 60px;
+	--nav-content-tabs-height: 35px;
+}
+
+/* 顶部导航栏 */
+.nav-top {
+	position: fixed; 
+	top: 0; 
+	left: 0;
+	width: 100%; 
+	height: var(--nav-top-height); 
+	z-index: 200; 
+	display: flex;
+	align-items: center;
+	border-bottom: 1px #F1F1F1 solid;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-top-left {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	height: 100%;
+	overflow: hidden;
+}
+
+.nav-top-logo {
+	display: flex;
+	align-items: center;
+	height: 100%;
+	padding: 0 20px;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.nav-top-menu {
+	flex: 1;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: hidden;
+}
+
+.nav-top-right {
+	height: 100%;
+	flex-shrink: 0;
+}
+
+/* 底部内容区 */
+.nav-content {
+	position: fixed;
+	top: var(--nav-top-height);
+	left: 0;
+	width: 100%;
+	height: calc(100vh - var(--nav-top-height));
+	z-index: 100;
+}
+
+.nav-content-tabs {
+	height: var(--nav-content-tabs-height);
+	line-height: var(--nav-content-tabs-height);
+	position: relative;
+	box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+.nav-content-view {
+	width: 100%;
+	height: calc(100vh - var(--nav-top-height) - var(--nav-content-tabs-height));
+	position: relative;
+	overflow: hidden;
+}
+
+/* 所有带动画的元素 */
+.admin-logo, .nav-top, .nav-top-left, .nav-top-menu, .nav-top-right, .nav-content {
+	transition: all 0.2s;
+}
+
+/* 菜单折叠 */
+.app-fold .nav-top-menu {
+	display: none;
+}
+
+.app-fold .nav-top-logo {
+	padding: 0 15px;
+}
+
+
+/* -------------- 其它 --------------- */
+
+/* 水平菜单的下拉子菜单样式 */
+.el-menu--horizontal .el-menu--popup {
+	background-color: #FFF !important;
+	border: 1px solid #E4E7ED;
+	box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+/* 菜单滚动条样式 */
+.nav-top-menu::-webkit-scrollbar {
+	height: 4px;
+}
+
+.nav-top-menu::-webkit-scrollbar-thumb {
+	background: rgba(0,0,0,0.2);
+	border-radius: 2px;
+}
+
+.nav-top-menu::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+/* 最高层级 */
+.z-index-max{z-index: 2147483647;}
+
+/* 水平菜单项样式调整 */
+.nav-top .el-menu--horizontal > .el-menu-item {
+	padding: 0 20px;
+	border-bottom: 3px solid transparent;
+	transition: all 0.3s;
+}
+
+.nav-top .el-menu--horizontal > .el-submenu .el-submenu__title {
+	padding: 0 20px;
+	transition: all 0.3s;
+}
+
+/* 增强选中状态的边框 */
+.nav-top .el-menu--horizontal > .el-menu-item.is-active {
+	border-bottom-color: currentColor;
+}
+
+/* 菜单项悬浮效果 */
+.nav-top .el-menu--horizontal > .el-menu-item:hover,
+.nav-top .el-menu--horizontal > .el-submenu:hover .el-submenu__title {
+	background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+	body {
+		--nav-top-height: 50px;
+	}
+	
+	.nav-top-logo {
+		padding: 0 10px;
+	}
+	
+	.nav-top .el-menu--horizontal > .el-menu-item,
+	.nav-top .el-menu--horizontal > .el-submenu .el-submenu__title {
+		padding: 0 12px;
+		font-size: 14px;
+	}
+}
+
+
+/* 遮罩样式 */
+.shade-fox{position: absolute; z-index: 1000000; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); color: #FFF; top: 0px;}
+.shade-fox{display: flex; justify-content: center; align-items: center}
+
+/* 去除掉便签的大边框 */
+.layer-note-class .layui-layer-input{outline: 0; box-shadow: none !important; padding: 0.8em !important; font-family: 'Times New Roman', Times, serif;}
+.layer-note-class .layui-layer-input{border: 0px #ddd solid; border-bottom: 1px #ddd solid;}
+

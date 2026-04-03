@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>管理文章</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		.article-manage-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.article-tabs {
+			margin-bottom: 20px;
+		}
+
+		.filter-section {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			margin-bottom: 15px;
+			flex-wrap: wrap;
+		}
+
+		.filter-section .filter-group {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.filter-section .search-input {
+			width: 200px;
+		}
+
+		.filter-section .select-input {
+			width: 150px;
+		}
+
+		.bulk-actions {
+			margin-bottom: 10px;
+		}
+
+		.data-table {
+			margin-bottom: 20px;
+		}
+
+		.article-title-cell {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.article-title-cell .title-text {
+			flex: 1;
+		}
+
+		.article-title-cell .action-icons {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+		}
+
+		.article-title-cell .action-icons i,
+		.article-title-cell .action-icons a {
+			cursor: pointer;
+			font-size: 16px;
+			color: #409EFF;
+			text-decoration: none;
+		}
+
+		.article-title-cell .action-icons i:hover,
+		.article-title-cell .action-icons a:hover {
+			color: #66b1ff;
+		}
+
+		.page-box {
+			display: flex;
+			justify-content: flex-end;
+			margin-top: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- 标题和新增按钮 -->
+			<div class="article-manage-header">
+				<div class="c-title">管理文章</div>
+			</div>
+
+			<!-- 标签页 -->
+			<div class="article-tabs">
+				<el-tabs v-model="activeTab" @tab-click="handleTabClick">
+					<el-tab-pane label="全部" name=""></el-tab-pane>
+					<el-tab-pane label="公开" name="publish"></el-tab-pane>
+					<el-tab-pane label="待审核" name="waiting"></el-tab-pane>
+					<el-tab-pane label="隐藏" name="hidden"></el-tab-pane>
+					<el-tab-pane label="已下架" name="removed"></el-tab-pane>
+				</el-tabs>
+			</div>
+
+			<!-- 筛选和搜索区域 -->
+			<div class="filter-section">
+				<div class="filter-group">
+					<el-input v-model="p.cid" placeholder="cid 精确搜索" class="search-input" clearable></el-input>
+					<el-input v-model="p.keyword" placeholder="请输入关键字" class="search-input" clearable></el-input>
+					<el-select v-model="p.author" placeholder="作者（输入快速匹配）" class="search-input" filterable remote
+						:remote-method="loadAuthors" :loading="authorLoading" clearable>
+						<el-option v-for="item in authorOptions" :key="item.id" :label="item.name" :value="item.name"></el-option>
+					</el-select>
+					<el-select v-model="p.category" placeholder="所有分类" class="select-input" clearable>
+						<el-option label="分类：全部" value=""></el-option>
+						<el-option v-for="item in categoryList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+					</el-select>
+					<el-select v-model="p.sort" placeholder="排序" class="select-input" clearable>
+						<el-option label="排序：全部" value=""></el-option>
+						<el-option v-for="item in sortFilterOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+					<el-select v-model="p.is_home" placeholder="首页显示" class="select-input" clearable>
+						<el-option label="首页显示：全部" value=""></el-option>
+						<el-option label="首页显示" value="1"></el-option>
+						<el-option label="首页不显示" value="0"></el-option>
+					</el-select>
+					<el-select v-model="p.hot_search" placeholder="热搜" class="select-input" clearable>
+						<el-option label="热搜：全部" value=""></el-option>
+						<el-option label="是" value="1"></el-option>
+						<el-option label="否" value="0"></el-option>
+					</el-select>
+
+				</div>
+			</div>
+
+			<!-- 批量操作 -->
+			<div class="bulk-actions">
+				<el-button type="danger" icon="el-icon-delete" @click="handleBulkDelete">删除</el-button>
+				<el-button type="warning" icon="el-icon-plus" :disabled="!hasMulSelection"
+					@click="batchUpdateStatus">批量设置状态</el-button>
+				<el-button type="success" icon="el-icon-tickets" :disabled="!hasMulSelection"
+					@click="openHomeDialog()">批量设置首页</el-button>
+				<el-button type="info" icon="el-icon-tickets" :disabled="!hasMulSelection"
+					@click="openCateDialog()">批量设置分类</el-button>
+				<el-button type="primary" icon="el-icon-s-comment" @click="openCommentDialog()">批量添加评论</el-button>
+				<el-button type="success" icon="el-icon-plus" @click="add">新增</el-button>
+				<el-button type="info" icon="el-icon-search" @click="f5()">筛选</el-button>
+			</div>
+
+			<!-- 数据列表 -->
+			<el-table v-loading="loading" class="data-table" ref="data-table" :data="dataList" size="small"
+				@selection-change="handleSelectionChange">
+				<el-table-column type="selection" width="45px"></el-table-column>
+				<el-table-column label="cid" prop="cid" width="80px" align="center">
+
+				</el-table-column>
+				<el-table-column label="标题" prop="title" min-width="200px">
+					<template slot-scope="scope">
+						<div class="article-title-cell">
+							<span class="title-text">{{ scope.row.title }}</span>
+							<div class="action-icons">
+								<i class="el-icon-edit" @click="update(scope.row)" title="编辑"></i>
+								<a :href="scope.row.preview_url" target="_blank" v-if="scope.row.preview_url" title="查看">
+									<i class="el-icon-link"></i>
+								</a>
+							</div>
+						</div>
+					</template>
+				</el-table-column>
+				<el-table-column label="作者" width="100px" align="center">
+					<template slot-scope="scope">
+						{{ scope.row.author_name || (scope.row.author && scope.row.author.screenName) || (scope.row.author &&
+						scope.row.author.name) || '-' }}
+					</template>
+				</el-table-column>
+				<el-table-column label="分类" width="120px" align="center">
+					<template slot-scope="scope">
+						<el-button type="text" @click="openCateDialog(scope.row)">
+							{{ scope.row.category_str || '-' }}
+						</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column label="发布时间" width="140px" align="center">
+					<template slot-scope="scope">
+						{{ scope.row.created_str || scope.row.created || '-' }}
+					</template>
+				</el-table-column>
+				<el-table-column label="浏览数" width="100px" align="center">
+					<template slot-scope="scope">
+						{{ scope.row.view || scope.row.web_show || 0 }}
+					</template>
+				</el-table-column>
+				<el-table-column label="首页显示" width="80px" align="center">
+					<template slot-scope="scope">
+						<el-button type="text" @click="openHomeDialog(scope.row)">
+							{{ (scope.row.is_home ? '是' : '否') }}
+						</el-button>
+					</template>
+				</el-table-column>
+				<!-- 动态排序字段列 -->
+				<el-table-column v-for="field in sortFieldList" :key="field.id" :label="field.name" width="120px"
+					align="center">
+					<template slot-scope="scope">
+						<el-input class="sort-item" v-if="scope.row.sort_fields[field.key].isEdit" autofocus type="number"
+							v-model.number="scope.row.sort_fields[field.key]._value" @blur="onChangeSort(field.key, scope.row)">
+						</el-input>
+						<el-button type="text" v-else @click="onEditSort(field.key, scope.row)">
+							{{ scope.row.sort_fields?.[field.key]?.value ?? 0 }}
+						</el-button>
+					</template>
+				</el-table-column>
+				<el-table-column label="热搜" width="80px" align="center">
+					<template slot-scope="scope">
+						<span style="cursor: pointer; color: #409EFF;" @click="toggleHotSearch(scope.row)">
+							{{ scope.row.hotSearch == 1 ? '是' : '否' }}
+						</span>
+					</template>
+				</el-table-column>
+				<el-table-column label="操作" align="center" width="200px" fixed="right">
+					<template slot-scope="scope">
+						<el-button type="primary" icon="el-icon-s-comment"
+							@click="openCommentDialog(scope.row.cid)">设置评论</el-button>
+					</template>
+				</el-table-column>
+			</el-table>
+
+			<!-- 分页 -->
+			<div class="page-box">
+				<el-pagination background layout="total, prev, pager, next, sizes, jumper" :current-page.sync="p.pageNo"
+					:page-size.sync="p.pageSize" :total="dataCount" :page-sizes="[1, 10, 20, 30, 40, 50, 100]"
+					@current-change="f5(true)" @size-change="f5(true)">
+				</el-pagination>
+			</div>
+
+		</div>
+		<!-- 批量设置首页显示 -->
+		<el-dialog title="设置首页显示" :visible.sync="homeDialogVisible" width="400px">
+			<div style="text-align: center; padding: 20px 0;">
+				<div style="margin-bottom: 12px;">设置文章： {{ selectHomeCid ? selectHomeCid :
+					selectedRows.map(item=>item.cid).join(',')}} 是否首页显示</div>
+				<el-radio-group v-model="is_home">
+					<el-radio :label="1">是</el-radio>
+					<el-radio :label="0">否</el-radio>
+				</el-radio-group>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="homeDialogVisible = false">取消</el-button>
+				<el-button type="primary" :loading="homeLoading" @click="setIsHome">确定</el-button>
+			</div>
+		</el-dialog>
+		<!-- 热搜设置弹窗 -->
+		<el-dialog title="设置热搜" :visible.sync="hotSearchDialogVisible" width="400px">
+			<div style="text-align: center; padding: 20px 0;">
+				<el-radio-group v-model="hotSearchValue">
+					<el-radio :label="1">是</el-radio>
+					<el-radio :label="0">否</el-radio>
+				</el-radio-group>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="hotSearchDialogVisible = false">取消</el-button>
+				<el-button type="primary" @click="confirmHotSearch">确定</el-button>
+			</div>
+		</el-dialog>
+		<!-- 批量改状态 -->
+		<el-dialog title="批量设置状态" :visible.sync="batchStatusDialogVisible" width="400px">
+			<div style="text-align: center; padding: 20px 0;">
+				<el-form>
+					<el-form-item label="状态">
+						<el-select v-model="batchStatus">
+							<el-option value="publish" label="公开"></el-option>
+							<el-option value="hidden" label="隐藏"></el-option>
+							<el-option value="removed" label="删除"></el-option>
+						</el-select>
+					</el-form-item>
+				</el-form>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="batchStatusDialogVisible = false">取消</el-button>
+				<el-button type="primary" :loading="batchstatusing" @click="onBatchUpdateStatus">确定</el-button>
+			</div>
+		</el-dialog>
+		<!-- 批量添加评论 -->
+		<el-dialog title="批量添加评论" :visible.sync="commentDialog" width="600px">
+			<el-form ref="comment" :model="commentState" :rules="commentRules" label-position="top">
+				<el-form-item label="评论的用户:" prop="user_nicknames">
+					<el-input v-model="commentState.user_nicknames" placeholder="哪个用户进行评论，多个用英文逗号分隔"></el-input>
+					<p class="description">多个用户昵称用英文逗号分隔</p>
+				</el-form-item>
+				<el-form-item label="文章的编号:" prop="article_ids">
+					<el-input v-model="commentState.article_ids" placeholder="到哪个文章下面进行评论，多个用英文逗号分隔"></el-input>
+					<p class="description">多个文章ID用英文逗号分隔</p>
+				</el-form-item>
+				<el-form-item label="评论的内容:" prop="comment_contents">
+					<el-input v-model="commentState.comment_contents" type="textarea" :rows="5"
+						placeholder="评论的数据，一行一个"></el-input>
+					<p class="description">每行一条评论内容</p>
+				</el-form-item>
+				<el-form-item label="评论的时间:">
+					<el-input-number v-model="commentState.time_from" @change="handleTimeChange" :min="0"></el-input-number>
+					<span>小时 ～ </span>
+					<el-input-number v-model="commentState.time_to" :min="commentState.time_from"></el-input-number>
+					<span>小时</span>
+					<p class="description">从文章发布时候后的第 {{commentState.time_from}} 小时 ~ 第 {{commentState.time_from}}小时</p>
+				</el-form-item>
+				<el-form-item label="是否置顶">
+					<el-checkbox v-model="commentState.is_top" :true-label="1" :false-label="0">置顶</el-checkbox>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="commentDialog = false">取消</el-button>
+				<el-button type="primary" :loading="commentLoading" @click="addComments">确定</el-button>
+			</div>
+		</el-dialog>
+		<!-- 批量改分类 -->
+		<el-dialog :title="selectCate ? '更改分类' : '批量更改分类'" :visible.sync="cateDialogVisible" width="600px">
+			<div style="padding: 20px 0;">
+				<el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+				<el-form label-position="top">
+					<el-form-item label="选择分类:">
+						<el-checkbox-group v-model="cates" @change="handleCheckedCitiesChange">
+							<el-checkbox :key="item.id" :label="item.id" v-for="item in categoryList">{{item.name}}</el-checkbox>
+						</el-checkbox-group>
+					</el-form-item>
+				</el-form>
+			</div>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="cateDialogVisible = false">取消</el-button>
+				<el-button type="primary" :loading="cateLoading" @click="batchSetCate">确定</el-button>
+			</div>
+		</el-dialog>
+	</div>
+	<script>
+		var app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa: sa,
+				activeTab: '', // 当前选中的标签
+				selectedRows: [], // 选中的行
+				p: { // 查询参数
+					cid: '', // 唯一 cid 精确搜索
+					keyword: '', // 确保是字符串
+					author: '', // 作者搜索
+					category: '', // 确保是字符串或数字，不是对象
+					sort: '', // 自定义排序字段
+					is_home: '', // 首页显示筛选
+					hot_search: '', // 热搜筛选
+					status: '', // 文章状态
+					pageNo: 1,
+					pageSize: 10,
+				},
+				dataCount: 0,	// 数据总数 
+				dataList: [], // 数据集合
+				categoryList: [], // 分类列表
+				authorOptions: [], // 作者下拉选项（远程搜索）
+				authorLoading: false,
+				sortFilterOptions: [], // 排序下拉选项（自定义排序字段）
+				sortFieldList: [], // 排序字段列表（动态列）
+				hotSearchDialogVisible: false, // 热搜设置弹窗显示状态
+				hotSearchValue: 0, // 热搜选择值（0=否，1=是）
+				currentHotSearchRow: null, // 当前操作的行数据
+				loading: false,
+				batchStatusDialogVisible: false,
+				batchStatus: 'publish',
+				batchstatusing: false,
+
+				commentDialog: false,
+				commentState: {
+					user_nicknames: '',
+					article_ids: '',
+					comment_contents: '',
+					time_from: '',
+					time_to: '',
+					is_top: 0
+				},
+				commentLoading: false,
+				commentRules: {
+					user_nicknames: [
+						{ required: true, message: '请填写昵称', trigger: 'blur' },
+					],
+					article_ids: [
+						{ required: true, message: '请填写文章cid', trigger: 'blur' },
+					],
+					comment_contents: [
+						{ required: true, message: '请填写文章内容', trigger: 'blur' },
+					],
+				},
+				is_home: 1,
+				homeDialogVisible: false,
+				homeLoading: false,
+				selectHomeCid: '',
+
+				cateDialogVisible: false,
+				cates: [],
+				cateLoading: false,
+				checkAll: false,
+				isIndeterminate: true,
+				selectCate: ''
+
+			},
+			computed: {
+				hasMulSelection() {
+					return this.selectedRows.length > 0
+				},
+				selectIds() {
+					return this.selectedRows.map(item => item.cid)
+				},
+				selectIdsString() {
+					return this.selectIds.join(',')
+				}
+			},
+			methods: {
+				// 标签页切换
+				handleTabClick: function (tab) {
+					// 根据标签设置状态
+					var statusMap = {
+						'publish': 'publish',
+						'waiting': 'waiting',
+						'hidden': 'hidden',
+						'removed': 'removed',
+						'all': ''
+					};
+					this.p.status = statusMap[tab.name] || '';
+					this.p.pageNo = 1;
+					this.f5();
+				},
+				// 数据刷新
+				async f5() {
+					try {
+						// 构建请求参数
+						var params = {
+							status: String(this.p.status),
+							page: Number(this.p.pageNo || 1),
+							limit: Number(this.p.pageSize || 10)
+						};
+
+						// 如果填写了唯一 cid，则优先按 cid 精确搜索
+						if (this.p.cid && String(this.p.cid).trim()) {
+							params.cid = Number(String(this.p.cid).trim()) || 0;
+						}
+
+						// 添加可选参数
+						if (this.p.keyword && String(this.p.keyword).trim()) {
+							params.keyword = String(this.p.keyword).trim();
+						}
+						if (this.p.author && String(this.p.author).trim()) {
+							params.author = String(this.p.author).trim();
+						}
+						if (this.p.category) {
+							var categoryId = this.p.category;
+							// 确保 category 是字符串或数字，不是对象
+							if (typeof categoryId === 'object' && categoryId !== null) {
+								categoryId = categoryId.id || categoryId.value || '';
+							}
+							if (categoryId) {
+								params.category_id = String(categoryId);
+							}
+						}
+						if (this.p.is_home !== '' && this.p.is_home !== null && this.p.is_home !== undefined) {
+							params.is_home = Number(this.p.is_home);
+						}
+						if (this.p.hot_search !== '' && this.p.hot_search !== null && this.p.hot_search !== undefined) {
+							params.hot_search = Number(this.p.hot_search);
+						}
+
+						// 处理排序
+						if (this.p.sort) {
+							var sortValue = this.p.sort;
+							// 确保 sort 是字符串，不是对象
+							if (typeof sortValue === 'object' && sortValue !== null) {
+								sortValue = sortValue.value || sortValue.name || '';
+							}
+							sortValue = String(sortValue || '');
+
+							if (sortValue.indexOf('custom:') === 0) {
+								var customSortField = sortValue.replace(/^custom:/, '');
+								if (customSortField) {
+									params.custormsort_id = customSortField;
+									params.order_by = customSortField;
+									params.order_dir = 'desc';
+								}
+							}
+						} else {
+							// 默认排序：公开文章按发布时间，其余按 cid
+							params.order_by = this.p.status === 'publish' ? 'created' : 'cid';
+							params.order_dir = 'desc';
+						}
+						this.loading = true
+						const res = await sa.http({
+							url: '/contents/list',
+							data: params
+						});
+						const data = res && res.data ? res.data : {};
+						const list = Array.isArray(data.list) ? data.list : [];
+						this.dataList = list.map(item => {
+								const { sort_fields, ...rest } = item
+								let _fields = {}
+								for (const key in (sort_fields || {})) {
+									_fields[key] = {
+										...sort_fields[key],
+										isEdit: false,
+										_value: sort_fields[key].value
+									}
+								}
+								return {
+									...rest,
+									sort_fields: _fields
+								}
+							})
+
+						if (this.dataList.length) {
+							const [_item] = this.dataList
+							this.sortFieldList = Object.entries(_item.sort_fields || {}).map(item => {
+								const [key, arr] = item
+								return {
+									key,
+									...arr
+								}
+							})
+						} else {
+							this.dataList = [];
+							this.sortFieldList = [];
+						}
+
+						this.dataCount = Number(data.total || 0);
+						sa.f5TableHeight(); // 刷新表格高度
+					} catch (error) {
+						console.error('获取文章列表失败：', error);
+						this.dataList = [];
+						this.dataCount = 0;
+						sa.f5TableHeight();
+					} finally {
+						this.loading = false
+					}
+				},
+				// 修改
+				update: async function (data) {
+					var cid = data.cid || data.id;
+					if (!cid) {
+						sa.error('文章ID不存在');
+						return;
+					}
+
+					// 记住最近一次从文章列表进入编辑的文章（仅 Redis，不落库）
+					try {
+						await sa.http({
+							url: '/contents/rememberLastEdit',
+							method: 'post',
+							data: {
+								cid: cid,
+								title: data.title || ''
+							},
+							// 这里是辅助功能，不需要弹出全局成功/失败提示
+							showSuccess: false,
+							showError: false
+						});
+					} catch (e) {
+						console.warn('调用 rememberLastEdit 接口失败（忽略）：', e);
+					}
+
+					window.parent.sa_admin.updateTabByUser('2-1-1', `cid=${cid}`);
+
+				},
+				// 新增
+				add: function () {
+					// 清除可能存在的编辑数据，确保是新增模式
+					try {
+						sessionStorage.removeItem('editArticleData');
+						// 设置一个标识，表示这是新增模式
+						sessionStorage.setItem('isNewArticle', 'true');
+					} catch (e) {
+						console.error('清除编辑数据失败：', e);
+					}
+					// 跳转到撰写新文章页面，使用菜单ID: 2-1
+					try {
+						// 优先使用系统菜单导航方法
+						if (window.parent && window.parent.sa_admin) {
+							window.parent.sa_admin.showMenuById('2-1');
+						} else if (window.top && window.top.sa_admin) {
+							window.top.sa_admin.showMenuById('2-1');
+						} else {
+							// 降级方案：直接修改hash
+							if (window.parent && window.parent !== window) {
+								window.parent.location.hash = '#2-1';
+							} else {
+								window.location.hash = '#2-1';
+							}
+						}
+					} catch (e) {
+						console.error('导航失败：', e);
+						// 最终降级方案
+						if (window.parent && window.parent !== window) {
+							window.parent.location.hash = '#2-1';
+						} else {
+							window.location.hash = '#2-1';
+						}
+					}
+				},
+				// 选择变化
+				handleSelectionChange: function (selection) {
+					this.selectedRows = selection;
+				},
+				// 批量删除
+				handleBulkDelete: async function () {
+					if (this.selectedRows.length === 0) {
+						return sa.msg('请至少选择一条数据');
+					}
+					var ids = this.selectedRows.map(function (row) { return row.cid || row.id; });
+					sa.confirm('是否删除选中数据？此操作不可撤销', async function () {
+						try {
+							await sa.http({
+								url: '/contents/delete',
+								data: {
+									ids: ids // cid 数组集合
+								}
+							});
+							sa.arrayDelete(this.dataList, this.selectedRows);
+							sa.ok('删除成功');
+							this.selectedRows = [];
+							sa.f5TableHeight();
+							this.f5(); // 刷新列表
+						} catch (error) {
+							console.error('删除失败：', error);
+						}
+					}.bind(this));
+				},
+				// 作者下拉远程搜索
+				async loadAuthors(query) {
+					if (query === '') {
+						this.authorOptions = [];
+						return;
+					}
+					try {
+						this.authorLoading = true;
+						const res = await sa.http({
+							url: '/contents/authors',
+							data: { keyword: query, limit: 30 }
+						});
+						this.authorOptions = Array.isArray(res && res.data) ? res.data : [];
+					} catch (e) {
+						this.authorOptions = [];
+					} finally {
+						this.authorLoading = false;
+					}
+				},
+				// 获取分类列表
+				async getCategoryList() {
+					try {
+						const res = await sa.http({
+							url: '/contents/categories',
+							data: {}
+						});
+						this.categoryList = Array.isArray(res && res.data) ? res.data : [];
+					} catch (error) {
+						this.categoryList = [];
+					}
+				},
+				async getSortFilterOptions() {
+					try {
+						const res = await sa.http({
+							url: '/contents/sortFields',
+							data: {}
+						});
+						const list = Array.isArray(res)
+							? res
+							: (Array.isArray(res?.data) ? res.data : []);
+						this.sortFilterOptions = list.map(item => ({
+							label: item.name,
+							value: 'custom:' + item.slug
+						}));
+					} catch (error) {
+						this.sortFilterOptions = [];
+					}
+				},
+
+				// 点击热搜列，打开弹窗
+				toggleHotSearch: function (row) {
+					this.currentHotSearchRow = row;
+					// 将 hotSearch 转换为 0 或 1
+					var hotSearch = row.hotSearch;
+					if (hotSearch === true || hotSearch === 1 || hotSearch === '1') {
+						this.hotSearchValue = 1;
+					} else {
+						this.hotSearchValue = 0;
+					}
+					this.hotSearchDialogVisible = true;
+				},
+				// 确认设置热搜
+				async confirmHotSearch() {
+					if (!this.currentHotSearchRow) {
+						return;
+					}
+					var cid = this.currentHotSearchRow.cid || this.currentHotSearchRow.id;
+					if (!cid) {
+						sa.error('文章ID不存在');
+						return;
+					}
+					try {
+						await sa.http({
+							url: '/contents/toggleHotSearch',
+							data: {
+								cid: cid,
+								hotSearch: this.hotSearchValue
+							}
+						});
+						// 更新当前行的热搜状态
+						this.currentHotSearchRow.hotSearch = this.hotSearchValue;
+						sa.ok('设置成功');
+						this.hotSearchDialogVisible = false;
+						this.currentHotSearchRow = null;
+					} catch (error) {
+						console.error('设置热搜失败：', error);
+						sa.error('设置失败');
+					}
+				},
+				batchUpdateStatus() {
+					this.batchStatus = 'publish'
+					this.batchStatusDialogVisible = true
+				},
+				async onBatchUpdateStatus() {
+					try {
+						this.batchstatusing = true
+						await sa.http({
+							url: 'contents/updateStatus',
+							data: {
+								ids: this.selectIds,
+								status: this.batchStatus
+							}
+						})
+						this.f5()
+						this.$refs['data-table'].clearSelection()
+						this.batchStatusDialogVisible = false
+					} catch (error) {
+
+					} finally {
+						this.batchstatusing = false
+					}
+				},
+				openCommentDialog(cid) {
+					this.commentState = {
+						user_nicknames: '',
+						article_ids: cid || this.selectIdsString,
+						comment_contents: '',
+						time_from: '',
+						time_to: '',
+						is_top: 0
+					}
+					this.commentDialog = true
+
+				},
+
+				addComments() {
+					this.$refs.comment.validate(async valid => {
+						if (valid) {
+							try {
+								this.commentLoading = true
+								await sa.http({
+									url: 'contents/batchAddComments',
+									data: {
+										...this.commentState
+									}
+								})
+								this.f5()
+								this.$refs['data-table'].clearSelection()
+								this.commentDialog = false
+							} catch (error) {
+
+							} finally {
+								this.commentLoading = false
+							}
+						}
+					})
+				},
+				handleTimeChange(val) {
+					if (val > this.commentState.time_to) {
+						this.commentState.time_to = val
+					}
+				},
+
+				openHomeDialog(data) {
+					if (data) {
+						this.selectHomeCid = data.cid
+						this.is_home = data.is_home ^ 1
+					} else {
+						this.selectHomeCid = ''
+						this.is_home = 1
+					}
+					this.homeDialogVisible = true
+				},
+				async setIsHome() {
+					try {
+						this.homeLoading = true
+						await sa.http({
+							url: 'contents/setHome',
+							data: {
+								ids: this.selectHomeCid ? [this.selectHomeCid] : this.selectedRows.map(item => item.cid),
+								is_home: this.is_home,
+							},
+							showSuccess: true
+						})
+						this.f5()
+						this.$refs['data-table'].clearSelection()
+						this.homeDialogVisible = false
+					} catch (error) {
+
+					} finally {
+						this.homeLoading = false
+					}
+				},
+				openCateDialog(data) {
+					if (data) {
+						this.selectCate = data.cid
+						this.cates = Array.isArray(data.category_ids)
+							? data.category_ids.slice()
+							: (Array.isArray(data.categories) ? data.categories.map(item => item.id) : [])
+					} else {
+						this.selectCate = ''
+						this.cates = []
+					}
+					this.handleCheckedCitiesChange(this.cates)
+					this.cateDialogVisible = true
+				},
+				handleCheckAllChange(val) {
+					this.cates = val ? this.categoryList.map(item => item.id) : [];
+					this.isIndeterminate = false;
+				},
+				handleCheckedCitiesChange(value) {
+					let checkedCount = value.length;
+					this.checkAll = checkedCount === this.categoryList.length;
+					this.isIndeterminate = checkedCount > 0 && checkedCount < this.categoryList.length;
+				},
+				async batchSetCate() {
+					try {
+						this.cateLoading = true
+						await sa.http({
+							url: 'contents/batchSetCategory',
+							data: {
+								cids: this.selectCate ? [this.selectCate] : this.selectIds,
+								category_ids: this.cates
+							}
+						})
+						this.f5()
+						this.cateDialogVisible = false
+					} catch (error) {
+
+					} finally {
+						this.cateLoading = false
+					}
+				},
+				onEditSort(key, rowData) {
+					this.dataList = this.dataList.map(item => {
+						const { sort_fields } = item
+						if (item.cid === rowData.cid) {
+							for (const _key in sort_fields) {
+								const isEdit = _key === key
+								sort_fields[_key].isEdit = isEdit
+
+								if (isEdit) {
+									this.$nextTick(() => {
+										document.querySelector('.sort-item input').focus()
+									})
+								}
+							}
+							return {
+								...item,
+								sort_fields
+							}
+						}
+						for (const _key in sort_fields) {
+							sort_fields[_key].isEdit = false
+						}
+						return {
+							...item,
+							sort_fields
+						}
+					})
+				},
+				async onChangeSort(key, rowData) {
+					try {
+						rowData.sort_fields[key].isEdit = false
+						if (rowData.sort_fields[key].value !== rowData.sort_fields[key]._value) {
+							await sa.http({
+								url: 'contents/updateSortField',
+								data: {
+									cid: rowData.cid,
+									field: key,
+									value: rowData.sort_fields[key]._value
+								},
+								showSuccess: true
+							})
+							rowData.sort_fields[key].value = rowData.sort_fields[key]._value
+						}
+					} catch (error) {
+
+					}
+				}
+			},
+			watch: {
+				// 监听 category 变化，确保始终是字符串或数字
+				'p.category': function (newVal) {
+					if (newVal === null || newVal === undefined) {
+						this.p.category = '';
+					} else if (typeof newVal === 'object' && newVal !== null) {
+						// 如果是对象，提取 id 或 value
+						this.p.category = newVal.id || newVal.value || '';
+					}
+				},
+				// 监听 sort 变化，确保始终是字符串
+				'p.sort': function (newVal) {
+					if (newVal === null || newVal === undefined) {
+						this.p.sort = '';
+					} else if (typeof newVal === 'object' && newVal !== null) {
+						// 如果是对象，提取 value 或 name
+						this.p.sort = newVal.value || newVal.name || '';
+					}
+				},
+				'p.is_home': function (newVal) {
+					if (newVal === null || newVal === undefined) {
+						this.p.is_home = '';
+					}
+				},
+				'p.hot_search': function (newVal) {
+					if (newVal === null || newVal === undefined) {
+						this.p.hot_search = '';
+					}
+				}
+			},
+			created: function () {
+				// 确保初始值是字符串类型
+				this.activeTab = String(this.activeTab);
+				this.p.status = String(this.p.status);
+				this.p.keyword = String(this.p.keyword || '');
+				this.p.author = String(this.p.author || '');
+				this.p.category = String(this.p.category || '');
+				this.p.sort = String(this.p.sort || '');
+				this.p.is_home = this.p.is_home === null || this.p.is_home === undefined ? '' : String(this.p.is_home);
+				this.p.hot_search = this.p.hot_search === null || this.p.hot_search === undefined ? '' : String(this.p.hot_search);
+
+				this.getCategoryList(); // 获取分类列表
+				this.getSortFilterOptions(); // 获取自定义排序筛选项
+				this.f5();
+				sa.onInputEnter();		// 监听输入框的回车事件，执行查询  
+			}
+		})
+	</script>
+
+</body>
+
+</html>

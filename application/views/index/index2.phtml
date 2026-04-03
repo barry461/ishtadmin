@@ -1,0 +1,302 @@
+<head>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" /> -->
+    <link rel="stylesheet" href="/static/assets/style.css?v=v1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- <script src="https://unpkg.com/swiper@8/swiper-bundle.js"> </script>
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js.map"> </script> -->
+    <title><?php echo $title ?></title>
+    <meta name="og:title" property="og:title" content="<?php echo $title ?>">
+    <meta name="og:site_name" property="og:site_name" content="<?php echo $title ?>">
+    <meta name="description" content="<?php echo $description ?>">
+    <meta name="keywords" content="<?php echo $keyword ?>">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.js"> </script>
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"> </script>
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js.map"> </script>
+    <script type="text/javascript" src="/static/assets/jquery-3.6.4.min.js"></script>
+    <script src="/static/web/index/js/jquery.qrcode.js"></script>
+    <script src="/static/web/index/js/clipboard.min.js"></script>
+    <script>
+        var dataMap = {
+            // 复制文字
+            copyText: "<?php echo $share ?>",
+            // 商务合作
+            businessLink: "<?php echo $tg_sw; ?>",
+            // tg
+            tgLink: "<?php echo $tg_group; ?>",
+            // 土豆
+            potatoLink: "<?php echo $potato_sw; ?>",
+            // 推特
+            twitterLink: "<?php echo $twitter; ?>",
+            // ios下载
+            iosLink: "<?php echo $pwa_url2; ?>",
+            // 安卓下载
+            androidLink: "<?php echo $android ? $android->apk : '/'; ?>",
+            // mac下载
+            macLink: "<?php echo $mac_download ? $mac_download->apk : '/'; ?>",
+            // windows下载
+            windowsLink: "<?php echo $windows_download ? $windows_download->apk : '/'; ?>",
+            // 当前地址
+            qrcodeLink: location.href,
+            // 应用中心
+            app_center_url: "<?php echo $app_center_url; ?>",
+        };
+    </script>
+    <script type="text/javascript" src="/static/assets/index.js?v=7"></script>
+    <link rel="stylesheet" href="/static/backend/layuiadmin/layui/css/layui.css?v=<?php echo time() ?>" media="all">
+    <script src="/static/backend/layuiadmin/layui/layui.js?v=<?php echo time() ?>"></script>
+    <script src="/static/zzz.js?v=<?php echo time() ?>"></script>
+    <script>
+        layui.config({base: '/static/backend/layuiadmin/', 'version': '1'});
+        layui.use(['layer'])
+    </script>
+</head>
+
+<body class="body" data-clipboard-text= "<?php echo $share ?>">
+<div id="loyoutId" class="layout">
+    <!-- 标题logo模块 -->
+    <div class="top">
+        <div class="top-btn">
+            <img style="height: 36px; width: 100px;" src="/static/assets/logo.png"/>
+            <div class="btn-list">
+                <img class="btnimg" src="/static/assets/swhz.png" onclick="onClick(0)"/>
+                <img class="btnimg" src="/static/assets/yyzx.png" onclick="onClick(1)"/>
+                <img class="btnimg" src="/static/assets/zdwm.png" onclick="onClick(2)"/>
+                <img class="btnimg" src="/static/assets/lxkf.png" onclick="onClick(3)"/>
+
+            </div>
+        </div>
+        <img src="/static/assets/top-title.png"/>
+        <!-- 轮播模块 -->
+        <div  class="swiper" onclick="toDownload()">
+            <div class='swiper-container' id="swiperId">
+                <div  class='swiper-wrapper'>
+                    <?php foreach ($rotates as $key => $value) : ?>
+
+                        <div class="swiper-slide">
+
+                            <img src="data:image/gif;base64,R0lGODlhAQABAIABAAAAAP///yH5BAEAAAEALAAAAAABAAEAAAICTAEAOw==" class="reload" data-url="<?php echo $value['img_url'] ?>" alt="525X942">
+
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- <div class='swiper-pagination'>
+    </div> -->
+
+    <!-- 底部按钮交互模块 -->
+    <div class="bottom">
+        <!-- 下载 -->
+        <div class="download">
+
+            <div class="downitem"  data-clipboard-text= "<?php echo $share ?>" onclick="onDownload('android')">
+                <img src="/static/assets/andriodicon.png"/>
+                <p>安卓下载</p>
+            </div>
+            <div class="downitem" data-clipboard-text= "<?php echo $share ?>" onclick="onDownload('ios')">
+                <img src="/static/assets/iosicon.png"/>
+                <p>IOS下载</p>
+            </div>
+            <div class="downitem" data-clipboard-text= "<?php echo $share ?>" onclick="onDownload('window')">
+                <img src="/static/assets/windowsicon.png"/>
+                <p>Windows下载</p>
+            </div>
+            <div class="downitem" data-clipboard-text= "<?php echo $share ?>" onclick="onDownload('macOS')">
+                <img src="/static/assets/macicon.png"/>
+                <p>macOS下载</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 获取地址弹框模块 -->
+    <div id="addressId" class="mask" onclick="onHideAddress()">
+
+        <div class="address">
+            <p class="addresstitle">官方最新地址发布</p>
+            <div class="address-item" onclick="onAddress('address')">
+                <div class="address-item-left">
+                    <img src="/static/assets/icon51.png"/>
+                    <div class="address-item-left-info">
+                        <p>官网地址</p>
+                        <span id="addressurl"><?php echo $luodiye_guanwang_url; ?></span>
+                    </div>
+                </div>
+                <img src="/static/assets/copylink.png"></img>
+            </div>
+
+            <div class="address-item" onclick="onAddress('group')">
+                <div class="address-item-left">
+                    <img src="/static/assets/iconTg.png"/>
+                    <div class="address-item-left-info">
+                        <p>官网交流群</p>
+                        <span id="guanwang_group"> <?php echo $tg_group; ?> </span>
+                    </div>
+                </div>
+                <img src="/static/assets/joingroup.png"></img>
+
+            </div>
+
+            <div class="address-item" onclick="onAddress('email')">
+                <div class="address-item-left">
+                    <img src="/static/assets/iconGmail.png"/>
+                    <div class="address-item-left-info">
+                        <p>邮箱</p>
+                        <span id="emailurl"> <?php echo $luodiye_emal; ?> </span>
+                    </div>
+                </div>
+                <img src="/static/assets/copyemail.png"></img>
+
+            </div>
+
+            <div class="address-item" onclick="onAddress('website')">
+                <div class="address-item-left">
+                    <img src="/static/assets/iconGithub.png"/>
+                    <div class="address-item-left-info">
+                        <p>网站发布</p>
+                        <span id="wzfb"><?php echo $luodiye_wzfb; ?></span>
+                    </div>
+                </div>
+                <img src="/static/assets/focuson.png"></img>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 反馈模块 -->
+    <div id="feedbackId" class="feedback">
+        <div class="nav">
+            <img src="/static/assets/back2.png" onclick="onBack('feedback')"></img>
+            <p>问题反馈</p>
+            <p></p>
+        </div>
+
+        <!-- 分类器 -->
+        <form class="radio-form" name="formRadio" method="get" accept-charset="utf-8">
+            <p>请选择分类为标题</p>
+            <div class="checkbox">
+                <input type="radio" name="applicationSystem" value="1" id="check1"/>
+                <label for="check1">无法下载</label>
+            </div>
+            <div class="checkbox">
+                <input type="radio" name="applicationSystem" value="2" id="check2"/>
+                <label for="check2">下载后无法进入</label>
+            </div>
+            <div class="checkbox">
+                <input type="radio" name="applicationSystem" checked value="3" id="check3"/>
+                <label for="check3">其他</label>
+            </div>
+        </form>
+        <!-- 详细描述 -->
+        <form class="describe" name="myTextarea" method="post">
+            <p>详细描述<span>（必填）</span></p>
+            <textarea id="textareaId" name="describe" maxlength="200" required placeholder="您的问题是..."
+                      oninput="onInputChange()"></textarea>
+            <p id="countId" class="count">1/200</p>
+        </form>
+
+        <!-- 提交图片或视频 -->
+        <form class="upload" name="upload" method="post">
+            <p>上传反馈图片<span>（非必填）</span></p>
+            <input type="file" id="file_input" accept="image/png, image/jpeg, image/gif, image/jpg" multiple/>
+            <div style="display: flex; margin-top: 15px;">
+                <div id="img"></div>
+                <div class="addbtn" id="addId1" onclick="onOpen()">
+                    <img src="/static/assets/addicon.png"/>
+                </div>
+            </div>
+        </form>
+
+        <div class="btn">
+            <button class="btn-submit" onclick="onSubmit()">提交</button>
+        </div>
+    </div>
+
+    <div id="feedbackresultId" class="feedbackresult">
+        <div class="nav">
+            <img src="/static/assets/back2.png" onclick="onBack('feedbackresult')"></img>
+            <p>问题反馈</p>
+            <p></p>
+        </div>
+
+        <div class="resultlayout">
+            <img id="post_result_img" src="/static/assets/check.png"/>
+            <p id="post_result_text">您的反馈已提交</p>
+        </div>
+        <div class="downbtn" style="margin-top:  60%;">
+            <button onclick="onConfirmFeedback()">确认</button>
+        </div>
+    </div>
+
+    <!-- 安装app解决方案模块 -->
+    <div id="solutionId" class="solution">
+
+        <div class="top-bg">
+            <div class="backicon">
+                <img onclick="onBack('solution')" class="back" src="/static/assets/back.png"/>
+                <img class="logo" src="/static/assets/logo.png"/>
+                <img class="back" style="opacity: 0;" src="/static/assets/back.png"/>
+            </div>
+        </div>
+        <div class="setting-bg">
+            <p>因安卓手机型号过多,下面步骤的名称可能会与您的手机系统名称有所不同</p>
+            <div class="set-item" onclick="onSetting('huawei')">华为手机安装APP设置</div>
+            <div class="set-item" onclick="onSetting('vivo')">VIVO手机安装APP设置</div>
+            <div class="set-item" onclick="onSetting('meizu')">魅族手机安装APP设置</div>
+            <div class="set-item" onclick="onSetting('oppo')">OPPO手机安装APP设置</div>
+            <div class="set-item" onclick="onSetting('xiaomi')">小米手机安装APP设置</div>
+        </div>
+    </div>
+
+    <!-- 安装教程模块 -->
+    <div id="tutorialId" class="tutorial">
+        <div class="nav">
+            <img src="/static/assets/back2.png" onclick="onBack('tutorial')"></img>
+            <p id="navId">落地页</p>
+            <p></p>
+        </div>
+        <img id="tutorialImgId" src="/static/assets/vivo.jpg"/>
+    </div>
+
+    <!-- 下载模块 -->
+    <div id="downloadId" class="download-bg">
+        <div class="top-bg">
+            <div class="backicon">
+                <img onclick="onBack('download')" class="back" src="/static/assets/back.png"/>
+                <img class="logo" src="/static/assets/logo.png"/>
+                <img class="back" style="opacity: 0;" src="/static/assets/back.png"/>
+            </div>
+            <p id="platformname">ios轻量版安装教程</p>
+            <button id="pgxiazai" onclick="pgxiazai()">立即下载</button>
+        </div>
+        <img id="platformimg" style="position: relative;top: -20px" src="/static/assets/iosdown.png"/>
+        <div id="downandriod" class="downandriod" style="display: none;" onclick="toTutorial()"></div>
+        <div class="downbtn">
+            <button id="andxiazai" onclick="pgxiazai()">
+                立即下载
+            </button>
+        </div>
+
+    </div>
+    <div id="modelId" class="model">
+        <p id="tipsId">成功</p>
+    </div>
+</div>
+
+<!--<div class="maskbtn" onclick="toDownload()"></div>-->
+<script> new ClipboardJS('.body');</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YFMJ6B4NV1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-YFMJ6B4NV1');
+</script>
+<!-- <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script> -->
+</body>

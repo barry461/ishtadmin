@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>设置插件 ArtPlayer</title>
+	<script src="../../static/common-head.js"></script>
+	<style>
+		html,
+		body {
+			background-color: #f5f5f5;
+			color: #333;
+			margin: 0;
+			padding: 0;
+		}
+
+		.settings-container {
+			padding: 20px;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+
+		.page-header {
+			font-size: 24px;
+			font-weight: bold;
+			color: #333;
+			margin-bottom: 30px;
+			padding-bottom: 10px;
+			border-bottom: 1px solid #ddd;
+		}
+
+		.settings-form {
+			background: #fff;
+			border-radius: 4px;
+			padding: 30px;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		}
+
+		.form-group {
+			margin-bottom: 25px;
+		}
+
+		.form-label {
+			display: block;
+			font-size: 14px;
+			font-weight: 500;
+			color: #333;
+			margin-bottom: 8px;
+		}
+
+		.form-input {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 14px;
+			font-family: inherit;
+			box-sizing: border-box;
+			transition: border-color 0.3s;
+		}
+
+		.form-input:focus {
+			outline: none;
+			border-color: #007cba;
+			box-shadow: 0 0 5px rgba(0, 124, 186, 0.2);
+		}
+
+		.form-textarea {
+			resize: vertical;
+			min-height: 100px;
+		}
+
+		.form-help {
+			font-size: 12px;
+			color: #666;
+			margin-top: 5px;
+			line-height: 1.4;
+		}
+
+		.radio-group {
+			display: flex;
+			gap: 20px;
+			flex-wrap: wrap;
+		}
+
+		.radio-item {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			cursor: pointer;
+		}
+
+		.radio-item input[type="radio"] {
+			margin: 0;
+		}
+
+		.radio-item label {
+			font-size: 14px;
+			cursor: pointer;
+			margin: 0;
+		}
+
+		.checkbox-group {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.checkbox-item {
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.checkbox-item input[type="checkbox"] {
+			margin: 0;
+			margin-top: 2px;
+		}
+
+		.checkbox-item .checkbox-label {
+			flex: 1;
+		}
+
+		.checkbox-title {
+			font-size: 14px;
+			font-weight: 500;
+			color: #333;
+			margin-bottom: 4px;
+		}
+
+		.checkbox-desc {
+			font-size: 12px;
+			color: #666;
+			line-height: 1.4;
+		}
+
+		.form-actions {
+			margin-top: 40px;
+			padding-top: 20px;
+			border-top: 1px solid #ddd;
+			text-align: left;
+		}
+
+		.btn {
+			padding: 10px 20px;
+			border: none;
+			border-radius: 4px;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.3s;
+			text-decoration: none;
+			display: inline-block;
+			margin-right: 10px;
+		}
+
+		.btn-primary {
+			background: #007cba;
+			color: #fff;
+		}
+
+		.btn-primary:hover {
+			background: #005a87;
+		}
+
+		.section-divider {
+			margin: 35px 0;
+			border-bottom: 1px solid #eee;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="app" class="settings-container">
+		<div class="page-header">设置插件 ArtPlayer</div>
+
+		<div class="settings-form">
+			<form @submit.prevent="saveSettings">
+				<div class="form-group">
+					<label class="form-label">插件广告位</label>
+					<textarea v-model="settings.adSlot" class="form-input form-textarea" placeholder="输入广告代码"></textarea>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">广告类型</label>
+					<textarea v-model="settings.adType" class="form-input form-textarea" placeholder="输入广告类型配置"></textarea>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">插件广告条</label>
+					<textarea v-model="settings.adBanner" class="form-input form-textarea" placeholder="输入广告条代码"></textarea>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">为客观显示</label>
+					<textarea v-model="settings.objectiveDisplay" class="form-input form-textarea"
+						placeholder="配置显示参数"></textarea>
+					<div class="form-help">
+						如需要条条形现象源地工作标题否解音见如应症添加写不平台，如果约设示不真不然插正完作"设招请告慰
+						此则长见有获优符，禁黑平衡强口已能串提签团建量况标绍告亮"添加下严益参"。
+					</div>
+				</div>
+
+				<div class="section-divider"></div>
+
+				<div class="form-group">
+					<label class="form-label">ML 设置</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="ml-disable" value="disable" v-model="settings.mlSetting">
+							<label for="ml-disable">不开启ML返回</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="ml-enable" value="enable" v-model="settings.mlSetting">
+							<label for="ml-enable">开启ML返回</label>
+						</div>
+					</div>
+					<div class="form-help">开启后，网页单元设计诊览</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效热视频</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="video-disable" value="disable" v-model="settings.videoSetting">
+							<label for="video-disable">不开启历史视频</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="video-enable" value="enable" v-model="settings.videoSetting">
+							<label for="video-enable">开启历史视频</label>
+						</div>
+					</div>
+					<div class="form-help">不激活历史视频盗订圾</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效建议</label>
+					<div class="checkbox-group">
+						<div class="checkbox-item">
+							<input type="checkbox" id="suggestion-1" v-model="settings.suggestions.highlight">
+							<div class="checkbox-label">
+								<div class="checkbox-title">关键新闻</div>
+							</div>
+						</div>
+						<div class="checkbox-item">
+							<input type="checkbox" id="suggestion-2" v-model="settings.suggestions.archive">
+							<div class="checkbox-label">
+								<div class="checkbox-title">开启新曾</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效刪啺</label>
+					<div class="checkbox-group">
+						<div class="checkbox-item">
+							<input type="checkbox" id="advanced-1" v-model="settings.advanced.deleteHistory">
+							<div class="checkbox-label">
+								<div class="checkbox-title">不开启戶高变门</div>
+								<div class="checkbox-desc">不激活历史而合历史簯身業字船聚告到号医代片會</div>
+							</div>
+						</div>
+						<div class="checkbox-item">
+							<input type="checkbox" id="advanced-2" v-model="settings.advanced.enableHistory">
+							<div class="checkbox-label">
+								<div class="checkbox-title">开启历史視频</div>
+								<div class="checkbox-desc">不激活历史卡合历史坐</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效显烏啪</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="display-disable" value="disable" v-model="settings.displaySetting">
+							<label for="display-disable">不开启合视</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="display-enable" value="enable" v-model="settings.displaySetting">
+							<label for="display-enable">开启合视</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效意接鋪移</label>
+					<div class="checkbox-group">
+						<div class="checkbox-item">
+							<input type="checkbox" id="transfer-1" v-model="settings.transfer.enableTransfer">
+							<div class="checkbox-label">
+								<div class="checkbox-title">不开启高龍子去量</div>
+							</div>
+						</div>
+						<div class="checkbox-item">
+							<input type="checkbox" id="transfer-2" v-model="settings.transfer.enableSync">
+							<div class="checkbox-label">
+								<div class="checkbox-title">开启高続料金象</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效報品鋪不夕</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="report-disable" value="disable" v-model="settings.reportSetting">
+							<label for="report-disable">不令贼斉方施設</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="report-enable" value="enable" v-model="settings.reportSetting">
+							<label for="report-enable">开启料金示</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">应急单语察</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="emergency-disable" value="disable" v-model="settings.emergencySetting">
+							<label for="emergency-disable">不开启合视</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="emergency-enable" value="enable" v-model="settings.emergencySetting">
+							<label for="emergency-enable">开启合视</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效鑫算件条是体素</label>
+					<div class="checkbox-group">
+						<div class="checkbox-item">
+							<input type="checkbox" id="algorithm-1" v-model="settings.algorithm.enableMain">
+							<div class="checkbox-label">
+								<div class="checkbox-title">不开可挙算音基「开启向否受员</div>
+								<div class="checkbox-desc">本度挙意开起值情，评完注場歌注長一面经正</div>
+							</div>
+						</div>
+						<div class="checkbox-item">
+							<input type="checkbox" id="algorithm-2" v-model="settings.algorithm.enableSecondary">
+							<div class="checkbox-label">
+								<div class="checkbox-title">开施古效果金意辩注站反算</div>
+								<div class="checkbox-desc">불능력합전인자정안海源的按척數士 isInert)</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">应况询终语察数值</label>
+					<input type="text" v-model="settings.queryValue" class="form-input" placeholder="输入数值">
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">高古有效源影阻最</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="source-disable" value="disable" v-model="settings.sourceSetting">
+							<label for="source-disable">不可能全词穩</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="source-enable" value="enable" v-model="settings.sourceSetting">
+							<label for="source-enable">开启言铺更示</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">赏装身开变</label>
+					<div class="radio-group">
+						<div class="radio-item">
+							<input type="radio" id="decoration-1" value="1" v-model="settings.decorationSetting">
+							<label for="decoration-1">主器品舞用馆</label>
+						</div>
+						<div class="radio-item">
+							<input type="radio" id="decoration-2" value="2" v-model="settings.decorationSetting">
+							<label for="decoration-2">创益输中馆</label>
+						</div>
+					</div>
+					<div class="form-help">输影位示分記用告配</div>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn btn-primary">保存设置</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		const app = new Vue({
+			el: '#app',
+			data: {
+				settings: {
+					adSlot: '',
+					adType: '',
+					adBanner: '',
+					objectiveDisplay: '',
+					mlSetting: 'disable',
+					videoSetting: 'disable',
+					suggestions: {
+						highlight: true,
+						archive: false
+					},
+					advanced: {
+						deleteHistory: true,
+						enableHistory: false
+					},
+					displaySetting: 'disable',
+					transfer: {
+						enableTransfer: false,
+						enableSync: true
+					},
+					reportSetting: 'disable',
+					emergencySetting: 'disable',
+					algorithm: {
+						enableMain: false,
+						enableSecondary: true
+					},
+					queryValue: '',
+					sourceSetting: 'disable',
+					decorationSetting: '1'
+				}
+			},
+			methods: {
+				saveSettings() {
+					console.log('保存设置:', this.settings);
+					try {
+						parent.sa.msg('设置已保存');
+					} catch (e) {
+						alert('设置已保存');
+					}
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,17 @@
+.post-content .content-file .content-file-icon{display:none!important}
+@media (min-width:767px){
+    .post-content .content-file{font-size:1rem!important}
+}
+@media (max-width:767px){#nav .menu{margin-top:1.25rem}
+    .navbar-nav .category-list .category-list{background-color:transparent}
+    .navbar-nav .category-list ul.list{display:block!important}
+    #nav .menu .category-list ul.list li{font-weight:400;padding:0;display:block;width:auto}
+    #nav .menu .category-list ul.list li:nth-child(even),#nav .menu .category-list ul.list li:nth-child(odd){padding-right:unset;padding-left:unset}
+    #nav .menu .category-list ul.list li>a{background-color:transparent;border-radius:unset;padding:.375rem 1.75rem;position:relative;line-height:2.25rem;display:block;font-size:1.25rem;text-align:center;font-weight:400}
+    body #nav .menu .category-list ul.list li>a{background:0 0}
+    body #nav .menu .category-list{background:0 0}
+    body.theme-dark #nav .menu li a{color:#ccc!important}
+    body.theme-white #nav .menu li a{color:#333!important;font-weight:400!important}
+    #nav .author{padding-top:1.25rem;padding-bottom:1.25rem}
+    #comment-form .comment-input[name=mail],#comment-form .comment-input[name=url]{display:none!important}
+}

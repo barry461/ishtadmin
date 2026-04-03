@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>管理评论</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<script src="../../static/common-head.js"></script>
+	<style type="text/css">
+		.comment-manage-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+
+		.comment-tabs {
+			margin-bottom: 20px;
+		}
+
+		.comment-tabs .el-tabs__nav-wrap::after {
+			height: 1px;
+		}
+
+		.bulk-actions {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 15px;
+		}
+
+		.bulk-actions-left {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.bulk-actions-right {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.owner-btn-group {
+			display: flex;
+			border: 1px solid #dcdfe6;
+			border-radius: 4px;
+			overflow: hidden;
+		}
+
+		.owner-btn-group .owner-btn {
+			padding: 8px 16px;
+			background: #fff;
+			border: none;
+			cursor: pointer;
+			font-size: 14px;
+			color: #606266;
+			transition: all 0.3s;
+		}
+
+		.owner-btn-group .owner-btn:first-child {
+			border-right: 1px solid #dcdfe6;
+		}
+
+		.owner-btn-group .owner-btn.active {
+			background: #ecf5ff;
+			color: #409eff;
+		}
+
+		.owner-btn-group .owner-btn:hover {
+			color: #409eff;
+		}
+
+		/* 评论表格样式 */
+		.comment-table {
+			margin-top: 16px;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.comment-table .el-table__header th {
+			background: #f8fafc;
+			color: #374151;
+			font-weight: 600;
+		}
+
+		.comment-table .el-table__row:hover>td {
+			background: #f0f9ff !important;
+		}
+
+		/* 作者单元格 */
+		.author-cell {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.author-avatar {
+			width: 40px;
+			height: 40px;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+		}
+
+		.author-avatar i {
+			font-size: 20px;
+			color: #fff;
+		}
+
+		.author-info {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
+		}
+
+		.author-name {
+			font-size: 14px;
+			font-weight: 600;
+			color: #1f2937;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.author-ip {
+			font-size: 12px;
+			color: #6b7280;
+			max-width: 120px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.author-platform {
+			font-size: 11px;
+			color: #6366f1;
+			background: #eef2ff;
+			padding: 2px 6px;
+			border-radius: 4px;
+			display: inline-block;
+			max-width: 120px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		/* 内容单元格 */
+		.content-cell {
+			padding: 4px 0;
+		}
+
+		.comment-meta {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			margin-bottom: 8px;
+			font-size: 12px;
+			color: #9ca3af;
+		}
+
+		.meta-sep {
+			color: #d1d5db;
+		}
+
+		.comment-date {
+			color: #9ca3af;
+		}
+
+		.comment-source {
+			color: #1890ff;
+			text-decoration: none;
+			cursor: pointer;
+			font-weight: 500;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			display: inline-block;
+		}
+
+		.comment-source:hover {
+			color: #40a9ff;
+			text-decoration: underline;
+		}
+
+		.comment-text {
+			font-size: 14px;
+			color: #374151;
+			line-height: 1.6;
+			word-break: break-word;
+			padding: 10px 12px;
+			background: #f9fafb;
+			border-radius: 6px;
+		}
+
+		/* 操作按钮区域 */
+		.comment-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			margin-top: 10px;
+			padding-top: 10px;
+			border-top: 1px dashed #e5e7eb;
+		}
+
+		.comment-actions .el-button {
+			margin-left: 0;
+		}
+
+		.comment-actions .el-button--mini {
+			padding: 4px 8px;
+			font-size: 12px;
+		}
+
+		/* 弹框提示文字 */
+		.form-tip {
+			font-size: 12px;
+			color: #9ca3af;
+			margin-top: 4px;
+		}
+
+		/* 选中计数 */
+		.selected-count {
+			font-size: 13px;
+			color: #6366f1;
+			margin-left: 12px;
+		}
+
+		/* 批量操作下拉菜单 */
+		.bulk-actions-dropdown {
+			min-width: 160px;
+		}
+
+		.el-dropdown-menu {
+			width: 100px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="vue-box" style="display: none;" :style="'display: block;'">
+		<div class="c-panel">
+			<!-- 标题和新增按钮 -->
+			<div class="comment-manage-header">
+				<div class="c-title">管理评论</div>
+
+			</div>
+
+			<!-- 标签页 -->
+			<div class="comment-tabs">
+				<el-tabs v-model="activeTab" @tab-click="handleTabClick">
+					<el-tab-pane label="全部" name="all"></el-tab-pane>
+					<el-tab-pane label="已通过" name="approved"></el-tab-pane>
+					<el-tab-pane name="waiting">
+						<span slot="label">待审核 <el-badge v-if="waitingCount > 0" :value="waitingCount"
+								class="tab-badge"></el-badge></span>
+					</el-tab-pane>
+					<el-tab-pane label="垃圾" name="spam"></el-tab-pane>
+					<el-tab-pane label="系统过滤" name="filter"></el-tab-pane>
+				</el-tabs>
+			</div>
+
+			<!-- ------------- 检索参数 ------------- -->
+			<el-form>
+				<div class="c-item">
+					<label class="c-label">文章ID：</label>
+					<el-input v-model="p.cid" placeholder="请输入文章ID" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">评论内容：</label>
+					<el-input v-model="p.keyword" placeholder="请输入关键字" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">评论作者：</label>
+					<el-input v-model="p.author" placeholder="请输入作者名称" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">IP地址：</label>
+					<el-input v-model="p.ip" placeholder="请输入IP地址" clearable></el-input>
+				</div>
+				<div class="c-item">
+					<label class="c-label">开始时间：</label>
+					<el-date-picker v-model="p.date_from" type="date" placeholder="开始日期" value-format="yyyy-MM-dd"
+						clearable></el-date-picker>
+				</div>
+				<div class="c-item">
+					<label class="c-label">结束时间：</label>
+					<el-date-picker v-model="p.date_to" type="date" placeholder="结束日期" value-format="yyyy-MM-dd"
+						clearable></el-date-picker>
+				</div>
+
+			</el-form>
+
+			<!-- ------------- 快捷按钮 ------------- -->
+			<div class="fast-btn">
+				<el-button type="info" icon="el-icon-refresh" @click="resetFilter()">重置</el-button>
+				<el-button type="primary" size="small" @click="add">新增</el-button>
+				<el-button type="primary" icon="el-icon-search" @click="f5()">查询</el-button>
+
+			</div>
+
+			<!-- ------------- 批量操作区域 ------------- -->
+			<div class="bulk-actions">
+				<div class="bulk-actions-left">
+					<el-dropdown trigger="click" @command="handleBulkAction" popper-class="bulk-actions-dropdown">
+						<el-button size="small">
+							选中项操作 <i class="el-icon-arrow-down el-icon--right"></i>
+						</el-button>
+						<el-dropdown-menu slot="dropdown">
+							<el-dropdown-item command="approve" v-if="activeTab === 'waiting'">通过</el-dropdown-item>
+							<el-dropdown-item command="spam" v-if="activeTab === 'approved'">垃圾</el-dropdown-item>
+							<el-dropdown-item command="filter">过滤</el-dropdown-item>
+							<el-dropdown-item command="delete">删除</el-dropdown-item>
+						</el-dropdown-menu>
+					</el-dropdown>
+					<span class="selected-count" v-if="selectedRows.length > 0">已选 {{ selectedRows.length }} 项</span>
+				</div>
+			</div>
+
+			<!-- 评论表格 -->
+			<el-table :data="dataList" v-loading="loading" @selection-change="handleSelectionChange" border stripe
+				class="comment-table">
+				<el-table-column type="selection" width="50" align="center"></el-table-column>
+				<el-table-column label="作者信息" width="200">
+					<template slot-scope="scope">
+						<div class="author-cell">
+                            <img class="author-avatar" :src="scope.row.thumb || commentAvatarDefault || defaultCommentAvatar" alt="头像" />
+							<div class="author-info">
+								<div class="author-name">{{ scope.row.author }}</div>
+								<div class="author-ip">{{ scope.row.ip || '0.0.0.0' }}</div>
+								<div class="author-platform" :title="scope.row.agent">{{ scope.row.agent }}</div>
+							</div>
+						</div>
+					</template>
+				</el-table-column>
+				<el-table-column label="评论内容" min-width="400">
+					<template slot-scope="scope">
+						<div class="content-cell">
+							<div class="comment-meta">
+								<span class="comment-date">{{ scope.row.created }}</span>
+								<span class="meta-sep">于</span>
+								<a class="comment-source" :href="scope.row.content_preview_url" target="_blank"
+									:title="scope.row.content_title">
+									{{ scope.row.content_title }}
+								</a>
+							</div>
+							<div class="comment-text">{{ scope.row.text }}</div>
+							<div class="comment-actions">
+								<el-button type="success" size="mini" @click="setStatus(scope.row, 'approved')"
+									v-if="scope.row.status === 'waiting'">通过</el-button>
+								<el-button type="warning" size="mini" @click="setStatus(scope.row, 'waiting')"
+									v-if="scope.row.status !== 'waiting' && scope.row.status !== 'approved' && scope.row.status !== 'spam'">待审核</el-button>
+								<el-button type="info" size="mini" @click="setStatus(scope.row, 'spam')"
+									v-if="scope.row.status !== 'spam'">垃圾</el-button>
+								<el-button size="mini" @click="setStatus(scope.row, 'filter')"
+									v-if="scope.row.status !== 'filter'">过滤</el-button>
+								<el-button type="danger" size="mini" @click="deleteComment(scope.row)">删除</el-button>
+								<el-button type="danger" size="mini" @click="deleteSameIp(scope.row)">相同IP删除</el-button>
+								<el-dropdown trigger="click" @command="(cmd) => handleBanIp(cmd, scope.row)" size="mini">
+									<el-button type="danger" size="mini">
+										封禁IP <i class="el-icon-arrow-down el-icon--right"></i>
+									</el-button>
+									<el-dropdown-menu slot="dropdown">
+										<el-dropdown-item command="single">封禁此IP</el-dropdown-item>
+										<el-dropdown-item command="range">封禁IP段</el-dropdown-item>
+									</el-dropdown-menu>
+								</el-dropdown>
+							</div>
+						</div>
+					</template>
+				</el-table-column>
+
+				<el-table-column label="审核人" prop="admin_name" align="center"></el-table-column>
+			</el-table>
+
+			<!-- 分页 -->
+			<div class="page-box" v-if="dataCount > 0">
+				<el-pagination background layout="total, prev, pager, next, sizes, jumper" :current-page.sync="p.page"
+					:page-size.sync="p.limit" :total="dataCount" :page-sizes="[10, 20, 30, 50, 100]" @current-change="f5"
+					@size-change="f5">
+				</el-pagination>
+			</div>
+		</div>
+
+		<!-- 新增评论弹框 -->
+		<el-dialog title="新增评论" :visible.sync="addDialogVisible" width="500px" :close-on-click-modal="false">
+			<el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+				<el-form-item label="文章ID" prop="cid">
+					<el-input v-model="addForm.cid" placeholder="请输入文章ID"></el-input>
+				</el-form-item>
+				<el-form-item label="用户标识" prop="app_aff">
+					<el-input v-model="addForm.app_aff" placeholder="请输入用户标识"></el-input>
+				</el-form-item>
+				<el-form-item label="评论内容" prop="text">
+					<el-input type="textarea" v-model="addForm.text" placeholder="请输入评论内容" :rows="4"></el-input>
+				</el-form-item>
+				<el-form-item label="状态" prop="status">
+					<el-select v-model="addForm.status" placeholder="请选择状态" style="width: 100%;">
+						<el-option label="审核通过" value="approved"></el-option>
+						<el-option label="待审核" value="waiting"></el-option>
+						<el-option label="垃圾" value="spam"></el-option>
+						<el-option label="过滤" value="filter"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="是否置顶" prop="is_top">
+					<el-switch v-model="addForm.is_top" :active-value="1" :inactive-value="0"></el-switch>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="addDialogVisible = false">取 消</el-button>
+				<el-button type="primary" @click="submitAdd" :loading="addLoading">确 定</el-button>
+			</div>
+		</el-dialog>
+
+		<!-- 封禁单个IP弹框 -->
+		<el-dialog title="封禁IP" :visible.sync="banSingleIpVisible" width="480px" :close-on-click-modal="false">
+			<el-form :model="banSingleIpForm" ref="banSingleIpForm" label-width="100px">
+				<el-form-item label="IP地址" prop="ip">
+					<el-input v-model="banSingleIpForm.ip" disabled>
+						<template slot="prepend">ip</template>
+					</el-input>
+				</el-form-item>
+				<el-form-item label="封禁原因" prop="reason">
+					<el-input type="textarea" v-model="banSingleIpForm.reason" placeholder="封禁原因 (可选)" :rows="3">
+					</el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="banSingleIpVisible = false">取 消</el-button>
+				<el-button type="danger" @click="submitBanSingleIp" :loading="banSingleIpLoading">确认封禁</el-button>
+			</div>
+		</el-dialog>
+
+		<!-- 封禁IP段弹框 -->
+		<el-dialog title="封禁IP段" :visible.sync="banIpRangeVisible" width="480px" :close-on-click-modal="false">
+			<el-form :model="banIpRangeForm" :rules="banIpRangeRules" ref="banIpRangeForm" label-width="100px">
+				<el-form-item label="起始IP" prop="start_ip">
+					<el-input v-model="banIpRangeForm.start_ip" placeholder="192.168.1.0">
+
+					</el-input>
+					<div class="form-tip">起始IP (必填)</div>
+				</el-form-item>
+				<el-form-item label="结束IP" prop="end_ip">
+					<el-input v-model="banIpRangeForm.end_ip" placeholder="192.168.1.255">
+
+					</el-input>
+					<div class="form-tip">结束IP (必填)</div>
+				</el-form-item>
+				<el-form-item label="封禁原因" prop="reason">
+					<el-input type="textarea" v-model="banIpRangeForm.reason" placeholder="封禁原因 (可选)" :rows="3">
+					</el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click="banIpRangeVisible = false">取 消</el-button>
+				<el-button type="danger" @click="submitBanIpRange" :loading="banIpLoading">确认封禁</el-button>
+			</div>
+		</el-dialog>
+	</div>
+	<script>
+		const app = new Vue({
+			el: '.vue-box',
+			data: {
+				sa,
+				activeTab: 'all', // 当前选中的标签
+				selectAll: false, // 全选状态
+				waitingCount: 0, // 待审核数量
+				loading: false, // 加载状态
+				p: { // 查询参数
+					cid: '', // 文章id
+					keyword: '', // 评论内容关键字
+					author: '', // 评论作者
+					ip: '', // ip地址
+					date_from: '', // 开始时间
+					date_to: '', // 结束时间
+					status: '', // 评论状态: approved/waiting/spam/filter，全部不传
+					page: 1,
+					limit: 10,
+				},
+				dataCount: 0, // 数据总数 
+				dataList: [], // 数据集合
+				// 新增评论弹框
+				addDialogVisible: false,
+				addLoading: false,
+				addForm: {
+					cid: '',
+					app_aff: '',
+					text: '',
+					status: 'approved',
+					is_top: 0
+				},
+				addFormRules: {
+					cid: [
+						{ required: true, message: '请输入文章ID', trigger: 'blur' },
+						{ pattern: /^\d+$/, message: '文章ID必须为数字', trigger: 'blur' },
+						{ validator: (rule, value, callback) => {
+							if (value && parseInt(value) <= 0) {
+								callback(new Error('文章ID必须大于0'));
+							} else {
+								callback();
+							}
+						}, trigger: 'blur' }
+					],
+					app_aff: [
+						{ required: true, message: '请输入用户标识', trigger: 'blur' },
+						{ pattern: /^\d+$/, message: '用户标识必须为数字', trigger: 'blur' },
+						{ validator: (rule, value, callback) => {
+							if (value && parseInt(value) <= 0) {
+								callback(new Error('用户标识必须大于0'));
+							} else {
+								callback();
+							}
+						}, trigger: 'blur' }
+					],
+					text: [{ required: true, message: '请输入评论内容', trigger: 'blur' }]
+				},
+				// 封禁单个IP弹框
+				banSingleIpVisible: false,
+				banSingleIpLoading: false,
+				banSingleIpForm: {
+					ip: '',
+					reason: ''
+				},
+				// 封禁IP段弹框
+				banIpRangeVisible: false,
+				banIpLoading: false,
+				banIpRangeForm: {
+					start_ip: '',
+					end_ip: '',
+					reason: ''
+				},
+				banIpRangeRules: {
+					start_ip: [{ required: true, message: '请输入起始IP', trigger: 'blur' }],
+					end_ip: [{ required: true, message: '请输入结束IP', trigger: 'blur' }]
+				},
+				currentBanItem: null, // 当前操作的评论项
+				selectedRows: [], // 表格选中的行
+				commentAvatarDefault: '', // 外观中配置的评论默认头像（无用户头像时使用）
+				defaultCommentAvatar: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 40 40\'%3E%3Ccircle fill=\'%23ddd\' cx=\'20\' cy=\'20\' r=\'20\'/%3E%3C/svg%3E'
+			},
+			created() {
+				this.loadCommentAvatarDefault();
+				this.refreshWaitingCount();
+			},
+			computed: {
+				// 获取选中的评论
+				selectedItems() {
+					return this.selectedRows;
+				}
+			},
+			methods: {
+				// 加载外观中配置的评论默认头像
+				loadCommentAvatarDefault() {
+					sa.http({ url: '/theme/getImages', method: 'post' }).then(res => {
+						if (res && res.data && res.data.comment_avatar) {
+							this.commentAvatarDefault = res.data.comment_avatar.src || res.data.comment_avatar.url || '';
+						}
+					}).catch(() => {});
+				},
+				// 标签页切换
+				handleTabClick(tab) {
+					// tab.name === 'all' 时，不传 status 字段，其它 tab 传对应状态
+					if (tab.name === 'all') {
+						this.p.status = '';
+					} else {
+						const statusMap = {
+							approved: 'approved',
+							waiting: 'waiting',
+							spam: 'spam',
+							filter: 'filter'
+						};
+						this.p.status = statusMap[tab.name];
+					}
+					this.p.page = 1;
+					this.selectAll = false;
+					this.f5();
+				},
+				async refreshWaitingCount() {
+					try {
+						const res = await sa.http({
+							url: '/comments/list',
+							data: {
+								status: 'waiting',
+								page: 1,
+								limit: 1
+							}
+						});
+						const data = res.data || {};
+						this.waitingCount = Number(data.total || 0);
+					} catch (e) {
+						this.waitingCount = 0;
+					}
+				},
+				// 数据刷新
+				f5(keepPage) {
+					this.loading = true;
+
+					sa.http({
+						url: '/comments/list',
+						data: this.p
+					}).then(res => {
+						const data = res.data || {};
+						const list = Array.isArray(data.list) ? data.list : [];
+						this.dataList = list.map(item => ({ ...item, checked: false }));
+						this.dataCount = Number(data.total || 0);
+
+						this.selectAll = false;
+						this.refreshWaitingCount();
+					}).finally(() => {
+						this.loading = false;
+					});
+				},
+
+				// 表格选择变化
+				handleSelectionChange(selection) {
+					this.selectedRows = selection;
+				},
+				// 批量操作
+				handleBulkAction(command) {
+					const { selectedItems } = this;
+					if (selectedItems.length === 0) {
+						return sa.msg('请至少选择一条评论');
+					}
+
+					const ids = selectedItems.map(item => item.coid);
+
+					const actionMap = {
+						approve: { url: '/comments/approve', msg: '通过' },
+						spam: { url: '/comments/spam', msg: '垃圾' },
+						filter: { url: '/comments/filter', msg: '过滤' },
+						delete: { url: '/comments/delete', msg: '删除' }
+					};
+
+					const action = actionMap[command];
+					if (!action) return;
+
+					if (command === 'delete') {
+						sa.confirm('确定要删除选中的评论吗？此操作不可撤销', () => {
+							this.executeBulkAction(action.url, ids, action.msg);
+						});
+					} else {
+						this.executeBulkAction(action.url, ids, action.msg);
+					}
+				},
+				// 执行批量操作
+				executeBulkAction(url, ids, msg) {
+					sa.http({
+						url,
+						data: { ids }
+					}).then(res => {
+							sa.ok(`${msg}成功`);
+							this.f5();
+					}).catch(error => {
+						console.error(`${msg}失败：`, error);
+					});
+				},
+				// 新增评论
+				add() {
+					this.addForm = {
+						cid: '',
+						app_aff: '',
+						text: '',
+						status: 'approved',
+						is_top: 0
+					};
+					this.addDialogVisible = true;
+					this.$nextTick(() => {
+						this.$refs.addForm && this.$refs.addForm.clearValidate();
+					});
+				},
+				// 提交新增评论
+				submitAdd() {
+					this.$refs.addForm.validate(valid => {
+						if (!valid) return;
+
+						this.addLoading = true;
+						sa.http({
+							url: '/comments/save',
+							data: this.addForm
+						}).then(res => {
+							sa.ok('新增评论成功');
+							this.addDialogVisible = false;
+							this.f5();
+						}).catch(error => {
+							console.error('新增评论失败：', error);
+						}).finally(() => {
+							this.addLoading = false;
+						});
+					});
+				},
+				// 重置筛选条件
+				resetFilter() {
+					Object.assign(this.p, {
+						cid: '',
+						keyword: '',
+						author: '',
+						ip: '',
+						date_from: '',
+						date_to: '',
+						page: 1
+					});
+					this.f5();
+				},
+				// 设置评论状态（通过/垃圾/过滤）
+				setStatus(item, status) {
+					const statusMap = {
+						approved: { url: '/comments/approve', text: '通过' },
+						waiting: { url: '/comments/waiting', text: '待审核' },
+						spam: { url: '/comments/spam', text: '垃圾' },
+						filter: { url: '/comments/filter', text: '过滤' }
+					};
+					const action = statusMap[status];
+					if (!action) {
+						return;
+					}
+					sa.http({
+						url: action.url,
+						data: {
+							ids: [item.coid]
+						}
+					}).then(res => {
+						sa.ok(`已设为${action.text}`);
+						this.f5();
+					});
+				},
+				// 删除评论
+				deleteComment(item) {
+					sa.confirm('确定要删除这条评论吗？此操作不可撤销', () => {
+						sa.http({
+							url: '/comments/delete',
+							data: { ids: [item.coid] }
+						}).then(res => {
+							sa.ok('删除成功');
+							this.f5();
+						});
+					});
+				},
+				// 删除相同IP的所有评论
+				deleteSameIp(item) {
+					sa.confirm(`确定要删除IP为 ${item.ip} 的所有评论吗？此操作不可撤销`, () => {
+						sa.http({
+							url: '/comments/deleteSameIp',
+							data: {
+								ip: item.ip
+							}
+						}).then(res => {
+							sa.ok('相同IP评论删除成功');
+							this.f5();
+						});
+					});
+				},
+				// 处理封禁IP
+				handleBanIp(command, item) {
+					this.currentBanItem = item;
+					if (command === 'single') {
+						// 打开封禁单个IP弹框
+						this.banSingleIpForm.ip = item.ip || '';
+						this.banSingleIpForm.reason = '';
+						this.banSingleIpVisible = true;
+					} else if (command === 'range') {
+						// 打开封禁IP段弹框
+						const ipParts = (item.ip || '').split('.');
+						if (ipParts.length === 4) {
+							this.banIpRangeForm.start_ip = `${ipParts[0]}.${ipParts[1]}.${ipParts[2]}.0`;
+							this.banIpRangeForm.end_ip = `${ipParts[0]}.${ipParts[1]}.${ipParts[2]}.255`;
+						} else {
+							this.banIpRangeForm.start_ip = '';
+							this.banIpRangeForm.end_ip = '';
+						}
+						this.banIpRangeForm.reason = '';
+						this.banIpRangeVisible = true;
+						this.$nextTick(() => {
+							this.$refs.banIpRangeForm && this.$refs.banIpRangeForm.clearValidate();
+						});
+					}
+				},
+				// 提交封禁单个IP
+				submitBanSingleIp() {
+					this.banSingleIpLoading = true;
+					sa.http({
+						url: '/comments/banIp',
+						data: {
+							ip: this.banSingleIpForm.ip,
+							reason: this.banSingleIpForm.reason
+						}
+					}).then(res => {
+						sa.ok('IP封禁成功');
+						this.banSingleIpVisible = false;
+						this.f5();
+					}).finally(() => {
+						this.banSingleIpLoading = false;
+					});
+				},
+				// 提交封禁IP段
+				submitBanIpRange() {
+					this.$refs.banIpRangeForm.validate(valid => {
+						if (!valid) return;
+
+						this.banIpLoading = true;
+						sa.http({
+							url: '/comments/banIpRange',
+							data: this.banIpRangeForm
+						}).then(res => {
+							sa.ok('IP段封禁成功');
+							this.banIpRangeVisible = false;
+							this.f5();
+						}).finally(() => {
+							this.banIpLoading = false;
+						});
+					});
+				}
+			},
+			created() {
+				this.f5();
+				sa.onInputEnter();
+			}
+		});
+	</script>
+
+</body>
+
+</html>

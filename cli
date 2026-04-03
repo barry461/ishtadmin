@@ -1,0 +1,18 @@
+#!/usr/bin/env php
+
+<?php
+
+
+try {
+    define('IN_APP', true);
+    define('APP_MODULE', 'cli');
+    define('RELATIVE_ROOT_PATH', './');
+    define("APP_PATH", __DIR__ . '/'); // public 上级目录
+    date_default_timezone_set('Asia/Shanghai');
+
+
+    $app = new Yaf\Application(APP_PATH . "/conf/app.ini");
+    $app->bootstrap()->run();
+}catch (\Throwable $e){
+    throw $e;
+}
