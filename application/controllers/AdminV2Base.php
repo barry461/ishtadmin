@@ -8,7 +8,7 @@
  * @description 管理后台V2基础控制器
  */
 
-class AdminV2BaseController extends \Yaf\Controller_Abstract
+class AdminV2BaseController extends Yaf_Controller_Abstract
 {
     // 状态码
     const STATUS_SUCCESS = 1;
@@ -116,7 +116,7 @@ class AdminV2BaseController extends \Yaf\Controller_Abstract
     protected function initAuth()
     {
         // IP白名单验证
-        // if (\Yaf\Application::app()->environ() === 'product') {// 生产环境
+        // if (Yaf_Application::app()->environ() === 'product') {// 生产环境
         //     $whiteListStr = \tools\HttpCurl::get('https://white.yesebo.net/ip.txt');
         //     if ($whiteListStr !== false && !empty($whiteListStr)) {
         //         $whiteList = explode(',', $whiteListStr);

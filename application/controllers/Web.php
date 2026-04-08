@@ -1,11 +1,10 @@
 <?php
 
 use service\OptionService;
-use Tbold\WebsiteController;
 use website\Router;
-use \Yaf\Controller_Abstract;
+use \Yaf_Controller_Abstract;
 
-class WebController extends WebsiteController
+class WebController extends Tbold_WebsiteController
 {
     protected $limit;
     protected $page;
@@ -38,7 +37,7 @@ class WebController extends WebsiteController
     {
         try {
             $method = "{$method}Action";
-            \Yaf\Loader::import($require_file);
+            \Yaf_Loader::import($require_file);
             /** @var self $object */
             $object = new $clazz($this->_request, $this->_response, $this->_view);
             if (!$object instanceof self) {
@@ -311,7 +310,7 @@ class WebController extends WebsiteController
     {
         // 标记为404页面，用于禁用统计代码（同模板复用）
         $this->is404Page = true;
-	\Yaf\Registry::set('html:skip', true);
+	\Yaf_Registry::set('html:skip', true);
         // 设置状态码（默认404，也可以是410）
         if ($statusCode === 410) {
             header("HTTP/1.1 410 Gone");
@@ -439,7 +438,7 @@ class WebController extends WebsiteController
     {
         // 如果是第一页且URL包含/page/1/，则重定向到无分页的URL
         if ($this->page == 1 && strpos($this->getRequest()->getRequestUri(), '/1/') !== false) {
-            \Yaf\Registry::set('html:skip', true);
+            \Yaf_Registry::set('html:skip', true);
             $targetUrl = url($routeName, $routeParams, false);
             if ($routeName == 'search') {
                 $targetUrl .= '/';

@@ -70,7 +70,7 @@ class LibMember
     /**
      * @return MemberModel
      * @throws Throwable
-     * @throws \Yaf\Exception
+     * @throws \Yaf_Exception
      */
     public function fetchMember(): MemberModel
     {
@@ -165,7 +165,7 @@ class LibMember
      * 获取用户
      *
      * @return MemberModel
-     * @throws \Yaf\Exception|Throwable
+     * @throws \Yaf_Exception|Throwable
      */
     public function getMember(): MemberModel
     {

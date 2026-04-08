@@ -48,7 +48,7 @@ class YacCacheManager
     public static function getSiteConfig()
     {
         return yac()->fetch(self::PREFIX_CONFIG . 'site', function () {
-            return \Yaf\Registry::get('site');
+            return \Yaf_Registry::get('site');
         });
     }
 

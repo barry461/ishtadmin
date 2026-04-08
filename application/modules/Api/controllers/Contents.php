@@ -78,7 +78,7 @@ class ContentsController extends BaseController
         try {
             FieldsModel::setWatchUser($this->member);
             $version = $this->data['version'];
-            $table = \Yaf\Registry::get('database')->prefix;
+            $table = Yaf_Registry::get('database')->prefix;
             $date = $this->data['date'] ?? null;
             $fullTable = $table.'contents';
             $mid = $this->data['mid'] ?? null;
@@ -174,7 +174,7 @@ class ContentsController extends BaseController
             $list = cached($key)
                 ->chinese('标签的内容列表')
                 ->fetchPhp(function () use ($mid, $version) {
-                    $fullTable = \Yaf\Registry::get('database')->prefix
+                    $fullTable = Yaf_Registry::get('database')->prefix
                         .'contents';
                     $meta = MetasModel::getMetaByMid($mid);
                     test_assert($meta, '数据异常');
@@ -625,7 +625,7 @@ class ContentsController extends BaseController
     public function popularAction(): bool
     {
         try {
-            $prefix = \Yaf\Registry::get('database')->prefix;
+            $prefix = Yaf_Registry::get('database')->prefix;
             $table = "{$prefix}contents";
             $list = cached("list-popular-". $this->page)
                 ->fetchPhp(function () use ($table,$prefix){
@@ -1592,7 +1592,7 @@ class ContentsController extends BaseController
             $list = cached('contents:archives:new-'.$last_ix.'_' . $date)
                 ->chinese('往期福利')
                 ->fetchPhp(function () use ($date) {
-                    $table = \Yaf\Registry::get('database')->prefix;
+                    $table = Yaf_Registry::get('database')->prefix;
                     $fullTable = $table.'contents';
                     return ContentsModel::query()
                         ->when(empty($date), function ($query) {

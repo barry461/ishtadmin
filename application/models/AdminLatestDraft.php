@@ -208,8 +208,8 @@ class AdminLatestDraftModel extends BaseModel
     public static function getDraftTableName(): string
     {
         $prefix = '';
-        if (class_exists('\Yaf\Registry') && \Yaf\Registry::has('database')) {
-            $db = \Yaf\Registry::get('database');
+        if (class_exists('Yaf_Registry') && Yaf_Registry::has('database')) {
+            $db = Yaf_Registry::get('database');
             $prefix = isset($db->prefix) ? (string) $db->prefix : '';
         }
         return $prefix . 'admin_latest_draft';

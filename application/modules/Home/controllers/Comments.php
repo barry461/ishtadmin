@@ -174,7 +174,7 @@ class CommentsController extends WebController{
         $this->getResponse()->setHeader('X-Robots-Tag', 'noindex, nofollow');
         
         // 返回空响应
-        \Yaf\Registry::set('html:skip', true);
+        Yaf_Registry::set('html:skip', true);
         $this->getResponse()->setBody('');
         return true;
     }

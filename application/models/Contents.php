@@ -293,7 +293,7 @@ class ContentsModel extends BaseModel
 
     public static function queryWebListPost()
     {
-        $prefix = \Yaf\Registry::get('database')->prefix;
+        $prefix = Yaf_Registry::get('database')->prefix;
         $fullTable = $prefix . 'contents';
         return ContentsModel::queryPost()
             ->selectRaw("$fullTable.cid,title,`order`,type,status,commentsNum,is_home,home_top,is_slice,authorId,fake_view,view,created,modified");

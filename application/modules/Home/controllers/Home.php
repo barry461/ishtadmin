@@ -14,7 +14,7 @@ class HomeController extends WebController
             $this->page = $this->getRequest()->getParam('page') ?? 1;
 
 
-            $table = \Yaf\Registry::get('database')->prefix;
+            $table = Yaf_Registry::get('database')->prefix;
             $fullTable = $table . 'contents';
             $query = ContentsModel::queryWebListPost()
                 ->where('is_home', 1);

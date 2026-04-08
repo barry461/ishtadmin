@@ -42,7 +42,7 @@ class BigRelationModel extends BaseModel
             ->fetchJson(function () use ($bid){
                 $ids = self::where('big_id', $bid)->orderByDesc('order')->pluck('c_id')->toArray();
 
-                $table = \Yaf\Registry::get('database')->prefix;
+                $table = Yaf_Registry::get('database')->prefix;
                 $fullTable = $table.'contents';
                 $list = ContentsModel::query()
                     ->with([

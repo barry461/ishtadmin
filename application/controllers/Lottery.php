@@ -1,6 +1,6 @@
 <?php
 
-class LotteryController extends \Yaf\Controller_Abstract
+class LotteryController extends Yaf_Controller_Abstract
 {
 
     //签到接口

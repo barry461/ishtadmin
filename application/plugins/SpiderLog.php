@@ -1,10 +1,10 @@
 <?php
 
-use Yaf\Plugin_Abstract;
-use Yaf\Request_Abstract;
-use Yaf\Response_Abstract;
+use Yaf_Plugin_Abstract;
+use Yaf_Request_Abstract;
+use Yaf_Response_Abstract;
 
-class SpiderLogPlugin extends Plugin_Abstract
+class SpiderLogPlugin extends Yaf_Plugin_Abstract
 {
     /**
      * 在整个分发循环结束后记录蜘蛛访问
@@ -12,7 +12,7 @@ class SpiderLogPlugin extends Plugin_Abstract
      * @param Request_Abstract $request
      * @param Response_Abstract $response
      */
-    public function dispatchLoopShutdown(Request_Abstract $request, Response_Abstract $response)
+    public function dispatchLoopShutdown($request, $response)
     {
         trigger_log('123');
         // 仅处理 WEB 请求

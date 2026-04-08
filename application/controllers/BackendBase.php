@@ -3,11 +3,11 @@
 
 use Illuminate\Database\Query\Builder;
 use tools\GoogleAuthenticator;
-use Yaf\Application;
-use Yaf\Response_Abstract;
-use Yaf\Session;
+use Yaf_Application;
+use Yaf_Response_Abstract;
+use Yaf_Session;
 
-class BackendBaseController extends \Yaf\Controller_Abstract
+class BackendBaseController extends Yaf_Controller_Abstract
 {
     protected $user;
     protected $page;
@@ -43,7 +43,7 @@ class BackendBaseController extends \Yaf\Controller_Abstract
             $this->getUser()->role_id
         );
 
-        $this->config = \Yaf\Registry::get('config');
+        $this->config = Yaf_Registry::get('config');
         $this->page = $request->getQuery('page', 1);
         $this->offset = ($this->page - 1) * $this->limit;
         $this->post = $_POST;
@@ -109,7 +109,7 @@ class BackendBaseController extends \Yaf\Controller_Abstract
     }
 
     /**
-     * @return \Yaf\View_Interface|\Smarty\adapter
+     * @return Yaf_View_Interface|\Smarty\adapter
      * @author xiongba
      */
     public function getView()

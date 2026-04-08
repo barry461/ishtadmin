@@ -1,7 +1,7 @@
 <?php
 
 
-class CommandController extends \Yaf\Controller_Abstract
+class CommandController extends Yaf_Controller_Abstract
 {
     public function indexAction()
     {

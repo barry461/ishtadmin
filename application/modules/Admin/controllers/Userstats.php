@@ -40,7 +40,7 @@ class UserstatsController extends BackendBaseController
         $offset = ($page - 1) * $limit;
 
         // 获取表名前缀
-        $tablePrefix = \Yaf\Registry::get('database')->prefix;
+        $tablePrefix = Yaf_Registry::get('database')->prefix;
         $usersTable = $tablePrefix . 'users';
         $contentsTable = $tablePrefix . 'contents';
         $commentsTable = $tablePrefix . 'comments';

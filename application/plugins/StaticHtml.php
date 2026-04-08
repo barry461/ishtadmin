@@ -1,18 +1,14 @@
 <?php
 
 use website\DefaultView;
-use Yaf\Dispatcher;
-use Yaf\Plugin_Abstract;
-use Yaf\Registry;
-use Yaf\Request_Abstract;
-use Yaf\Response_Abstract;
 use Illuminate\Database\Capsule\Manager;
 use service\SpiderLogService;
 
-class StaticHtmlPlugin extends Plugin_Abstract {
+class StaticHtmlPlugin extends Yaf_Plugin_Abstract {
     use \website\HtmlCache;
     private $migrate = ['_initOne','_initDefaultDbAdapter','_initViews'];
     private $bootstrap;
+    private $dispatcher;
     
     public function __construct($dispatcher, $bootstrap)
     {
@@ -23,13 +19,13 @@ class StaticHtmlPlugin extends Plugin_Abstract {
         $this->NewHtmlCache(is_array($options) ? $options : []);
     }
 
-    public function dispatchLoopStartup(Request_Abstract $request, Response_Abstract $response) {
+    public function dispatchLoopStartup($request, $response) {
         $this->__import();
         SpiderLogService::pushFromRequest($request);
         $this->dispatchStartup();
     }
 
-    public function dispatchLoopShutdown(Yaf\Request_Abstract $request, Yaf\Response_Abstract $response) {
+    public function dispatchLoopShutdown($request, $response) {
         $this->dispatchShutdown($request, $response);
     }
 
@@ -40,19 +36,19 @@ class StaticHtmlPlugin extends Plugin_Abstract {
             $this->{$method}($this->dispatcher);
         }
     }
-    public function _initOne(Dispatcher $dispatcher)
+    public function _initOne($dispatcher)
     {
-        Yaf\Loader::import('function/common.php');
-        Yaf\Loader::import('function/helper.php');
-        Yaf\Loader::import('function/v.php');
-        Yaf\Loader::import('function/init.php');
+        Yaf_Loader::import('function/common.php');
+        Yaf_Loader::import('function/helper.php');
+        Yaf_Loader::import('function/v.php');
+        Yaf_Loader::import('function/init.php');
         $dispatcher->disableView();
     }
 
     public function _initDefaultDbAdapter()
     {
         try {
-            $object = new \Yaf\Config\Ini(APP_PATH.'/conf/database.ini', ini_get('yaf.environ'));
+            $object = new Yaf_Config_Ini(APP_PATH.'/conf/database.ini', ini_get('yaf.environ'));
             if ($object->es) {
                 class_alias(tools\Elasticsearch::class, '\LibEs');
                 \LibEs::registerConfig([$object->es->toArray()]);
@@ -95,7 +91,7 @@ class StaticHtmlPlugin extends Plugin_Abstract {
         $capsule->bootEloquent();
         class_alias(Manager::class, 'DB');
     }
-    public function _initViews(Dispatcher $dispatcher)
+    public function _initViews($dispatcher)
     {
         if (APP_MODULE === 'staff') {
             $smarty = new Smarty\adapter(null, $this->bootstrap->config->smarty->toArray());

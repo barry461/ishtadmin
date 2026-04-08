@@ -45,7 +45,7 @@ class RankController extends BaseController
                         return [];
                     }
                     $cids = array_keys($rankInfo);
-                    $table = \Yaf\Registry::get('database')->prefix;
+                    $table = Yaf_Registry::get('database')->prefix;
                     $fullTable = $table.'contents';
                     $list = ContentsModel::query()
                         ->with([
@@ -95,7 +95,7 @@ class RankController extends BaseController
                 ->group('contents:view:rank')
                 ->chinese('文章排行榜')
                 ->fetchPhp(function (){
-                    $table = \Yaf\Registry::get('database')->prefix;
+                    $table = Yaf_Registry::get('database')->prefix;
                     $fullTable = $table.'contents';
 
                     return ContentsModel::query()

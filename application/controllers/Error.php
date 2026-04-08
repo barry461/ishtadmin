@@ -1,8 +1,8 @@
 <?php
 
-use Yaf\Controller_Abstract;
+use Yaf_Controller_Abstract;
 
-class ErrorController extends Controller_Abstract
+class ErrorController extends Yaf_Controller_Abstract
 {
 
     public function errorAction($exception)
@@ -42,7 +42,7 @@ class ErrorController extends Controller_Abstract
             'crypt' => true,
         ];
 
-        if (in_array(\Yaf\Application::app()->environ() , ['test' , 'product'])  ) {
+        if (in_array(Yaf_Application::app()->environ() , ['test' , 'product'])  ) {
             $crypt = new LibCrypt();
             if (APP_MODULE == 'api') {
                 $returnData = $crypt->replyDataPwa($returnData);

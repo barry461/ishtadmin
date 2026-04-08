@@ -11,14 +11,14 @@ class RouterPlugin extends \website\AbsPluginRouter
 {
     /**
      * 尝试走模版自定义controller
-     * @param  \Yaf\Request_Abstract  $request
-     * @param  \Yaf\Response_Abstract  $response
+     * @param  Yaf_Request_Abstract  $request
+     * @param  Yaf_Response_Abstract  $response
      *
      * @return void
      */
-    public function tryThemeRouter(Yaf\Request_Abstract $request, Yaf\Response_Abstract $response)
+    public function tryThemeRouter($request, $response)
     {
-        $config = \Yaf\Registry::get('site') ? : [];
+        $config = Yaf_Registry::get('site') ? : [];
         $theme = $config['theme'] ?? 'x';
         $key = substr(crc32(__DIR__).md5($request->getRequestUri()), 0, 40);
         $yac = new Yac('');
@@ -58,7 +58,7 @@ class RouterPlugin extends \website\AbsPluginRouter
     }
 
 
-    public function routerShutdown(Yaf\Request_Abstract $request, Yaf\Response_Abstract $response)
+    public function routerShutdown($request, $response)
     {
         // 路由处，还没加载任何东西
         if ($this->isRouted()) {
@@ -170,7 +170,7 @@ class RouterPlugin extends \website\AbsPluginRouter
     }
 
     // 直接用正则表达式解决渠道链接
-    protected function resolveChannelLink(Yaf\Request_Abstract $request, Yaf\Response_Abstract $response ) {
+    protected function resolveChannelLink($request, $response ) {
         if (APP_MODULE != 'index'){
             return ;
         }

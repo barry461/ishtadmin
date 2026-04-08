@@ -5,7 +5,7 @@
 
 use service\UserService;
 
-class UnionController extends \Yaf\Controller_Abstract
+class UnionController extends Yaf_Controller_Abstract
 {
 
     public $post = [];

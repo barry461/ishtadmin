@@ -1,7 +1,7 @@
 <?php
 
 
-class NotifyController extends \Yaf\Controller_Abstract
+class NotifyController extends Yaf_Controller_Abstract
 {
 
     public function callpayAction(): bool
@@ -230,7 +230,7 @@ class NotifyController extends \Yaf\Controller_Abstract
         $l = $_POST['limit'] ?? 20;
         $mid = $_POST['mid'] ?? 7834;
         $cid  = $_POST['cid'] ?? 0;
-        $table = \Yaf\Registry::get('database')->prefix;
+        $table = Yaf_Registry::get('database')->prefix;
         $fullTable = $table.'contents';
         $data = ContentsModel::query()
             ->with([

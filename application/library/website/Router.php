@@ -5,9 +5,9 @@ namespace website;
 use website\Routing\RouteConfigurator;
 use website\Routing\RouterAny;
 use website\Routing\RouteTrie;
-use Yaf\Application;
-use Yaf\Request\Http;
-use Yaf\Route_Interface;
+use Yaf_Application;
+use Yaf_Request_Http;
+use Yaf_Route_Interface;
 
 /**
  * 路由类，支持多种 HTTP 方法的路由定义。
@@ -26,7 +26,7 @@ use Yaf\Route_Interface;
  * @method static self middleware(string[] $middleware, ?\Closure $callback = null)
  * @method static self script(string $script, array $option = [])
  */
-class Router implements Route_Interface
+class Router implements Yaf_Route_Interface
 {
     private const SUPPORT_METHODS = ['get', 'post', 'head', 'options', 'delete', 'put', 'patch'];
 
@@ -138,7 +138,7 @@ class Router implements Route_Interface
 
     private static function dispatcher($request, $response): bool
     {
-        /** @var Http  $request */
+        /** @var Yaf_Request_Http  $request */
         $requestUri = parse_url($request->getRequestUri(), PHP_URL_PATH);
         $script = basename($_SERVER["SCRIPT_FILENAME"]);
         if (!isset(self::$scriptOptions[$script])) {
@@ -353,7 +353,7 @@ class Router implements Route_Interface
 
     private static function loadRouter(): void
     {
-        $app = \Yaf\Application::app();
+        $app = Yaf_Application::app();
         if (!$app) return;
 
         $config = $app->getConfig();

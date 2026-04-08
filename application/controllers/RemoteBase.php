@@ -1,7 +1,7 @@
 <?php
 
 
-class RemoteBaseController extends \Yaf\Controller_Abstract
+class RemoteBaseController extends Yaf_Controller_Abstract
 {
     /** @var MemberModel */
     protected $member; // 用户信息

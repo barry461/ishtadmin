@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Collection;
-use Yaf\Controller_Abstract;
+use Yaf_Controller_Abstract;
 use service\CommonService;
 use service\UserService;
 use service\ChannelService;
 
-class IndexController extends Controller_Abstract
+class IndexController extends Yaf_Controller_Abstract
 {
     public function app_jsAction()
     {

@@ -2,12 +2,12 @@
 
 namespace website;
 
-use Yaf\Application;
-use Yaf\Plugin_Abstract;
-use Yaf\Request_Abstract;
-use Yaf\Response_Abstract;
+use Yaf_Application;
+use Yaf_Plugin_Abstract;
+use Yaf_Request_Abstract;
+use Yaf_Response_Abstract;
 
-class AbsPluginRouter extends Plugin_Abstract
+class AbsPluginRouter extends Yaf_Plugin_Abstract
 {
     /** @var \Yaf\Router  */
     protected $router = null;
@@ -17,7 +17,7 @@ class AbsPluginRouter extends Plugin_Abstract
 
     public function __construct($dispatcher = null)
     {
-        $this->dispatcher = $dispatcher ?: Application::app()->getDispatcher();
+        $this->dispatcher = $dispatcher ?: Yaf_Application::app()->getDispatcher();
         $this->router = $this->dispatcher->getRouter();
         $this->router->addRoute($this->routerName, new Router());
     }

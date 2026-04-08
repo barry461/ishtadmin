@@ -33,7 +33,7 @@ class CategoriesController extends WebController
 
             $this->limit = 30;
             $this->page = $this->getRequest()->getParam('page') ?? 1;
-            $table = \Yaf\Registry::get('database')->prefix;
+            $table = Yaf_Registry::get('database')->prefix;
             $fullTable = $table.'contents';
             $categoryId = $category->id ?? null;
             $key = 'content:category-list-'.$categoryId.'_'.$this->page;
